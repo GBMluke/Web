@@ -1,0 +1,689 @@
+跨站脚本攻击(XSS)
+
+    绕过方法
+        0x00前端过滤
+            burp抓包改包绕过
+
+        0x01双写绕过
+            用于屏蔽一些对大小写敏感的黑名单匹配
+                ?id=1 UnIon SeLeCt user()#
+
+        0x02事件绕过
+            onclick
+            onmousemove
+
+        0x03大小写绕过
+            用于屏蔽一些对大小写敏感的黑名单匹配
+                ?id=1 UnIon SeLeCt user()#
+
+        0x04注释干扰绕过
+            <scri<!--test-->pt>alert(1),<scr<!--teat-->ipt>
+
+        0x05伪协议绕过
+            111">a href="javascript:alert(document.domain)">xss</a>
+            <table background="javascript:alert(/xss/)"></table>
+            <img src ="javascript:alert('xss';")>
+
+        0x06空格回车Tab绕过
+            空格
+                <img src="jav    ascript:alert('xss');">
+            Tab
+                <img src="javasc	ript:alert('xss');">
+            回车
+                <img src="jav
+                ascript:
+                alert('xss'):">
+
+        0x07编码绕过
+            base64编码
+                eval("")eval函数把字符串当作程序执行
+                atob函数是将base64密文转换为明文
+                "><script>eval(atob('YWxlcnQoZG9tYWluKQ=='));</script>
+                base64编码多用于如下两种情况
+                    <a herf="可控点">
+                    <iframe src="可控点">
+                如果过滤了<、>、'、"、script，可以使用base64编码
+                <a herf="data:text/html;base64,PGItZyBzcmM9eCBvbmVycm9yPWFsCXJ0KDEpPg==">test</a>
+                这样当tast A链接点击时，就会以data协议，页面以html/test的方式解析，编码为base64，然后点击a链接时，base64的编码就被还原成原本的<img src=x onerror=alert(1)>
+            JS编码
+                八进制
+                    三个八进制数字，如果不够，在前面补0
+                    e.g.
+                        e = \145
+                十六进制
+                    两个十六进制数字，如果不够，在前面补0
+                    e.g.
+                        e = \x65
+                    十六进制前面加\x可以被JS识别
+                    <>被转义时，利用十六进制绕过
+                        \\x3cscript\\x3ealert(document.domain);\\x3c/script\\x3e
+                Unicode
+                    四个十六进制数字，如果不够，在前面补0
+                    e.g.
+                        e = \u0065
+                    十六进制前面加\u00变成可被JS识别的Unicode编码
+                    \\uoo3cscript\\u003ealert(document.domain);\\u003c/script\\u003e
+                对于一些控制字符，使用特殊的C类型的转义风格(\r、\n)
+            HTML实体编码
+                字符编码
+                    十进制、十六进制编码，样式为"&#数值;"
+                    {浏览器是不会在html标签里解析js编码的，所以我们在onerror=后面放js中的编码是不会被解析，你放进去是什么，就是什么}
+                    HTML5新增的实体命名编码
+                        &colon; = [:]
+                        &NewLine; = [Line feed]
+                        <a href="javasc&NewLine;ript&colon;alert(1)">click</a>
+            URL编码
+                进行两次URL前编码
+
+        0x08CSS
+            利用IE特性绕过
+                IE中‘’可以闭合一个“
+                "onmousemove=alert(1)
+            利用CSS特性绕过
+                设置background:url，利用JavaScript伪协议执行js
+                background-color:#f00;background:url("javascript:alert(document.domain);");
+            IE中利用CSS出发xss
+                CSS中的注视/**/
+                xss:expres/**/sion(if(!window.x){alert(document.domain);window.x=1;})
+
+        
+	XSS简介
+		XSS(Cross Site Script)跨站脚本攻击
+		XSS攻击通常指黑客通过HTML注入篡改了网页，插入了恶意脚本，从而在用户浏览网页时，控制用户浏览器的一种攻击
+		因为在最开始的时候XSS攻击的演示案例首跨域对，所以叫跨站脚本
+		分类
+			1.反射型XSS
+				简单地把用户输入的数据反射给服务器
+				黑客需要诱惑用户点击一个恶意链接，才能完成攻击
+				又称非持久型XSS(Non-persistent XSS)
+				[前端--->后端--->前端]
+			2.存储型XSS
+				把用户输入的数据存储在服务器端
+				具有很强的稳定性
+				又称持久型XSS(Persistent XSS)
+				[前端--->后端--->数据库--->前端]
+			3.DOM Based XSS(DOM型XSS)
+				通过修改页面的DOM节点形成的XSS
+				[前端]
+
+	XSS攻击进阶
+
+		初探XSS Payload
+			XSS攻击成功后，攻击者能够对用户当前浏览的页面植入恶意脚本，通过恶意脚本，控制用户的浏览器
+			这些用以完成各种具体功能的恶意脚本，被称为XSS Payload
+			XSS Payload实际上就是JavaScript脚本，还可以是Flash或其他富客户端的脚本，所以JavaScript能做到的功能，XSS Payload也能做到
+			一个最常见的XSS Payload就是通过读取浏览器的Cookie对象，从而发起Cookie劫持的攻击
+			Cookie中一般加密保存了当前用户的登录凭证，如果Cookie丢失，就意味着用户的登录凭证丢失，攻击者就可以不通过密码，直接进入用户的账户
+
+		强大的XSSPayload
+
+			构造GET与POST请求
+					特点
+						http的特点
+							基于tcp/ip、一种网络应用层协议、超文本传输协议HyperText Transfer Protocol
+							工作方式
+								客户端请求服务端应答的模式
+							快速
+								无状态连接
+							灵活
+								可以传输任意对象，对象类型由Content-Type标记
+							客户端请求request消息
+								* 请求行(request line)
+								* 请求头部(header)
+								* 空行
+								* 请求数据
+							服务端响应response由四个部分组成
+								* 状态行
+								* 消息报头
+								* 空行
+								* 响应正文
+						请求方法
+							http请求可以使用多种请求方法
+								HTTP1.0定义了三种请求方法
+									* GET
+									* POST
+									* HEAD
+								HTTP1.1新增了五种请求方法
+									* OPTIONS
+									* PUT
+									* DELETE
+									* TRACE
+									* CONNECT 
+								HTTP2.0 新的二进制格式(Binary Format)，HTTP1.x的解析是基于文本
+								基于文本协议的格式解析存在天然缺陷，文本的表现形式有多样性，要做到健壮性考虑的场景必然很多，二进制则不同，只认0和1的组合
+								基于这种考虑HTTP2.0的协议解析决定采用二进制格式，实现方便且健壮
+								多路复用(MultiPlexing)，即连接共享，即每一个request都是是用作连接共享机制的
+								一个request对应一个id，这样一个连接上可以有多个request，每个连接的request可以随机的混杂在一起，接收方可以根据request的id将request再归属到各自不同的服务端请求里面
+								header压缩，如上文中所言，对前面提到过HTTP1.x的header带有大量信息，而且每次都要重复发送，HTTP2.0使用encoder来减少需要传输的header大小，通讯双方各自cache一份header fields表，既避免了重复header的传输，又减小了需要传输的大小
+								服务端推送(server push)，同SPDY一样，HTTP2.0也具有server push功能
+									https://baike.baidu.com/item/HTTP%202.0/12520156?fr=aladdin
+									* GET请求指定的页面信息，并返回实体主体
+									* HEAD类似于get请求，只不过返回的响应中没有具体的内容，用于获取报头
+									* POST向指定资源提交数据进行处理请求(例如提交表单或者上传文件)，数据被包含在请求体中，POST请求可能会导致新的资源的建立和/或已有资源的修改
+									* PUT从客户端向服务器传送的数据取代指定的文档的内容
+									* DELETE请求服务器删除指定的页面
+									* CONNECT HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器
+									* OPTIONS允许客户端查看服务器的性能
+									* TRACE回显服务器收到的请求，主要用于测试或诊断
+						区别
+							http协议最常见的两种方法GET和POST，这几点答案其实有几点并不准确
+								* 请求缓存
+									GET会被缓存，而post不会
+								* 收藏书签
+									GET可以，而POST不能
+								* 保留浏览器历史记录
+									GET可以，而POST不能
+								* 用处
+									get常用于取回数据，post用于提交数据
+								* 安全性
+									post比get安全
+								* 请求参数
+									querystring是url的一部分get、post都可以带上，get的querystring(仅支持urlencode编码)，post的参数是放在body(支持多种编码)
+								* 请求参数长度限制
+									get请求长度最多1024kb，post对请求数据没有限制
+						误区
+							针对上面常见的区别，如果面试的时候这么说，肯定是有很大的毛病，刚在学校面试的时候也曾经囫囵吞枣地这样说过，现在回过头再想以前的错误认知，又有许多新的认识
+							用处
+								请求参数
+									get是querystring(仅支持urlencode编码)，post是放在body(支持多种编码)query参数是URL的一部分，而GET、POST等是请求方法的一种，不管是哪种请求方法，都必须有URL，而URL的query是可选的
+							请求参数长度限制
+								下面对各种浏览器和服务器的最大处理能力做一些说明
+									* IE浏览器对URL的最大限制为2083个字符
+									* Firefox(Browser)
+										对于Firefox浏览器URL的长度限制为65536个字符
+									* Safari(Browser)
+										URL最大长度限制为80000个字符
+									* Opera(Browser)
+										URL最大长度限制为190000个字符
+									* Google Chrome
+										URL最大长度限制为8182个字符
+									* Apache(Server)
+										能接受最大url长度为8192个字符
+									* Microsoft Internet Information Server(IIS)
+										能接受最大url的长度为16384个字符
+								为了符合所有标准，url的最好不好超过最低标准的2083个字符(2k+35)
+								当然在做客户端程序时，url并不展示给用户，只是个程序调用，这时长度只收web服务器的影响了
+								最常见的form表单，浏览器默认的form表单，默认的content-type是application/x-www-form-urlencoded，提交的数据会按照key-value的方式，jquery的ajax默认的也是这种content-type
+								在post方式中添加querystring一定是可以接收的到，但是在get方式中加body参数就不一定能成功接收到了
+							post不比get安全性要高
+								这里的安全是相对性，并不是真正意义上的安全，通过get提交的数据都将显示到url上，页面会被浏览器缓存，其他人查看历史记录会看到提交的数据，而post不会，另外get提交数据还可能会造成CSRF攻击
+					http状态码
+						1xx - 信息提示
+							100 Continue - 继续
+							101 Switching Protocols - 切换协议
+
+						2xx - 成功
+							200 OK - 客户端请求已成功
+							201 Created - 已创建
+							202 Accepted - 已接受
+							203 Non-Authoritative Information - 非权威性信息
+							204 No Content - 无内容
+							205 Reset Content - 重置内容
+							206 Partial Content - 部分内容
+
+						3xx - 重定向
+							300 Multiple Choices - 多种选择
+							301 Moved Permanently - 对象已永久重定向(对象已永久移走)
+							302 Found - 对象已临时移动
+							303 See Other - 服务器要将浏览器重定向到另一个资源
+							304 Not Modified - 未修改
+							307 Temporary Redirect - 临时重定向
+							308 Permanent Resident - 不允许浏览器将原本为POST的请求重定向到GET请求上
+
+						4xx - 客户端错误
+							400 Bad Request - 客户端请求到语法错误，服务器无法理解
+							401 Unauthorized - 请求要求用户的身份认证
+							402 Payment Required - 保留，将来使用
+							403 Forbidden - 服务器理解请求客户端的请求，但是拒绝执行此请求
+							404 Not Found - 服务器无法根据客户端的请求找到资源(网页)
+							405 Method Not Allowed - 客户端请求中的方法被禁止
+							406 Not Acceptable - 服务器无法根据客户端请求的内容特性完成请求
+							407 Proxy Authentication Required - 请求要求代理的身份认证
+							408 Request Time-out - 服务器等待客户端发送的请求时间过长，超时
+							409 Conflict - 服务器完成客户端的 PUT 请求时可能返回此代码，服务器处理请求时发生了冲突
+							410 Gone - 客户端请求的资源已经不存在
+							411 Length Required - 服务器无法处理客户端发送的不带Content-Length的请求信息
+							412 Precondition Failed - 客户端请求信息的先决条件错误
+							413 Request Entity Too Large - 由于请求的实体过大，服务器无法处理，因此拒绝请求，为防止客户端的连续请求，服务器可能会关闭连接
+						 	414 Request-URL Too Large - 请求的URI过长（URI通常为网址），服务器无法处理
+							415 Unsupported Media Type - 服务器无法处理请求附带的媒体格式
+							416 Requested Range Not Satisfiable - 客户端请求的范围无效
+							417 Expectation Failed - 服务器无法满足Expect的请求头信息
+
+						5xx - 服务器错误
+							500 Internal Server Error - 服务器内部错误，无法完成处理
+							501 Not Implemented - 服务器不支持请求的功能，无法完成请求
+							502 Bad Gateway - 作为网关或者代理工作的服务器尝试执行请求时，从远程服务器接受到了一个无效的响应
+							503 Service Unavailable - 由于超载或系统维护，服务器暂时无法处理客户端的请求
+							504 Gateway Time-out - 充当网关或代理的服务器，未能及时从远端服务器获取请求
+							505 HTTP Version Not Supported - 服务器不支持请求的HTTP协议的版本，无法完成处理
+
+						302	
+							在响应头中加入Location参数
+							浏览器接受到带有location头的响应时，就会跳转到相应的地址
+				
+					减低服务器流量压力
+						根据HTTP规范，GET用于信息获取，而且应该是安全的和幂等的，所谓安全的意味着该操作用于获取信息而非修改信息，GET请求一般不应产生副作用，幂等的意味着对同一URL的多个请求应该返回同样的结果，完整的定义并不像看起来那样严格，从根本上讲，其目标是当用户打开一个链接时，她可以确信从自身的角度来看没有改变资源
+					原理区别
+						一般在浏览器中输入网址访问资源都是通过GET方式，在FORM提交中，可以通过Method指定提交方式为GET或者POST，默认为GET提交
+						http定义了与服务器交互的不同方法，最基本的方法有4种，分别是GET，POST，PUT，DELETE
+						URL全称是资源描述符
+							一个URL地址，它用于描述一个网络上的资源，而HTTP中的GET，POST，PUT，DELETE就对应着对这个资源的查，改，增，删4个操作
+							GET一般用于获取/查询资源信息，而POST一般用于更新资源信息
+						[个人认为这是GET和POST的本质区别，也是协议设计者的本意，其它区别都是具体表现形式的差异]
+						根据HTTP规范，GET用于信息获取，而且应该是安全的和幂等的
+						* 所谓安全的意味着该操作用于获取信息而非修改信息，换句话说，GET请求一般不应产生副作用，就是说，它仅仅是获取资源信息，就像数据库查询一样，不会修改，增加数据，不会影响资源的状态
+							{这里安全的含义仅仅是指是非修改信息}
+						* 幂等的意味着对同一URL的多个请求应该返回同样的结果
+							[
+								幂等(idempotent、idempotence)是一个数学或计算机学概念，常见于抽象代数中
+								对于单目运算，如果一个运算对于在范围内的所有的一个数多次进行该运算所得的结果和进行一次该运算所得的结果是一样的，那么我们就称该运算是幂等的，如绝对值运算就是一个例子，在实数集中，有abs(a) = abs(abs(a))
+								对于双目运算，则要求当参与运算的两个值是等值的情况下，如果满足运算结果与参与运算的两个值相等，则称该运算幂等，如求两个数的最大值的函数，有在实数集中幂等，即max(x,x) = x，看完上述解释后，应该可以理解GET幂等的含义了
+								但在实际应用中，以上2条规定并没有这么严格
+								根据HTTP规范，POST表示可能修改变服务器上的资源的请求
+							]
+						上面大概说了一下HTTP规范中，GET和POST的一些原理性的问题
+						但在实际的做的时候，很多人却没有按照HTTP规范去做，导致这个问题的原因有很多
+							* 很多人贪方便，更新资源时用了GET，因为用POST必须要到from(表单)，这样会麻烦一点
+							* 对资源的增，删，改，查操作，其实都可以通过GET/POST完成，不需要用到PUT和DELETE
+							* 早期的但是Web MVC框架设计者们并没有有意识地将URL当作抽象的资源来看待和设计，还有一个较为严重的问题是传统的Web MVC框架基本上都只支持GET和POST两种HTTP方法，而不支持PUT和DELETE方法
+							{MVC本来是存在于Desktop程序中的，M是指数据模型，V是指用户界面，C则是控制器，使用MVC的目的是将M和V的实现代码分离，从而使同一个程序可以使用不同的表现形式}
+					表达式区别
+						//http请求行
+						//http请求消息报头
+						//回车换行
+						[]//http请求正文
+						提交方式区别
+							1、GET提交的数据会在地址栏中显示出来，而POST提交，地址栏不会改变
+								* GET提交
+									请求的数据会附在URL之后(就是把数据放置在HTTP协议头中)，以?分割URL和传输数据，多个参数用&连接
+								* POST提交
+									把提交的数据放置在是HTTP包的包体中
+							2、HTTP协议没有对传输的数据大小进行限制，HTTP协议规范也没有对URL长度进行限制
+								* GET
+									特定浏览器和服务器对URL长度有限制，IE对URL长度的限制是2083字节(2K+35)，对于其他浏览器，如Netscape、FireFox等，理论上没有长度限制，其限制取决于操作系统的支持
+								* POST
+									由于不是通过URL传值，理论上数据不受限，但实际各个WEB服务器会规定对post提交数据大小进行限制，Apache、IIS6都有各自的配置
+							3、安全性
+								POST的安全性要比GET的安全性高
+								{这里所说的安全性和上面GET提到的安全不是同个概念，上面安全的含义仅仅是不作数据修改，而这里安全的含义是真正的Security的含义}
+							4、Http get，post，soap协议都是在http上运行的
+								* get
+									请求参数是作为一个key/value对的序列(查询字符串)附加到URL上的查询字符串的长度受到web浏览器和web服务器的限制(IE最多支持2048个字符)，不适合传输大型数据集同时，它很不安全
+								* post
+									请求参数是在http标题的一个不同部分(名为entitybody传输的)，这一部分用来传输表单信息，因此必须将Content-type设置为application/x-www-form-urlencoded，post设计用来支持web窗体上的用户字段，其参数也是作为key/value对传输
+								* soap
+									是http post的一个专用版本，遵循一种特殊的xml消息格式Content-type设置为，text/xml任何数据都可以xml化
+					* get是从服务器上获取数据，post是向服务器传送数据
+						get和post只是一种传递数据的方式，get也可以把数据传到服务器，他们的本质都是发送请求和接收结果
+						只是组织格式和数据量上面有差别，http协议里面有介绍2.get是把参数数据队列加到提交表单的ACTION属性所指的URL中，值和表单内各个字段一一对应，在URL中可以看到
+						post是通过HTTPpost机制，将表单内各个字段与其内容放置在HTML HEADER内一起传送到ACTION属性所指的URL地址
+						用户看不到这个过程，因为get设计成传输小数据，而且最好是不修改服务器的数据，所以浏览器一般都在地址栏里面可以看到，但post一般都用来传递大数据，或比较隐私的数据，所以在地址栏看不到，能不能看到不是协议规定，是浏览器规定的
+					* 对于get方式，服务器端用Request.QueryString获取变量的值，对于post方式，服务器端用Request.Form获取提交的数据
+					* get传送的数据量较小，不能大于2KB，post传送的数据量较大，一般被默认为不受限制
+						但理论上，IIS4中最大量为80KB，IIS5中为100KB
+						post基本没有限制，我想大家都上传过文件，都是用post方式的，只不过要修改form里面的那个type参数
+					* get安全性非常低，post安全性较高
+						如果没有加密，他们安全级别都是一样的，随便一个监听器都可以把所有的数据监听到
+				
+				一个网站的应用只需要接受HTTP协议中的GET或POST请求，即可完成所有操作
+				对于攻击者来说，仅通过JavaScript就可以让浏览器发起这两个请求
+				所以XSS攻击后，攻击者除了可以实施Cookie劫持外，还能够通过模拟GET、POST请求操作用户的浏览器
+					这在某些隔离环境中会非常有用，比如Cookie劫持失效时，或者目标用户的网络不能访问互联网等情况
+
+			XSS钓鱼
+				将XSS与钓鱼结合的思路
+					利用JavaScript在当前界面伪造一个登录框，当用户在登录框中输入用户名与密码后，其密码会发送到黑客的服务器上
+				充分发挥想象力，可以使XSS攻击的威力更加巨大
+
+			识别用户浏览器
+				在很多时候，攻击者为了获取更大的利益，往往需要准确地手机用户的个人信息
+				但是浏览器的UserAgent是可以伪造的，所以通过JavaScript取出来的这个浏览器对象，信息并不一定准确
+				由于浏览器之间的实现存在差异——不同的浏览器会各自实现一些独特的功能，而同一个浏览器的不同版本之间也可能会有细微的差别
+				所以通过分辨这些浏览器之间的差异，就能准确地判断出浏览器的版本，而几乎不会报错，这种方法比读取UserAgent要准确得多
+				http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/
+
+			识别用户安装的软件
+				知道了用户使用的浏览器、操作系统后，进一步可以识别用户安装的软件
+				在IE中，可以通过判断ActiveX控件的classid是否存在，来推测用户是否安装了该软件
+				这种方法很早就被用于挂马攻击——黑客通过判断用户安装的软件，选择对应的浏览器漏洞，最终达到植入木马的目的
+				浏览器的扩展与插件也能被XSS Payload扫描出来
+
+			CSS History Hack
+				通过CSS，可以发现用户曾经访问过的网站
+				这个技巧最早被Jeremiah Grossman发现，其原理是利用style的visited属性，如果用户曾经访问过某个链接，那么这个链接的颜色会变得与众不同
+
+			获取用户的真实IP地址
+				通过XSS Payload还有办法获得一些客户端的本地IP地址
+				很多时候，用户电脑使用了代理服务器，或者在局域网中隐藏在NAT后面，网站看到的客户端IP地址是内网的出口IP地址，而并非用户的真实IP地址
+				JavaScript本身并没有提供获取本地IP地址的能力
+				XSS攻击需要借助第三方软件来完成
+				可以借助以上两点结合第三方软件使用，获得用户IP地址
+					http://decloak.net/decloak.html
+
+		XSS攻击平台
+
+			Attack API
+				http://code.google.com/p/attackapi/
+				由安全研究者pdp所主导的一个项目，它总结了很多能够直接使用XSS Payload，归纳为API的方式
+				e.g.
+					获取客户端本地信息的API(3.2.2)
+			BeEF
+				http://www.bindshell.net/tools/beef/
+				BeEF曾经是最好的XSS演示平台
+				它演示的是一个完整的XSS攻击过程
+				BeEF有一个控制后台，攻击者可以在后台控制前端的一切
+				每一个被XSS攻击的用户都将出现在后台，后台控制者可以控制这些浏览器的行为，并可以通过XSS向这些用户发送命令
+			XSS- Proxy
+				是一个轻量级的XSS攻击平台，通过嵌套iframe的方式可以实时地远程控制被XSS攻击的浏览器
+			这些XSS攻击平台有助于深入了解XSS的原理及危害
+
+		XSS Worm
+			#一种蠕虫病毒
+
+			Samy Worm
+				用户之间发生交互行为的页面如果存在存储型XSS，则会比较容易发起XSS Worm攻击
+				http://namb.la/popular/tech.html
+
+			百度空间蠕虫
+				http://security.ctocio.com.cn/securitycomment/57/7792057.shtml
+
+			以上两个蠕虫并不是恶意的蠕虫，真正可怕的蠕虫是那些在无声无息地盗取用户的敏感信息的蠕虫，然而这些蠕虫并不会干扰用户的正常使用，非常隐蔽
+
+		调试JavaScript
+			想写好XSS Payload，需要有很好的JavaScript功底，调试JavaScript也是必不可少的技能
+			工具
+				Firebug
+					这是最常用的脚本调试工具，前端工程师于Web Hacking必备，被誉为 居家旅行的瑞士军刀
+					Firebug非常强大，它有好几个面板，可以查看页面的DOM节点
+				IE 8 Developer Tools
+					在IE8中，为开发者内置了一个JavaScript Debugger，可以动态调试JavaScript
+				Fiddler
+					这是一个本地代理服务器，需要将浏览器设置为使用本地代理服务器上网才可使用
+					它会监控所有浏览器请求，并有能力在浏览器请求中插入数据
+					它支持脚本编程，一个强大的Fiddler脚本将非常有助于安全测试
+					http://www.fidder2.com/fidder2/
+				HttpWatch
+					这是一个商业软件，它以插件的形式内嵌在浏览器中
+					它并不能调试JavaScript，它仅仅是一个专业针对Web的Sniffer
+			[工具只是辅助，并不起关键作用]
+
+	    XSS构造技巧
+
+			利用字符编码
+				百度收藏
+					将%c1\组成新的Unicode字符这样%c1把转运符号 \ 隐藏起来了，从而绕过了系统的安全检查，实施了XSS攻击
+
+			绕过长度限制
+				很多时候，产生XSS的地方会有变量的长度限制，这个限制可能是服务器端逻辑造成的
+				攻击者可以利用事件(Event)来缩短所需要的字节数
+				最好的办法是把XSS Payload写到别处，再通过简短的代码加载这段XSS Payload
+				最常用的一个藏代码的地方，就是location.hash，而且根据HTTP协议，location.hash的内容不会在HTTP包中发送，所以服务器端的Web日志中并不会记录location.hash中的数据，从而也更好地隐藏了黑客真实点意图
+				因为location.hash的第一个字符是#，所以必须去除第一个字符才可运行
+				location.hash本身没有长度限制，但是浏览器的地址栏是有长度限制的，不过这个长度已经足够用来写很长的XSS Payload了
+				如果地址栏了长度不够用，还可以再使用加载远程JS的方法，来写更多代码
+				在某些环境下，可以通过注释符绕过长度限制
+
+			使用<base>标签
+				<base>标签并不常用，它的作用是定义页面上的所有使用相对路径标签的hosting地址
+				需要特别注意的是，在有技术的文档中，提到<base>标签只能用在<head>标签内，其实这是不对的，<base>标签可以出现在HTML脚本的任意位置并作用于位于标签之后的所有标签
+				所有在设计XSS安全方案时，一定要过滤掉这个非常危险的标签
+
+			window.name的妙用
+				window.name对象是一个很神奇的东西，对当前窗口的window.name对象赋值，没有特殊的字符限制，因为window对象是浏览器的窗体，而并非document对象，因此很多时候window对象不受同源策略的限制，攻击者利用这个对象，可以实现跨于、跨页面传递数据，在某些环境下，这种特性将变得非常有用
+				使用window.name可以缩短XSS Payload的长度
+				在同一窗口打开XSS的站点后，只需通过XSS执行相应的代码即可
+				这个技巧为安全研究者loulou所发现
+					《突破XSS字符数量限制执行任意JS代码》
+						http://secinn.appspot.com/pstzine/read?issue=3&articleid=4
+
+		Mission Impossible
+			从XSS漏洞利用的角度看，存储型XSS对攻击者的用处比反射型XSS要大，因为存储型XSS在用户访问正常URL时会自动触发，而反射型XSS会修改一个正常的URL，一般要求攻击者将XSS URL发送给用户点击，无形中提高了攻击门槛
+			有的XSS漏洞被认为只能攻击自己，称之为鸡肋漏洞
+
+			Apache Expect Header XSS
+				这个漏洞最早公布于2006年，这个漏洞曾一度被认为是无法利用的所以厂商不认为这是个漏洞
+				这个漏洞的影响范围是Apache Expect Header版本1.3.34、2.0.57、2.2.1及以下
+				利用过程
+					向服务器提交后返回
+					注意到服务器在出错返回时，会把Expect头的内容未经任何处理便写入到页面中，因此Expect头中的代码就会被浏览器解析执行
+				从攻击过程可以看出，需要在提交请求时向HTTP头中注入恶意数据，才能触发漏洞，但对于XSS攻击来说，JavaScript工作渲染后的浏览器环境中，无法控制用户浏览器发出的HTTP头，因此，这个漏洞曾一度被认为是鸡肋漏洞
+				后来，安全研究者Amit Klein提出了使用Flash构造请求的方法，成功地利用这个漏洞，变废为宝
+					在发送Flash中的HTTP请求时，可以自定义大多数的HTTP头
+
+			Anehta的回旋镖
+				反射型XSS也有可能像存储型XSS一样利用
+					将要利用的反射型XSS嵌入一个存储型XSS中
+				这个攻击方法曾经在未知安全研究者实现的一个XSS攻击平台(Anehta)中使用过，他将其命名为回旋镖
+				因为浏览器同源策略的原因，XSS也受到同源策略的限制
+					发生在A域上的XSS很难影响B域的用户
+				思路
+					如果在B域上存在一个反射型XSS_B，在A域上存在一个存储型XSS_A，当用户访问A域上的XSS_A时，同时嵌入B域上的XSS_B，则可达到在A域的XSS攻击B域用户的目的
+
+		Flash XSS
+			Flash中同样也有可能造成XSS攻击
+			ActionScript是一种非常强大和灵活的脚本，甚至可以使用它发起网络连接，因此应该尽可能地禁止用户能够上传或加载中定义的Flash文件
+			如果仅仅是视频文件，则要求转码为flv文件，flv文件是静态文件，不会产生安全隐患
+			如果是带动态脚本的Flash，则可以通过Flash的配置参数进行限制
+			限制Flash动态脚本的最重要的参数是allowScriptAccress，这个参数定义了Flash能否与HTML页面进行通信
+				always - 对与HTML的通信也就是执行JavaScript不做任何限制
+				sameDomain - 只允许来自于本域的Flash域HTML通信，这是默认值
+				never - 绝对静止Flash域HTML的通信
+				使用always是非常危险的，一般推荐使用never，如果值为sameDomain的话，{必须确保Flash文件不是用户上传的}
+			除了allowScriptAccress外，allowNetworking也非常关键，这个参数能控制Flash与外部网络进行通信
+				all - 允许使用所有的网络通信，这是默认值
+				internal - Flash不能与浏览器通信，但可以调用其他API
+				none - 禁止任何的网络通信
+				一般建议此值设置为none或internal，设置为all可能带来安全问题
+			除了用户的Flash文件能够实施脚本攻击外，一些Flash也可能会产生XSS漏洞
+			安全研究者Stefano Di Paola曾经写了一个叫SWFIntruder的工具来检测产生在Flash里的XSS漏洞，通过这个工具可以检测出很多注入Flash变量导致的XSS问题
+				https://www.owasp.org/index.php/Category:SWFIntruder
+			Flash XSS往往被开发者所忽视，注入Flash变量的XSS，因为其原因出现在编译后的Flash文件中，一般的扫描工具或者代码审计工具都难以检查，常常使其成为漏网之鱼
+			OWASP为Flash安全研究设立了一个Wiki页面
+				https://www.owasp.org/index.php/Category:OWASP_Flash_Security_Project
+
+		JavaScript开发框架
+			一般来收成熟的JavaScript开发框架都会注意自身的安全问题，但代码是人写的，高手难免也会犯错，一些JavaScript开发框架也曾暴露过一些XSS漏洞
+			Dojo
+				Dojo是一个流行的JavaScript开发框架，它曾被发现有XSS漏洞
+					在Dojo1.4.1中，存在两个DOM型XSS
+			YUI
+				翻翻YUI的bugtracker也可以看到类似Dojo的问题
+			jQuery
+				jQuery可能是目前最流行的JavaScript框架，它本身出现的XSS漏洞很少，但开发者该记住的是，JavaScript框架只是对JavaScript语言本身的封装，并不能解决代码逻辑上产生的问题，所以开发者的意识才是安全编码的关键所在
+
+	XSS防御
+
+		HttpOnly
+			HttpOnly是由微软最早提出的并在IE6中实现，至今已经逐渐成为一个标准，浏览器将禁止页面的JavaScript访问带有HttpOnly属性的Cookie
+			以下浏览器开始支持HttpOnly
+				Microsoft IE 6 SP1+
+				Mozilla Firefox 2.0.0.5+
+				Mozilla Firefox 3.0.0.6+
+				Google Chrome
+				Apple Safari 4.0+
+				Opera9.5+
+			严格来说，HttpOnly并非为了对抗XSS，它是解决XSS后的Cookie劫持攻击
+				原理*见3.2.1*
+					如果Cookie设置了HttpOnly，则这种攻击会失败，因为JavaScript读取不到Cookie的值
+			一个Cookie的使用过程如下
+	            1. 浏览器想服务器发起请求，这时候没有Cookie
+	            2. 服务器发挥时发送Set- Cookie头，向客户端浏览器写入Cookie
+	            3. 在该Cookie到期前，浏览器访问该域下的所有页面，都将发送该Cookie
+			{服务器可能会设置多个Cookie(多个key-value对)，而HttpOnly可以有选择性地加在任意一个Cookie值上}
+			在某些时候，应用可能需要JavaScript访问某几项Cookie，这种Cookie可以不设置HttpOnly标记，而仅把HttpOnly标记给用于认证的Cookie添加HttpOnly的过程简单，效果明显，有如四两拔千斤，但部署时需要注意如果业务非常复杂，则需要在所有Set-Cookie的地方，给关键Cookie都加上HttpOnly，漏掉了一个地方，都可能是使得这个方案失效
+			使用HttpOnly有助于缓解XSS攻击，但仍然需要其他能够解决XSS漏洞的方案
+
+		输入检查
+			常见的Web漏洞如XSS、SQL Injection等，都要求攻击者构造一些特殊字符，这些特殊字符可能是正常用户不会用到的，所以输入检查就有存在的必要了
+			输入检查在很多时候也被用于格式检查
+			这些格式检查有一点像白名单，也可以让一些基于特殊字符的攻击失效
+			输入检查的逻辑，必须放在服务器端代码中实现，如果只是在客户端使用JavaScript进行输入检查，是很容易被攻击者绕过的
+			目前的Web开发的普遍做法，是同时在客户端使用JavaScript中和服务器端代码中实现相同的输入检查
+				客户端JavaScript的输入检查可以阻挡大部分误操作的用户，从而节约服务器资源
+			在XSS防御上，输入检查一般是检查用户输入的数据中是否包含一些特殊字符,如果发现存在特殊字符，则将这些字符过滤或编码
+				特殊字符e.g.
+					<
+					>
+					'
+					"
+			比较智能的输入检查可能匹配XSS的特征，如<script>、javascript
+			这种输入检查的方式被称为XSS Filter，互联网上有很多开源的XSS Filter的实现
+			XSS Filter在用户提交数据时获取变量，并进行XSS检查，但此时用户数据并没有结合渲染页面的HTML代码，因此XSS Filter对语境的理解并不完整
+			如果是一个全局性的XSS Filter，则无法看到用户数据的输出语境，而只能看到用户提交了一个URL，就很可能会漏报
+				大多数情况下，URL是一种合法的用户数据
+			XSS Filter还有一个问题
+				其对于<、>的处理可能会改变用户数据的语义
+			对于XSS Filter来说，发现敏感字符<，如果其不够智能，粗暴地过滤或者替换了<，则可能会改变用户原本的意思
+			输入数据还可能会被展示在多个地方，每个地方的语境可能各不相同，如果使用单一的替换操作，则可能出现问题
+			e.g.
+				用户昵称会在很多地方展示，每个界面的语境也可能各不相同如果在输入时做了统一的更改，那么输出时可能有如下的问题
+			------------------ 
+			我的偶像是\"hackjacking\"
+			我的偶像是"hackjacking"
+			------------------
+			然而第一个结果显然是用户不希望看到的
+			[我都喜欢看到]
+
+		输出检查
+
+			安全编码函数
+				编码分为很多种，针对HTML代码的编码方式是HtmlEncode
+				HtmlEncode并非专用名词，它只是一种函数的实现，它的作用是将字符转换成HTML Entities，对应的标准是ISO-8859-1
+				为了对抗XSS，在HtmlEncode中要求至少转换以下字符
+					&		&amp
+					<		&lt
+					"		&quot
+					'		&#x27 或 &apos(不推荐)
+					/		&#x2F
+						包含反斜线是因为它可能会闭合一些HTML entity
+				在PHP中，有htmlentities()和htmlspecialchars()两个函数可以满足安全要求
+				JavaScript的编码方式可以使用JavascriptEncode
+				JavascriptEncode于HtmlEncode的编码方式不同，它需要使用 \ 对特殊字符进行转义在对抗XSS时，还要求输出的变量必须在引号内部以避免造成安全问题
+				要求使用JavascriptEncode的变量输出一定要在引号内
+				没有习惯的话，只能用更加严格的JavascriptEncode函数来保证安全
+					除了数字、字母的所以字符，都使用十六进制\xHH的方式进行编码
+				在OWASP ESAPI中有一个安全的JavascriptEncode的实现，非常严格
+					http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API
+				除了HtmlEncode、JavascriptEncode外，还有许多用于各种情况的编码函数，比如XMLEncode(实现与HtmlEncode相似)
+																					     JSONEncode(于JavascriptEncode相似)等
+				在Apache Common Lang的StringEscapeUtils里，提供了许多escape的函数
+				可以在适当的情况下选用适当的函数，但编码后的数据长度可能会发生改变，从而影响某些功能在编码时需要注意这个细节，以免产生不必要的bug
+
+			只需要一种编码吗
+				XSS攻击主要发生在MVC架构中的View层，大部分的XSS漏洞可以在模板系统中解决
+				在python的开发架构Django自带的模板系统Django Templates中，可以使用escape进行HtmlEncode
+				在正确的地方使用正确的编码方式
+				对于浏览器来说，htmlparser会优先于JavaScript Parser执行，所以解析过程是被HtmlEncode的字符先被解码，然后执行JavaScript事件
+				导致XSS攻击发生的原因是由于没有分清楚输出变量的语境，因此并非用了auto-escape就万事大吉了
+				XSS的防御需要区分情况对待
+
+		正确地防御XSS
+			XSS的本质还是一种HTML注入，用户的数据被当成了HTML代码的一部分执行，从而混淆了原本的语义，产生了新的语义
+			如果网站使用了MVC架构，那么XSS就发生在View层——在应用拼接变量到HTML页面时产生，所以在用户提交数据处进行输入检查的方案，其实并不是在真正发生攻击的地方做防御
+			想要根治XSS问题，可以列出所有XSS可能发生的场景，再一一解决
+			可能存在以下场景
+	            * 在HTML标签中输出
+					所有在标签中输出的变量，如果未作任何处理，都可能导致直接产生XSS
+					防御方法：对变量使用HtmlEncode
+	            * 在HTML属性中输出
+					与标签中输出的XSS相似
+					防御方法：对变量使用HtmlEncode
+						在OWASP EASAPI中推荐了一种更严格的HtmlEncode——除了字母、数字外，其他所有的特殊字符都被编码成HTMLEnities
+	            * 在<script>标签中输出
+					首先应该确保输出的变量在引号中
+					攻击者需要先闭合引号才能实施XSS攻击
+					防御方法：使用JavascriptEncode
+	            * 在事件中输出
+					与<script>输出类似
+					防御方法：使用JavascriptEncode
+	            * 在CSS中输出
+					防御方法：尽可能禁止用户可控制的变量在<style>标签、HTML标签的style属性以及CSS文件中输出
+						如果一定有这样的需求，OWASP ESAPI中推荐了encodeForCSS()函数
+					原理：类似ESAPI.encoder().encodeForJavaScript()函数，除了字母、数字外的所有字符都被编码成十六进制形式(\uHH)
+	            * 在地址中输出
+					1.在URL的path(路径)或者search(参数)中输出
+						URLEncode会将字符转换为%HH形式
+							e.g.	
+								空格			%20
+								<			%3c
+						防御方法：使用URLEncode即可
+					2.整个URL能够被用户完全控制，这是URL的Protocal和Host部分是不能够使用URLEncode的，否则会改变URl的语义
+						在Protocal与Host中，如果使用严格的URLEncode函数，则会吧 :// 、. 等都编码掉 
+						除了javascript作为伪协议可以执行代码外，还有vbscript、dataURI等协议可能导致脚本执行
+						dataURI这个伪协议是Mozilla所支持的，能够将一段代码写在URL里
+						防御方法：如果变量是整个URL，则应该先检查是否以http开头(如果不是则自动添加)以保证不会出现伪协议类的XSS攻击
+								   再对变量进行URLEncode
+
+		处理富文本
+			有些时候，网站需要允许用户提交一些自定义的HTML代码，称之为富文本
+			在处理富文本时，还是要回到输入检查的思路上来
+				输入检查的主要问题是在检查时还不知道变量的输出语境，但用户提交的富文本数据，其语义是完整的HTML代码，在输出时也不会\n				
+			拼凑到某个标签的属性中，因此可以特殊情况特殊处理
+			在*正确地防御XSS*中，列出了所有在HTML中可能执行脚本的地方，而一个优秀的XSS Filter，也应该能够找出HTML代码中所有可能执行脚本的地方
+			HTML是一种结构化的语言，比较好分析，通过htmlparser可以解析出HTML代码的标签、标签属性和事件
+			在过滤富文本时，事件应该被严格禁止，因为富文本的展示需求里不应该包括事件这种动态效果，而一些危险的标签，如<iframe>、<scroipt>、<base>、<from>等，也是应该严格禁止的对象
+			在标签的选择上，{应该使用白名单，避免使用黑名单}
+				e.g.
+					<a>、<img>、<div>等比较安全的标签
+			在富文本过滤中，处理CSS也是一件麻烦的事情，如果允许用户自定义CSS、style，则也可能导致XSS攻击，因此尽可能禁止用户自定义CSS与style
+			如果一定要允许用户自定义样式，则只能像过滤富文本一样过滤CSS
+			有一些比较成熟的开源项目，实现了对富文本的XSS检查
+			Anti-Samy是OWASP上的一个开源项目，也是目前最好的XSS Filter，最早的时候，它是基于Java的，现在已扩展到.NET等语言
+				https://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project
+			在PHP中，可以使用另外一个广受好评的开源项目：HTMLPurify
+				http://htmlpurifier.org/
+
+		防御DOM Based XSS
+			在button的onclock事件中，执行了定义的一个函数，将HTML代码写入DOM节点，最后导致XSS的发生
+			事实上，DOM Based XSS是从JavaScript中输出数据到HTML页面里，而前面提到的方法都是针对从服务器应用直接输出到HTML页面的XSS漏洞，因此并不适用于DOM型XSS
+			防御方法：从JavaScript输出到HTML页面，也相当于一次XSS输出到过程，需要分语境使用不同的编码函数
+			以下几个地方是JavaScript输出到HTML页面的必经之路
+				document.write()
+					[
+						页面载入过程中用实时脚本创建页面内容，以及用延时脚本创建本窗口或新窗口的内容，在document被加载完后调用docuemnt.write方法时将会自动去触发document.open()
+						在载入页面后，浏览器输出流自动关闭，在此之后，任何一个对当前页面进行操作的document.write()方法将打开一个新的输出流，它将清除当前页面内容(包括源文档的任何变量或值)
+					]
+					[document.open()：打开一个新文档，即打开一个流，并擦除当前文档的内容]
+				document.writeln()
+				xxx.innerHTML = 
+				xxx.outerHTML = 
+				innerHTML.replace
+					[innerHTML：获取或替换html中的内容]
+				document.attachEvent()
+				window.attachEvent()
+					[通过window.attachEvent()监听小事件]
+				document.location.replace()
+					[replace()：用一个新文档取代当前文档]
+				document.location.assign()
+					[assign()：加载一个新的文档]
+				……
+				需要重点关注这几个地方的参数是否可以被用户控制
+			除了服务器端直接输出变量到JavaScript外，还有几个地方可能会成为DOM型XSS的输入点，也需要重点关注
+				页面中所有的inputs框
+				window.location(href、hash等)
+					[window.location ：用于获得当前页面的地址 (URL)，并把浏览器重定向到新的页面]
+				window.name
+					[window.name：当前window的名称]
+				document.referrer
+					[document.referrer：返回一个url，当前页面就是从这个 URI 所代表的页面跳转或打开的]
+				document.cookie
+				localstorage
+					[localstorage属性允许在浏览器中存储 key - value 对的数据]
+				XMLHttpRsquest返回的数据
+					[XMLHttpRsquest是一组API函数集，可被JavaScript、JScript、VBScript以及其它web浏览器内嵌的脚本语言调用，通过HTTP在浏览器和web服务器之间收发XML或其它数据]
+				……
+				安全研究者Stefano Di Paola设立了一个DOM型XSS的cheatsheet
+					http://code.google.com/p/domxsswiki
+
+		不同角度看XSS的风险
+			一般来说，存储型XSS的风险会高于反射型XSS，因为存储型XSS会保存在服务器上，有可能跨网站存在它不改变url的原有结构，因此有时候还能逃过一些IDS的检测
+			从攻击过程来说，反射型XSS一般要求攻击者诱使用户点击一个包含XSS代码的URL链接，而存储型XSS只需要让用户浏览一个正常的URL链接
+			从风险的角度来看，用户之间有互动的页面，是可能发起XSS Worm攻击的地方，而根据不同页面的PageView高低，也可以分析出哪些页面受XSS攻击后影响会更大
+
+	总结
+		理论上，XSS漏洞虽然复杂，但却是可以彻底解决的，在设计XSS解决方案时，应该深入理解XSS攻击的原理，针对不同的场景使用不同的方法，同时有很多开源项目为我们提供了参考
+		[
+			过滤输入的数据，包括'、"、<、>等特殊字符
+			对输出到页面的数据进行相应的编码转换，包括HTMl实体编码、JavaScript编码等
+		]
