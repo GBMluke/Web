@@ -1,0 +1,154 @@
+溢出
+    
+    基本数据类型
+    	* 整型
+    	* 浮点型
+    	整型包括
+    		* char
+    		* short
+    		* int
+    		* long
+    		* long long
+    	除此之外，整型还有无符号类型unsigned...
+    	浮点型包括
+    		* float
+    		* double
+    		* long double
+    	规则
+    		short至少16位，int至少和short一样长
+    		long至少32位，至少和int一样长
+    		long long至少64位，至少和long一样长
+    		float至少4个字节
+    		double至少6个字节，并且不少于float
+    		long double至少和double一样长
+
+    数据范围
+    	不同的系统环境，数据范围有所不同；32位/64位操作系统，数据范围也有所不同
+    	可以通过代码来确定不同的范围
+    	* c语言定义了一系列的宏
+    		-----------------------------------------
+    		#include <stdio.h>
+    		#include <limits.h>
+
+    		int main()
+    		{
+    		    printf("max integer: %d\n", INT_MAX);
+    		    printf("min integer: %d\n", INT_MIN);
+    		    return 0;
+    		}
+    		-----------------------------------------
+    	* C++ 数值极限
+    		----------------------------------------------------
+    		#include <iostream>
+    		#include <limits>
+
+    		int main()
+    		{
+    		    std::cout << numeric_limits<int>::max() << endl;
+    		    std::cout << numeric_limits<int>::min() << endl;
+    		    return 0;
+    		}
+    		----------------------------------------------------
+
+    数据类型应用
+    	介绍个亲身遇到的数据溢出的问题
+    	* 数据压缩后还原导致溢出
+    		---------------------------
+    		int d = 0;
+    		long value = d * 1000 + 10;
+    		---------------------------
+    	上面一段代码就有发生数据溢出的可能
+    	当变量d足够大时，再乘以1000就会溢出。结果可想而知，是一个相对小的数值
+    		---------------------------------
+    		//可以这样改写，就不会出现问题
+    		long value = (long)d * 1000 + 10;
+    		---------------------------------
+    	C/C++基本数据类型，每一种都有范围
+    	在选择数据类型要注意合适的范围，否则会造成数据溢出，产生难以发现的bug
+
+    CSS方式
+
+    	单行溢出
+    		--------------------------------------------------------------------------------
+    		<!DOCTYPE html>
+    		<html>
+    			<head> 
+    				<meta charset="utf-8">
+    				<title>text-overflow</title>
+    					<style type="text/css">
+    						.test_demo{
+    						    text-overflow:ellipsis;//值为clip表示剪切，ellipsis时为显示省略号
+    						    overflow:hidden; 
+    						    white-space:nowrap; 
+    						    width:200px; 
+    						    background:#ccc;
+    						}
+    					</style>
+    			</head> 
+    			<body>
+    				<div class="test_demo">
+    					超酷的IT技术学习平台（我是省略号）
+    				</div>
+    			</body>
+    		</html>
+    		--------------------------------------------------------------------------------
+    		同时，word-wrap也可以用来设置文本行为，当前行超过指定容器的边界时是否断开转行
+
+    	多行溢出
+    		针对webkit内核的浏览器以及Opera浏览器
+    			--------------------------------------------------------------------------------------------------------
+    			<!DOCTYPE html>
+    			<html>
+    				<head> 
+    					<meta charset="utf-8">
+    					<title>text-overflow</title>
+    					<style type="text/css">
+    					.test_demo{ 
+    					    text-overflow:ellipsis;  
+    					    overflow:hidden; 
+    					    width:200px; //指定宽度
+    					    background:#ccc;  
+    					    display:-webkit-box;  
+    					    -webkit-box-orient:vertical;  
+    					    -webkit-line-clamp:3; //指定显示多少行
+    					}
+    				</style>
+    			</head> 
+    			<body>
+    				<div class="test_demo">
+    					超酷的IT技术学习平台，我是省略号术学习平台，我是省略号我是省略号术学习平台，我是省略我是省略号术学习平台，我是省略
+    				</div>
+    			</body>
+    			</html>
+    			--------------------------------------------------------------------------------------------------------
+    		对于其他浏览器：比较靠谱简单的做法就是设置相对定位的容器高度，用包含省略号(…)的元素模拟实现
+    			----------------------------------------------------------------------------------------
+    			p 
+    			{
+    			　　position: relative;
+    			　　line-height: 1.4em;
+    			　　height: 4.2em;
+    			　　overflow: hidden;
+    			}
+    			p::after 
+    			{
+    			　　content: "...";
+    			　　font-weight: bold;
+    			　　position: absolute;
+    			　　bottom: 0;
+    			　　right: 0;
+    			　　padding: 0 20px 1px 45px;
+    			　　background: url(http://css88.b0.upaiyun.com/css88/2014/09/ellipsis_bg.png) repeat-y;
+    			}
+    			----------------------------------------------------------------------------------------
+    		这里注意几点
+    			* height高度正好是line-height的3倍
+    			* 结束的省略好用了半透明的png做了减淡的效果，或者设置背景颜色
+    			* IE6-7不显示content内容，所以要兼容IE6-7可以是在内容中加入一个标签，比如用…去模拟
+    			* 要支持IE8，需要将::after替换成:after
+
+    	js插件方式
+    		更为好用的是使用jQuery插件-jQuery.dotdotdot
+    			---------------------------------------------------------------------------------------------
+    			$('.news-left-text').dotdotdot();//先要引入jquery.dotdotdot.js，然后选择文本段落，使用dotdotdot方法
+    			---------------------------------------------------------------------------------------------
