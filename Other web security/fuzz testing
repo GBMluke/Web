@@ -1,0 +1,72 @@
+FUZZ模糊测试
+    
+    简介
+    	模糊测试是一种自动或半自动的测试技术，常被用来发现软件/操作系统/网络的代码中的错误和安全性问题，其中用于输入随机的数据和不合法的数据被称为FUZZ
+    	之后，系统将被监视各种异常，如系统崩溃或内置代码失败等 
+    	模糊测试最初是由威斯康辛大学的巴顿·米勒于1989年开发的
+    	模糊测试是一种软件测试技术，是安全测试的一种
+
+    原因
+    	* 通常，模糊测试会发现最严重的的安全错误或缺陷
+    	* 当与黑箱测试、Beta测试和其他调试方法一起使用时，Fuzz测试会产生更有效的结果
+    	* 模糊测试用于检测软件的脆弱性，这是一种非常经济有效的测试技术
+    	* 模糊测试是黑盒测试技术之一，模糊是黑客发现系统漏洞最常用的方法之一
+
+    步骤
+    	* 识别目标系统
+    	* 确定输入
+    	* 生成模糊数据
+    	* 使用模糊数据执行测试
+    	* 监控系统的行为
+    	* 记录缺陷
+
+    举例
+    	* Mutation-Based Fuzzers 
+    		alter existing data samples to create new test data,This is the very simple and straightforward approach,this starts with valid samples of protocol and keeps mangling every byte or file
+    	* Generation-Based Fuzzers 
+    		define new data based on the input of the model,It starts generating input from the scratch based on the specification
+    	* PROTOCOL-BASED-fuzzer
+    		最成功的fuzzer是对正在测试的协议格式有详细的了解
+    		理解取决于规范
+    		它包括在工具中编写一个规范数组，然后使用基于模型的测试生成技术遍历规范并在数据内容、序列等中添加不规则性
+    		这也称为语法测试、语法测试、健壮性测试等
+    		Fuzzer可以从现有的测试用例生成测试用例，也可以使用有效或无效的输入
+    	主要包含3中不同类型的fuzzer，基于交叉、生成和协议的
+    	由于部分翻译起来比较生硬，还是英文对比起来比较直观，所以就不翻译了
+    	protocol-based fuzzing的两个限制
+    		* 在规范成熟之前不能进行测试
+    		* 许多有用的协议都是已发布协议的扩展，如果fuzz测试基于已发布的规范，则新协议的测试覆盖率将受到限制
+    	模糊技术最简单的形式是将随机输入作为协议包或事件发送给软件
+    	这种传递随机输入的技术对于发现许多应用程序和服务中的错误非常有用
+    	其他技术也是可用的，并且很容易实现
+    	要实现这些技术，我们只需要更改现有的输入
+    	我们可以通过交换输入的位来改变输入
+
+    通过模糊测试检测到的bug类型
+    	* Assertion failures and memory leaks 
+    		this methodology is widely used for large applications where bugs are affecting the safety of memory,which is a severe vulnerability
+    	* Invalid input 
+    		In fuzz testing,fuzzers are used to generate an invalid input which is used for testing error-handling routines,and this is important for the software which does not control its input,Simple fuzzing can be known as a way to automate negative testing
+    	* Correctness bugs 
+    		Fuzzing can also be used to detect some types of correctness bugs,Such as a corrupted database,poor search results,etc
+    	总的来说包括了以上3种类型的bug
+    		* 内存泄漏
+    		* 非法输入
+    		* 部分正确的bug
+
+    Advantages of Fuzz Testing
+    	* 提升了软件安全性的测试
+    	* 模糊测试发现的通常是严重的错误，而且是容易被黑客攻击的错误
+    	* 模糊测试可以发现那些由于时间和资源限制而无法被测试人员发现的错误
+
+    Disadvantages of Fuzz Testing
+    	* 仅靠模糊测试无法全面了解整个安全威胁或bug
+    	* 在处理不会导致程序崩溃的安全威胁时，例如某些病毒、蠕虫、木马等，模糊测试的效率较低
+    	* 模糊测试只能检测简单的错误或威胁
+    	* 为了有效地执行，这将需要大量的时间
+    	* 设置带有随机输入的边值条件是非常有问题的，但是现在使用基于用户输入的确定性算法，大多数测试人员解决了这个问题
+
+    总结
+    	在软件工程中，Fuzz测试显示应用程序中存在bug
+    	模糊不能保证在应用程序中完全检测出bug
+    	但是通过使用Fuzz技术，它确保了应用程序的健壮性和安全性，因为这种技术有助于暴露大多数常见的漏洞
