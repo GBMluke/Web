@@ -1,0 +1,47 @@
+<table width="773" border="0" align="center" cellpadding="0" cellspacing="0">
+<tr>
+    <td>
+<script language=vbscript>
+function jiami(str) 
+    len1 = len(str)
+    out = ""
+    for i=1 to len1
+        c1 = right(left(str,i),1)
+        c2 = asc(c1)
+        c3 = c2*2
+        if c3>127 then
+            c3=c3-127
+        end if
+        out = out & Chr(c3)
+    next
+    f.output.value=out
+end function
+function jiemi(str) 
+    len1 = len(str)
+    out = ""
+    for i=1 to len1
+        c1 = right(left(str,i),1)
+        c2 = asc(c1)
+        if c2 mod 2=0 then
+            c3 = c2/2
+        else
+            c3 = (c2+127)/2
+        end if
+        out = out & Chr(c3)
+    next
+    f.output.value=out
+end function
+</script>
+<H1 align="center">编码加密
+</H1>
+<FORM NAME="f">
+原码<BR>
+<TEXTAREA NAME="source" WRAP="soft" style="height: 200px; width: 750px"></TEXTAREA><BR><BR>
+<INPUT TYPE=BUTTON VALUE="加密" ONCLICK="jiami(f.source.value)">
+   <INPUT TYPE=BUTTON VALUE="解密" ONCLICK="jiemi(f.source.value)">
+<BR>
+<TEXTAREA NAME="output" WRAP="soft" style="width: 750px; height: 200px"></TEXTAREA><BR><BR>
+</FORM>
+</td>
+</tr>
+</table>
