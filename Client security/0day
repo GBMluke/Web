@@ -1,0 +1,82 @@
+0day漏洞
+
+    简介
+    	通常是指还没有补丁的漏洞，也就是说官方还没有发现或者是发现了还没有开发出安全补丁的漏洞
+    	利用0day漏洞进行的攻击，特点是利用简单，危害较大	
+
+    常见0day——struts2
+    	Struts2框架存在漏洞，平时说的存在struts2漏洞是指的远程命令/代码执行漏洞
+    	Struts2漏洞有很多，比较著名的几个远程命令/代码执行漏洞
+    		S2-016
+    			影响范围：Struts 2.0.0 - Struts 2.3.15
+    		S2-032
+    			影响范围：Struts 2.3.20 - Struts Struts 2.3.28(except 2.3.20.3 and 2.3.24.3)
+    		S2-037
+    			影响范围：Struts 2.3.20 - Struts Struts 2.3.28.1
+    		S2-045
+    			影响范围：Struts 2.3.5 - Struts 2.3.31 , Struts 2.5 - Struts 2.5.10
+    		S2-046
+    			影响范围：Struts 2.3.5 - Struts 2.3.31 , Struts 2.5 - Struts 2.5.10
+    		S2-048
+    			影响范围：Struts 2.3.x with Struts 1 plugin and Struts 1 action
+    		危害：可获取服务器权限
+    	利用该漏洞可执行任意操作，例如上传shell，添加管理员账号等，下图我们展示的是查询os版本信息，以证明漏洞存在
+
+    常见0day——Java反序列化
+    	* Java序列化
+    		把Java对象转换为字节序列的过程便于保存在内存、文件、数据库中，ObjectOutputStream类的writeObject()方法可以实现序列化
+    	* Java反序列化
+    		把字节序列恢复为Java对象的过程，ObjectInputStream类的readObject()方法用于反序列化
+    	* 影响范围
+    		WebLogic、WebSphere、JBoss、Jenkins、OpenNMS这些大名鼎鼎的Java应用，都收到影响
+    	* 危害
+    		导致远程代码执行，获取服务器权限
+    	* 直接部署一个webshell，利用非常简单
+
+    常见的0day——bash破壳漏洞
+    	* Bash漏洞
+    		bash漏洞源于在调用Bash Shell之前可以用构造的值创建环境变量
+    		由于没有对输入的环境变量进行检测，攻击者可以在输入变量的时候可以包含恶意代码，在shell被调用后会被立即执行
+    	* 影响范围
+    		影响目前主流的操作系统平台，包括但不限于Redhat、CentOS、Ubuntu、Debian、Fedora、Amazon Linux、OS X 10.10等平台
+    	* 危害
+    		黑客利用该漏洞，可以执行任意代码，甚至可以不需要经过认证，就能远程取得系统的控制权，包括执行恶意程序，或在系统内植入木马，或获取敏感信息
+
+    常见的0day——心脏滴血漏洞
+    	* 心脏滴血漏洞(OpenSSL心脏滴血漏洞)
+    		未能正确检测用户输入参数的长度，攻击者可以利用该漏洞，远程读取存在漏洞版本的OpenSSL服务器内存中64K的数据，获取内存中的用户名、密码、个人相关信息以及服务器的证书等私密信息
+    	* 影响范围
+    		该漏洞纰漏时，约有17%(大约五十万)通过认证机构认证的互联网安全网络服务器容易受到攻击
+    	* 危害
+    		通过多个测试实例表明，根据对应OpenSSL服务器承载业务类型，攻击者一般可获得用户X.509证书私钥、实时连接的用户账号密码、会话Cookie等敏感信息，进一步可直接取得相关用户权限，窃取私密数据或执行非授权操作
+
+    常见的0day——永恒之蓝
+    	* 永恒之蓝(EternalBlue)
+    		美国国家安全局(NSA)开发的漏洞利用程序，于2017年4月14日被黑客组织影子掮客泄露
+    		Wannacry传播利用的是windows的smb漏洞，漏洞补丁是MS17-010
+    	* 影响范围
+    		大多数Windows系统都受到影响(已有相关补丁)
+    	* 危害
+    		获取服务器权限
+
+    常见的0day——samba漏洞
+    	* Linux版永恒之蓝，CVE-2017-7494
+    	* 差异
+    		Windows的SMB服务器默认开启
+    		Samba在大多数的Linux发行版中需要手动开启
+    	* 影响范围
+    		漏洞影响Samba3.5.0及3.5.0和4.6.4之间的任意版本(不包括4.5.10、4.4.14、4.6.4)
+    	* 危害
+    		可直接获取服务器shell
+
+    常见的0day——dedecms
+    	* Dedecms，织梦内容管理系统
+    	* recommend.php存在sql注入
+    	* 利用EXP
+    	* 危害：上述exp可获取管理员密码
+
+    常见的0day——phpcms
+    	* phpcms,PHPCMS V9内容管理系统
+    	* Authkey泄露、17年最新getshell 0day
+    	* Authkey泄露利用EXP
+    	* 危害：若存在该漏洞，访问上述链接authkey会泄露，可利用authkey进行注入
