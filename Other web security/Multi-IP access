@@ -1,0 +1,173 @@
+多IP访问
+
+	python爬虫
+		在爬虫过程中，如果长时间频繁的使用同一个ip地址访问某个网站和提取内容，就很容易让对方网站识别认定为爬虫，从而对你的爬虫行为做出相应的限制，或直接屏蔽你的ip地址访问
+		因此使用多个ip地址进行访问，可以有效解决这一问题
+
+		整体思路
+			建立一个存放ip地址的列表，包含多个可用的ip地址(大家可以网上搜免费ip地址0)，然后每次都随机调用一个ip地址，建立http连接
+			这样就避免了同一个ip地址多次访问被屏蔽的风险了
+
+		代码
+			---------------------------------------------------
+			from urllib import request
+			import random
+			proxy_list = [
+			  {"http":"124.88.67.54:80"},
+			  {"http":"61.135.217.7:80"},
+			  {"http":"42.231.165.132:8118"}
+			]
+			proxy = random.choice(proxy_list)# 随机选择一个ip地址
+			httpproxy_handler = request.ProxyHandler(proxy)
+			opener = request.build_opener(httpproxy_handler)
+			request = request.Request("http://www.baidu.com/")
+			response =opener.open(request)
+			print(response.read())
+			---------------------------------------------------
+
+	Java模拟多IP访问
+		-------------------------------------------------------------------------------------------------------------------------------------
+		package url_demo;
+
+		import java.io.BufferedReader;
+		import java.io.IOException;
+		import java.io.InputStreamReader;
+		import java.io.PrintWriter;
+		import java.net.URL;
+		import java.net.URLConnection;
+		import java.util.Random;
+
+		public class HttpUtilTest 
+		{
+        
+		    private int index = 0;
+
+		    public String sendPost(String url, String param) 
+			{
+		        PrintWriter out = null;
+		        BufferedReader in = null;
+		        String result = "";
+		        try 
+				{
+		            URL realUrl = new URL(url);
+		            URLConnection conn = realUrl.openConnection();
+
+		            // 随机生成ip
+		            String ip = randIP();
+		            conn.setRequestProperty("X-Forwarded-For", ip);
+		            conn.setRequestProperty("HTTP_X_FORWARDED_FOR", ip);
+		            conn.setRequestProperty("HTTP_CLIENT_IP", ip);
+		            conn.setRequestProperty("REMOTE_ADDR", ip);
+		            conn.setRequestProperty("Host", "");
+		            conn.setRequestProperty("Connection", "keep-alive");
+		            conn.setRequestProperty("Content-Length", "17");
+		            conn.setRequestProperty("Accept", "application/json");
+		            conn.setRequestProperty("Origin", "ORIGIN");
+		            conn.setRequestProperty("User-Agent",
+		                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
+		            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		            conn.setRequestProperty("Referer", "REFERER");
+		            conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
+		            conn.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6,ja;q=0.4,pt;q=0.2");
+
+		            conn.setDoOutput(true);
+		            conn.setDoInput(true);
+		            out = new PrintWriter(conn.getOutputStream());
+		            out.print(param);
+		            out.flush();
+		            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		            String line;
+		            while ((line = in.readLine()) != null) 
+					{
+		                result += line;
+		            }
+		            synchronized (this) 
+					{
+		                DemoUtl.index = DemoUtl.index + 1;
+		            }
+		            System.out.println("第" + DemoUtl.index + "次访问； -->  || 当前线程：" + param + "  || 请求成功！ || 模拟ip: " + ip
+		                    + " || 返回结果： " + result.toString().hashCode());
+		        } 
+				catch (Exception e) 
+				{
+		            // System.out.println("发送 POST 请求出现异常！" + e);
+		            // e.printStackTrace();
+		        } 
+				finally 
+				{
+		            try 
+					{
+		                if (out != null) 
+						{
+		                    out.close();
+		                }
+		                if (in != null) 
+						{
+		                    in.close();
+		                }
+		            } 
+					catch (IOException ex) 
+					{
+		                ex.printStackTrace();
+		            }
+		        }
+		        return result;
+		    }
+
+		    public static String randIP() 
+			{
+		        Random random = new Random(System.currentTimeMillis());
+		        return (random.nextInt(255) + 1) + "." + (random.nextInt(255) + 1) + "." + (random.nextInt(255) + 1) + "."
+		                + (random.nextInt(255) + 1);
+		    }
+		}
+		-------------------------------------------------------------------------------------------------------------------------------------
+		----------------------------------------------------------------------------------
+		package url_demo;
+
+		import java.util.Random;
+
+		public class DemoUtl 
+		{
+
+		    public static int index = 0;
+
+		    public static void main(String[] args) throws InterruptedException 
+			{
+		        try 
+				{
+		            for (int i = 0; i < 100000; i++) 
+					{
+		                Thread.sleep((new Random()).nextInt(200) + 100);
+		                new Thread(new Runnable() 
+						{
+		                    @Override
+		                    public void run() 
+							{
+                            
+		                        for (int j = 0; j < 100000; j++) 
+								{
+		                            try 
+									{
+		                                Thread.sleep((new Random()).nextInt(3200) + 1500);
+		                                HttpUtilTest tt = new HttpUtilTest();
+		                                tt.sendPost(
+		                                        "https://www.baidu.com",
+		                                        Thread.currentThread().getName());
+		                            } 
+									catch (InterruptedException e) 
+									{
+		                                e.printStackTrace();
+		                            }
+		                        }
+		                    }
+		                }).start();
+		            }
+		        } 
+				catch (Exception e) 
+				{
+		            e.printStackTrace();
+		        }
+		    }
+		}
+		----------------------------------------------------------------------------------
