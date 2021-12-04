@@ -1,0 +1,91 @@
+信息泄露
+	信息泄露主要包括
+		泄露系统的敏感信息
+		泄露用户敏感信息
+		泄露用户密码
+	信息泄露的途径
+		错误信息失控
+		SQL注入
+		水平权限管理不当
+		XSS/CSRF
+	防止信息泄露手段
+		OAuth思想
+		一切行为由用户授权
+		授权行为不泄露敏感信息
+		授权汇过期
+	OAuth思想
+		将业务和敏感资料分离，用户登录后派发凭证，执行业务时把凭证发给业务层，业务层拿用户发的凭证到敏感资料服务去取用户数据，没有凭证不能获取用户数据
+	
+	Web源代码泄露
+		通过工具暴破相关Web源代码泄露
+		最想强调的是github信息泄露了，直接去github上搜索，收获往往是大于付出
+		可能有人不自信认为没能力去SRC挖洞，可是肯定不敢说不会上网不会搜索
+		github相关的故事太多，但是给人引出的信息泄露远远不仅在这里
+			* github.com
+			* rubygems.org
+			* pan.baidu.com
+			* ...
+		QQ群备注或介绍等，甚至混入企业qq工作群
+		然后说再多，也没这个好用https://sec.xiaomi.com/article/37 全自动监控github
+		信息泄露收集可能会用到如下地址
+			网盘搜索
+				http://www.pansou.com/
+				https://www.lingfengyun.com/
+			网盘密码破解可参考
+				https://www.52pojie.cn/thread-763130-1-1.html
+			社工信息泄露
+				https://www.instantcheckmate.com/、http://www.uneihan.com/
+			源码搜索
+				https://searchcode.com/
+				https://gitee.com/
+				gitcafe.com
+				code.csdn.net
+			钟馗之眼
+				https://www.zoomeye.org/
+			天眼查
+				https://www.tianyancha.com/
+			其它
+				威胁情报
+					微步在线
+				ti.360.cn
+				Virustotal
+	
+	邮箱信息收集
+		收集邮箱信息主要有两个作用
+			* 通过发现目标系统账号的命名规律，可以用来后期登入其他子系统
+			* 爆破登入邮箱用
+		通常邮箱的账号有如下几种生成规律
+			比如某公司有员工名叫做张小三，它的邮箱可能如下
+				zhangxiaosan@xxx.com
+				xiaosan.zhang@xxx.com
+				zxiaosan@xxx.com
+			当我们收集几个邮箱之后，便会大致猜出对方邮箱的命名规律
+			除了员工的邮箱之外，通过公司会有一些共有的邮箱，比如人力的邮箱、客服的邮箱，hr@xxx.com/kefu@xxx.com，这种邮箱有时会存在弱口令，在渗透时可额外留意一下
+			我们可以通过手工或者工具的方式来确定搜集邮箱
+				手工的方式
+					可以到百度等搜索引擎上搜索邮箱信息
+					github等第三方托管平台
+					社工库
+				工具方式
+					在邮箱收集领域不得不提一个经典的工具，The Harvester，The Harvester可用于搜索Google、Bing和PGP服务器的电子邮件、主机以及子域名，因此需要翻墙运行该工具
+					工具下载地址为
+						https://github.com/laramies/theHarvester
+					{python -m pip install -r requirements.txt导入相关配置，python3.6版本}
+					使用方式很简单
+						./theHarvester.py -d 域名 -1 1000 -b all
+				历史漏洞收集
+					仔细分析，大胆验证，发散思维，对企业的运维、开发习惯了解绝对是有很大的帮助
+					可以把漏洞保存下来，进行统计，甚至炫一点可以做成词云展示给自己看，看着看着或者就知道会有什么漏洞
+					wooyun历史漏洞库
+						http://www.anquan.us/
+						http://wooyun.2xss.cc/
+					漏洞银行
+						https://www.bugbank.cn/
+					360补天
+						https://www.butian.net/
+					教育行业漏洞报告平台(Beta)
+						https://src.edu-info.edu.cn/login/
+	
+	工具信息收集
+		7kbscan
+		破壳Web极速扫描器
