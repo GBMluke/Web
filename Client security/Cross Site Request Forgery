@@ -1,0 +1,151 @@
+跨站点请求伪造(CSRF)
+			
+	绕过Referer
+	    0x00Refere为空条件下
+	    	利用ftp://,http://,https://,file://,javascript:,data:这个时候浏览器地址栏是file://开头的，如果这个HTML页面向任何http站点提交请求的话，这些请求的Referer都是空的
+	    	e.g.
+	    		利用data协议
+	    		bese64编码
+	    		解码即可看到代码
+	    		利用https协议
+	    0x01判断Referer是某域情况下绕过
+	    	比如你找的csrf是xxx.com验证的referer是验证的*.xx.com可以找个二级域名之后<img "csrf地址">之后在把文章地址发出去就可以伪造
+	    0x02判断Referer是否存在某关键词
+	    	referer判断存在不存在google.com这个关键词
+	    	在网站新建一个google.com目录 把CSRF存放在google.com目录,即可绕过
+	    0x03判断referer是否有某域名
+	    	判断了Referer开头是否以126.com以及126子域名不验证根域名为126.com 那么我这里可以构造子域名x.126.com.xxx.com作为蠕虫传播的载体服务器，即可绕过
+
+	    Referer防御CSRF原理
+	    	HTTP Referer是header的一部分，当浏览器向web服务器发送请求的时候，一般会带上Referer，告诉服务器我是从哪个页面链接过来的，服务器基此可以获得一些信息用于处理,当用户点击被构造好的CSRF利用页面，那么在执行用户对应操作时，提交的HTTP请求中就有对应的Referer值，此时服务端判断Referer值是否与服务器的域名信息有关,如果不相关则不执行操作
+	    Referer防御代码编写
+	    	在PHP中使用 $_SERVER[‘HTTP_REFERER’] 获取页面提交请求中的Referer值
+	    	<?php if(strpos($_SERVER['HTTP_REFERER'],'xx.com') !== false) { 判断成功 } else { 判断失败 } ?>
+	    绕过Referer技巧
+	    	如果服务端只判断当前的Referer中是否具有域名，那么直接可以新建文件夹进行绕过
+	    Burpsutie自动生成POC
+
+	CSRF简介
+		CSRF(Cross Site Request Forgery)
+			跨站点请求伪造
+			它是一种常见的攻击方式，但很多开发者对它很陌生，CSRF也是Web安全中最容易被忽略的一种攻击方式，甚至很多安全工程师都不理解它的利用条件与危害，因此不给予重视
+			但CSRF在某些时候却能够产生强大的破坏性
+
+	CSRF进阶
+    
+		浏览器说Cookie策略
+			攻击者伪造的请求之所以能被搜狐服务器验证通过，是因为用户的浏览器成功发送了Cookie的缘故
+			浏览器所持有的Cookie分为两种
+				1.Session Cookie
+					又称临时Cookie
+				2.Third-party Cookie
+					又称本地Cookie
+				Third-party Cookie是服务器在Set-Cookie时指定了Expire时间，只有到了Expire时间后Cookie才会生效，所以这种Cookie会保存在本地
+				Session Cookie则没有指定Expire时间，所以浏览器关闭后，Session Cookie就失效了
+			如果浏览器从一个域的页面中要加载另一个域的资源，由于安全原因，某些浏览器会组织Third-party Cookie的发送
+				IE出于安全考虑，默认禁止了浏览器在<img>、<iframe>、<script>、<link>等标签中发送第三方Cookie
+				在Firefox中，默认策略是允许发送第三方Cookie的
+			在当前的主流浏览器中，默认会拦截Third-party Cookie的有：
+				IE6、IE7、IE8、Safari
+			不会拦截的有：
+				Firefox2、Firefox3、Opera、Google Chrome、Android等
+			但若CSRF攻击的目标并不需要使用Cookie，则也不需要顾虑浏览器的Cookie策略了
+
+		P3P头的副作用
+			尽管有些CSRF攻击实施起来不需要认证，不需要发送Cookie，但是不可否认的是，大部分敏感或重要的操作是躲藏在认证之后的，因此浏览器拦截第三方Cookie的发送，在某种程度上来说，降低了CSRF攻击的威力，可是这一情况在P3P头介入后变得复杂起来
+			P3P Header(The Platform For Privacy Preferences)是W3C制定的一项关于隐私的标准
+				隐私偏好平台
+			如果网站返回给浏览器的HTTP头中包含有P3P头，则某种程度上来说，将允许浏览器发送第三方Cookie
+			在网站的业务中，P3P头主要用于类似广告等需要跨域访问的页面，但是，很遗憾的是，P3P头设置后对于Cookie的影响将扩大到整个域中的所有页面，因为Cookie是以域和path为单位的，这并不符合最小权限原则
+			P3P的策略看起来似乎很难懂，但其实语法很简单，都是一一对应的关系，可以查询W3C标准
+				e.g.
+					CP			Compact Policy
+					CURa		<current/>
+					a			always
+				http://www.w3.org/TR/P3P/
+			P3P头也可以直接引用一个XML策略文件
+			正因为P3P头目前在网站的应用中被广泛应用，因此在CSRF的防御中不能依赖于浏览器对第三方Cookie的拦截策略，不能心存侥幸
+
+		GET/POST
+			在CSRF攻击流行之初，许多人认为CSRF攻击只能有GET请求发起，因此很多开发者都认为只要把重要的操作改成只允许POST请求，就能防止CSRF
+			形成错误观点的原因主要在于大多数CSRF攻击发起时，使用的HTML标签都是<img>、<iframe>、<script>等带src属性的标签，这类标签只能发起一次GET请求，但不能发起POST请求
+			在禁止GET请求时的攻击方法
+				1.在页面中构造好一个from表单，然后使用JavaScript自动提交这个表单
+				2.将这个页面隐藏在一个看不见的iframe窗口中，那么整个自动提交表单的过程对于用户来说也是看不见的
+				3.安全研究者pdp展示了一个Gmail CSRF漏洞攻击过程
+					用户登录Gmail账户，一边浏览器获得Gmail的临时Cookie
+					诱使用户访问一个恶意页面，在这个恶意页面中，隐藏了一个iframe，该iframe的地址指向pdp写的CSRF构造页面
+						这个链接实际就是把参数生成一个POST的表单，并自动提交
+					由于浏览器中已经存在Gmail的临时Cookie，所有用户在iframe中对Gmail发起的这次请求会成功
+					此时，邮箱的Filter中会新创建一条规则，将所有带附件的邮件都转发到攻击者的邮箱中
+
+		Flash CSRF
+			Flash中也有很多种方式能够发起网络请求，包括POST
+			除了URLRequest外，在Flash中还可以使用getURL，loadVars等方式发起请求
+			在IE6、IE7中，Flash发送的网络请求均可以带上本地Cookie，但IE8起，Flash发起的网络请求已经不再发送本地Cookie了
+
+		CSRF Worm
+			国内的安全组织80sec公布了一个百度的CSRF Worm
+				漏洞出现在百度用户中心的发送短消息功能中
+					只需要修改参数sn，即可对指定用户发送短消息
+					然而百度的另一个接口则能查询出某个用户的所有好友
+				将两者结合起来，可以组成一个CSRF Worm
+					让一个百度用户查看一个恶意页面后，将给他的所有好友发送一条短消息，这条短消息中包含一张图片，其地址在次指向CSRF页面，使得这些好友再次将消息发送给他的好友
+	            - 模拟服务器端取得request的参数
+					定义蠕虫页面服务器地址，取得？、&符号后的字符串，从URL中提取感染蠕虫的用户名和感染者好友的用户名
+	            - 好友json数据的动态获取
+					通过CSRF漏洞从远程加载受害者的好友json数据，根据该接口的json数据格式，提取好友数据为蠕虫的传播流程做准备
+	            - 感染信息输出和消息发送的核心部分
+					将感染者的用户名和需要传播的好友用户名放到入错那个链接内，输出短信息
+			这个蠕虫很好地展示了CSRF的破坏性，即使没有XSS漏洞，仅仅依靠CSRF，也是能够发起
+
+	CSRF防御
+
+		验证码
+			CSRF攻击的过程往往是在用户不知情的情况下构造了网络请求，然而验证码则强制用户必须与应用进行交互，才能完成最终请求
+			验证码只能作为防御CSRF攻击的一种辅助手段，而不能作为最主要的解决方案
+
+		Referer Check
+			Referer Check在互联网中最常见的应用就是防止图片盗链
+			同理，Referer Check也可以被用于检查请求是否来自合法的源
+			常见的互联网应用，页面与页面之间都具有一定的逻辑关系，这就使得每个正常请求的Referer具有一定的规律
+			即使我们能够通过检查Referer是否合法来检查用户是否被CSRF攻击，也仅仅是满足了防御的充分条件
+			{Referer Check的缺陷在于服务器并非什么时候都能取到Referer}
+			在Flash的一些版本中，曾经可以发送自定义的Referer头，虽然Flash在新版本中已经加强了安全限制，不再允许发送自定义的Referer头，但是难免不会有别的客户端插件允许这种操作
+			出于以上种种原因，我们还是无法依赖于Referer Check作为防御CSRF的主要手段，但是通过Referer Check来监控CSRF的发生却是一种可行的方案
+
+		Anti CSRF Token
+
+			CSRF的本质
+				CSRF攻击成功的原因
+					{重要操作的所有参数都是可以被攻击者猜测到的}
+				攻击者只有预测出URL的所有参数与参数值，才能成功地构造一个伪造的请求，反之，攻击者将无法完成攻击
+				出于以上原因，可以想到一个解决方案
+					把参数加密，或者使用一些随机数，从而让攻击者无法猜测到参数值  *不可预测性原则*
+				在攻击者不知道salt的情况下，是无法构造出这个URL的，因此也就无法发起CSRF攻击了
+				对于服务器来说，可以从Session或Cookie中取得username = name的值，再结合salt对整个请求进行验证，正常请求会被认为是合法的
+				但这个方法也有其对应的问题
+					加密后的URL对用户不友好
+					加随机数后的URL用户不能收藏
+					普通参数加密后，数据分析会非常困难
+				因此我们需要一个更加通用的解决方案——Anti CSRF Token
+				要Token足够随机，必须使用足够安全的随机数生成算法，或者采用真随机数生成器(物理随机) *加密算法与随机数*
+				Token因该作为一个秘密，为用户与服务器所共同持有，不能被第三方知晓
+				在实际应用时，Token可以放在用户的Session中，或者浏览器的Cookie中
+				Token需要同时放在表单与Session，在提交请求时，只需验证两个Token是否一致，如果不一致(包括空Token)，则有可能发生CSRF攻击
+
+			Token的使用原则
+				防御CSRF攻击的Token是根据不可预测性原则设计的方案，所以Token的生成一定要足够随机，需要使用安全的随机数生成器生成Token
+				如果Token保存在Cookie中，那么如果用户同时打开多个页面同时操作时，当某个页面消耗点Token时，其他页面的Token还是原先被消耗的Token，就会产生差错
+					解决方法：同时生成多个Token，一对一，更放心
+				如果Token出现在某个页面的URL中，则可能会通过Referer的方式泄露
+				如果页面包含了一张攻击者能指定地址的图片，则该请求地址会作为HTTP请求的Referer发送到evil.com的服务器上，从而导致Token泄露
+				因此在使用Token时，因该尽量把Token放在表单中把敏感操作由GET改为POST以from表单(或者AJAX)到形式提交，可以避免Token泄露
+				还有一些其他途径可能导致Token泄露，如XSS及跨域漏洞，都可以让攻击者盗取Token的值
+				CSRF的Token只适用于防范CSRF攻击，当网站中还有XSS漏洞时，这个方案就会变的无效，因为XSS乐意模拟客户端浏览器执行任意操作，在XSS攻击下，攻击者完全可以请求页面后，读出页面里的Token值，然后构造一个合法的请求，此过程称之为XSRF，用以与CSRF进行区分
+				XSS带来的问题，因该使用XSS的防御方案给予解决，否则CSRF的Token防御就是空中楼阁
+				安全防御的体系是相辅相成、缺一不可的
+
+	总结
+		CSRF攻击是攻击者利用用户的身份操作用户账户的一种攻击方式，设计CSRF的防御方案必须先理解CSRF攻击的原理和本质
+		根据不可预测性原则，我们通常使用Anti CSRF Token来防御CSRF攻击，在使用Token时，要注意Token的保密性和随机性
