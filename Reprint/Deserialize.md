@@ -8,6 +8,7 @@
 反序列化
 - 把字节序列恢复为对象的过程，即把可以存储或传输的数据转换为对象的过程
 - 例如将二进制数据流或文件加载到内存中还原为对象
+
 反序列化漏洞首次出现在2015，虽然漏洞较新，但利用十分热门，主要原因还是太过信任客户端提交的数据，容易被开发者忽略，该漏洞一般都可执行任意命令或代码，造成的影响较大
 ## 漏洞成因
 在身份验证，文件读写，数据传输等功能处，在未对反序列化接口做访问控制，未对序列化数据做加密和签名，加密密钥使用硬编码（如Shiro 1.2.4），使用不安全的反序列化框架库（如Fastjson 1.2.24）或函数的情况下，由于序列化数据可被用户控制，攻击者可以精心构造恶意的序列化数据（执行特定代码或命令的数据）传递给应用程序，在应用程序反序列化对象时执行攻击者构造的恶意代码，达到攻击者的目的
@@ -84,6 +85,7 @@ PHP中通常使用`serialize`函数进行序列化，使用`unserialize`函数�
 - __callStatic：用静态方法调用不可访问方法时调用
 - __get：获得类成因变量时调用
 - __set：设置类成员变量时调用
+
 使用下面代码创建一个类A并实例化一个对象a，然后输出序列化对象a后的值
 ```php
 <?php
@@ -104,6 +106,7 @@ print "Serialize Object A: ".serialize($a)."<br/>";
 序列化对象a，如图
 ![image](https://img-blog.csdnimg.cn/img_convert/1ce7e515ae083e24c9ff2e97099dd1b6.png)
 PHP中序列化后的数据中并没有像Python一样包含函数`__construct`和`print`的信息，而仅仅是类名和成员变量的信息。因此，在`unserialize`函数的参数可控的情况下，还需要代码中包含魔术方法才能利用反序列化漏洞
+
 使用下面代码定义一个包含魔术方法`__destruct`的类A，然后实例化一个对象a并输出序列化后的数据，在对象销毁的时候程序会调用`system`函数执行`df`命令，然后通过GET方法传递参数`arg`的值给服务器进行反序列化
 ```php
 <?php
@@ -179,6 +182,7 @@ Java序列化数据格式始终以双字节的十六进制`0xAC ED`作为开头�
 一个Java类的对象要想序列化成功，必须满足两个条件
 - 该类必须实现java.io.Serializable接口
 - 该类的所有属性必须是可序列化的，如果有一个属性不是可序列化的，则该属性必须注明是短暂的
+
 使用下面代码将对象序列化后存储到a.ser文件
 ```java
 package com.company;
@@ -261,6 +265,7 @@ FastJson作为史上最快的Json解析库应用也十分广泛，在1.2.69版�
 - 前端采用json提交用户名密码
 - 后台使用fastjson 1.2.24版本
 - 源码和WAR包[GitHub地址](https://github.com/NHPT/Java_Deserialization_Vulnerability_Experiment) 
+
 创建一个`User`类，用于查看序列化数据格式，如图
 ![image](https://img-blog.csdnimg.cn/img_convert/e7833a4166612142fa8a7b0e36a229b6.png)
 创建一个`home`类用于输出`user`对象的序列化数据，如图
@@ -289,6 +294,7 @@ FastJson作为史上最快的Json解析库应用也十分广泛，在1.2.69版�
 - 采用Xml提交数据
 - 使用.NET Framework 4.6.1
 - 完整源码[GitHub地址](https://github.com/NHPT/ASP.NET-Deserialization-Vulnerability-Experiment)
+
 使用下面代码定义一个`Test`类，包含执行`ipconfig`命令并返回执行结果的函数Run，使用`XmlSerializer`类将对象序列化后输出到页面 
 ```
 using System;
