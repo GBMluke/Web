@@ -39,7 +39,9 @@ new_cookie=pickle.loads(cookie)
 print("反序列化：",new_cookie)
 ```
 程序正常运行时，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/f4af7846ab8959a3b5e471493592a77f.png)
+
 利用`pickle`模块和魔术方法`__reduce__`生成执行命令的Payload
 ```python
 #!/usr/bin/python3
@@ -61,7 +63,9 @@ payload=pickle.dumps(res)
 print("Payload:",payload)
 ```
 生成执行`whoami`命令的Payload，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/78292c5d00e35ff8d1f0410cb02e2c5c.png)
+
 ## PHP反序列化漏洞实验
 PHP中通常使用`serialize`函数进行序列化，使用`unserialize`函数进行反序列化
 ### serialize函数输出格式
@@ -104,7 +108,9 @@ print "Serialize Object A: ".serialize($a)."<br/>";
 ?>
 ```
 序列化对象a，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/1ce7e515ae083e24c9ff2e97099dd1b6.png)
+
 PHP中序列化后的数据中并没有像Python一样包含函数`__construct`和`print`的信息，而仅仅是类名和成员变量的信息。因此，在`unserialize`函数的参数可控的情况下，还需要代码中包含魔术方法才能利用反序列化漏洞
 
 使用下面代码定义一个包含魔术方法`__destruct`的类A，然后实例化一个对象a并输出序列化后的数据，在对象销毁的时候程序会调用`system`函数执行`df`命令，然后通过GET方法传递参数`arg`的值给服务器进行反序列化
@@ -136,7 +142,9 @@ $a_unser = unserialize($arg);
 ?>
 ```
 不传入`arg`参数时，服务器返回对象a序列化后的数据和`df`命令执行的结果，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/942a65975f7255c8ba840a79e31d5438.png)
+
 当然，现实环境中几乎没有这样方便的攻击链，需要花不少时间去寻找POP链，可参考
 [https://www.freebuf.com/column/203767.html](https://www.freebuf.com/column/203767.html)
 [https://www.freebuf.com/column/203769.html](https://www.freebuf.com/column/203769.html)
@@ -174,9 +182,13 @@ public class Main{
 }
 ```
 程序执行后生成a.ser文件，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/9aa743f7c8f0667ceea101719fb03dae.png)
+
 以十六进制查看a.ser文件内容，如图 
+
 ![image](https://img-blog.csdnimg.cn/img_convert/4cdf142f75d120c4a35a648be81705ee.png)
+
 Java序列化数据格式始终以双字节的十六进制`0xAC ED`作为开头，Base64编码之后为`rO0`。之后的两个字节是版本号，通常为`0x00 05`
 
 一个Java类的对象要想序列化成功，必须满足两个条件
@@ -219,9 +231,13 @@ public class Main{
 }
 ```
 执行程序后生成a.ser文件，以十六进制格式查看文件内容，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/cace9564090dc9cc95be4a3b779b0e83.png)
+
 最后5个字节分别为字符串长度和`calc`的ASCII值。因此，修改文件为下图所示，即`notepad`的ASCII值和长度 
+
 ![image](https://img-blog.csdnimg.cn/img_convert/8790be258cb140ba5d35846393d5a22c.png)
+
 使用下面代码进行反序列化对象
 ```java
 package com.company;
@@ -256,7 +272,9 @@ public class Main{
 }
 ```
 程序执行后成功运行`notepad`，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/cdb65b0024114e5d7ea9cba5ffa9eabb.png)
+
 现实环境中也没有这样方便的攻击链，需要去寻找POP链，可参考
 [https://blog.knownsec.com/2015/12/untrusted-deserialization-exploit-with-java/](https://blog.knownsec.com/2015/12/untrusted-deserialization-exploit-with-java/)
 ### FastJson反序列化漏洞简单实验
@@ -267,17 +285,29 @@ FastJson作为史上最快的Json解析库应用也十分广泛，在1.2.69版�
 - 源码和WAR包[GitHub地址](https://github.com/NHPT/Java_Deserialization_Vulnerability_Experiment) 
 
 创建一个`User`类，用于查看序列化数据格式，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/e7833a4166612142fa8a7b0e36a229b6.png)
+
 创建一个`home`类用于输出`user`对象的序列化数据，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/94f2b469203ce4f05cce26448b672124.png)
+
 创建一个`login`类用于获取前端页面提交的json格式用户名和密码数据，并使用`JSON.parseObject`方法进行反序列化解析json数据，在后台可看到提交的数据，如图 
+
 ![image](https://img-blog.csdnimg.cn/img_convert/664554aeba5da4809eec9b9a62db2d83.png)
+
 访问`home`页面可直接获取`user`对象序列化后的结果，如图 
+
 ![image](https://img-blog.csdnimg.cn/img_convert/b616cc1e4df8fc7815bbc1675a03809c.png)
+
 @type的值为对象所属的类，`user`和`passwd`分别为对象的用户名属性和密码属性。因此可以利用`AutoType`特性，构造一个使用`@type`参数指定一个攻击类库，包含类属性或方法的JSON字符串提交到服务器，在反序列化时调用这个类的方法达到执行代码的目的。通常使用`java.net.Inet4Address`类或`java.net.Inet6Address`类，通过`val`参数传递域名，利用DnsLog进行漏洞检测，即：`{"@type":"java.net.Inet4Address","val":"DnsLog"}`。在登录页面输入用户名和密码提交，拦截数据包，修改提交的Json数据，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/0df6f52867098113cb7b339f89739a5c.png)
+
 虽然服务器返回错误信息，但Payload仍然被成功执行，在DnsLog网站可以看到解析记录，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/e62bb92e867153359d684e4e3dd382c3.png)
+
 要执行命令需要构造新的POP链，常用的POP链
 > 基于JNDI注入
 
@@ -411,15 +441,25 @@ namespace ASP.NETStudy
 }
 ```
 正常情况下访问页面，返回序列化后的数据，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/19431b769084e34dd1c5f72b08276448.png)
+
 点击`查看IP`按钮后，客户端提交数据，如图 
+
 ![image](https://img-blog.csdnimg.cn/img_convert/4d63ba0c942f7a5af18f97dfcf8eb88a.png)
+
 服务器执行命令后返回到客户端，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/ebf33377ae0f57d89ab5499fb6fa1c67.png)
+
 如果攻击者将传输的XML数据进行篡改，如图 
+
 ![image](https://img-blog.csdnimg.cn/img_convert/1b5b7e741c4b687108959d706371645a.png)
+
 服务器在反序列化后执行`whoami`命令，如图
+
 ![image](https://img-blog.csdnimg.cn/img_convert/f01c98229cb6d1f3ddba40f069f2c711.png)
+
 ### 防御方法
 - 对反序列数据加密或签名，且加密密钥和签名密钥不要使用硬编码
 - 对反序列化接口添加认证授权
