@@ -404,4 +404,5 @@ php代码解析标签
 ?>
 ```
 ![image](https://img-blog.csdnimg.cn/img_convert/1de5099672129121fd69b63989eeb50a.png)
+
 `windows findfirstfile`利用：若要搜索12345.txt文件，可使用`1<<`来代替或者`12<<`，不可以单独使用一个`"<"`或`">"`，因为单独一个只是代表了一个字符，两个代表多个字符
