@@ -51,6 +51,7 @@ if re.match(r"^192\.168(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$",ip_address) 
 
 这四种方式我们可以依次试试
 ![image](https://www.leavesongs.com/content/uploadfile/201609/15651475220446.png)
+
 四种写法（5个例子）：012.0.0.1、0xa.0.0.1、167772161、10.1、0xA000001实际上都请求的是10.0.0.1，但他们一个都匹配不上上述正则表达式
 
 更聪明一点的人是不会用正则表达式来检测IP的（也许这类人并不知道内网IP的正则该怎么写）。Wordpress的做法是，先将IP地址规范化，然后用“.”将其分割成数组parts，然后根据parts[0]和parts[1]的取值来判断
@@ -145,6 +146,7 @@ urlparse(url).hostname
 
 网上有个服务http://xip.io，这是一个“神奇”的域名，它会自动将包含某个IP地址的子域名解析到该IP。比如127.0.0.1.xip.io，将会自动解析到127.0.0.1，www.10.0.0.1.xip.io将会解析到10.0.0.1
 ![image](https://www.leavesongs.com/content/uploadfile/201609/a58b1475220449.png)
+
 这个域名极大的方便了我们进行SSRF漏洞的测试，当我们请求 http://127.0.0.1.xip.io/info.php的时候，表面上请求的Host是127.0.0.1.xip.io，此时执行
 is_inner_ipaddress('127.0.0.1.xip.io')是不会返回True的。但实际上请求的却是127.0.0.1，这是一个标准的内网IP
 
@@ -208,6 +210,7 @@ def get(url,params=None,**kwargs):
 ```
 所以，我们可以试试请求一个302跳转的网址
 ![image](https://www.leavesongs.com/content/uploadfile/201609/74631475220451.png)
+
 默认情况下，将会跟踪location指向的地址，所以返回的status code是最终访问的页面的状态码。而设置了`allow_redirects`的情况下，将会直接返回302状态码
 
 所以，即使我们获取了`http://t.cn/R2iwH6d`的Host，通过了`is_inner_ipaddress`检查，也会因为302跳转，跳到一个内网IP，导致SSRF
@@ -271,6 +274,7 @@ hooks是一个函数，或者一系列函数。这里做的工作就是遍历这
 
 我们翻翻文档，可以找到hooks event的说明[http://docs.python-requests.org/en/master/user/advanced/?highlight=hook#event-hooks](http://docs.python-requests.org/en/master/user/advanced/?highlight=hook#event-hooks)
 ![image](https://www.leavesongs.com/content/uploadfile/201609/2d531475220453.png)
+
 文档中定义了一个`print_url`函数，将其作为一个hook函数。在请求的过程中，响应对象被传入了`print_url`函数，请求的域名被打印了下来
 
 我们可以考虑一下，我们将检查SSRF的过程也写为一个hook函数，然后传给requests.get，在之后的请求中一旦获取response就会调用我们的hook函数。这样，即使我设置`allow_redirects=True`，requests在每次请求后都会调用一次hook函数，在hook函数里我只需检查一下`response.headers['location']`即可
