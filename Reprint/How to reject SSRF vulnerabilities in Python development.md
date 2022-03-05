@@ -1,7 +1,7 @@
 # 原文
 [传送门](https://www.leavesongs.com/PYTHON/defend-ssrf-vulnerable-in-python.html#hostip)
 
-## 0x00 SSRF漏洞常见防御手法及绕过方法
+# 0x00 SSRF漏洞常见防御手法及绕过方法
 SSRF是一种常见的Web漏洞，通常存在于需要请求外部内容的逻辑中，比如本地化网络图片、XML解析时的外部实体注入、软件的离线下载等。当攻击者传入一个未经验证的URL，后端代码直接请求这个URL，将会造成SSRF漏洞
 
 具体危害体现在以下几点上
@@ -16,7 +16,7 @@ SSRF是一种常见的Web漏洞，通常存在于需要请求外部内容的逻�
 2. 如何获取真正请求的host
 
 于是，攻击者通过这两个技术要点，针对性地想出了很多绕过方法
-## 0x01 如何检查IP是否为内网IP
+# 0x01 如何检查IP是否为内网IP
 这实际上是很多开发者面临的第一个问题，很多新手甚至连内网IP常用的段是多少也不清楚
 
 何谓内网IP，实际上并没有一个硬性的规定，多少到多少段必须设置为内网。有的管理员可能会将内网的IP设置为233.233.233.0/24段，当然这是一个比较极端的例子
@@ -125,12 +125,12 @@ def is_inner_ipaddress(ip):
             ip2long('0.0.0.0') >> 24 == ip >> 24
 ```
 以上代码也就是Python中判断一个IP是否是内网IP的最终方法，使用时调用`is_inner_ipaddress(...)`即可（注意自己编写捕捉异常的代码）
-## 0x02 host获取与绕过
+# 0x02 host获取与绕过
 如何获取"真正请求"的Host，这里需要考虑三个问题
 1. 如何正确的获取用户输入的URL的Host？
 2. 只要Host只要不是内网IP即可吗？
 3. 只要Host指向的IP不是内网IP即可吗？
-### 如何正确的获取用户输入的URL的Host？
+## 如何正确的获取用户输入的URL的Host？
 第一个问题，看起来很简单，但实际上有很多网站在获取Host上犯过一些错误。最常见的就是，使用`http://233.233.233.233@10.0.0.1:8080/`、`http://10.0.0.1#233.233.233.233`
 这样的URL，让后端认为其Host是233.233.233.233，实际上请求的却是10.0.0.1。这种方法利用的是程序员对URL解析的错误，有很多程序员甚至会用正则去解析URL
 在Python3下，正确获取一个URL的Host的方法
@@ -141,7 +141,7 @@ url = 'https://10.0.0.1/index.php'
 urlparse(url).hostname
 ```
 这一步一定不能犯错，否则后面的工作就白做了
-### 只要Host只要不是内网IP即可吗？
+## 只要Host只要不是内网IP即可吗？
 第二个问题，只要检查一下我们获取到的Host是否是内网IP，即可防御SSRF漏洞么？
 
 答案是否定的，原因是，Host可能是IP形式，也可能是域名形式。如果Host是域名形式，我们是没法直接比对的。只要其解析到内网IP上，就可以绕过我们的`is_inner_ipaddress`了
@@ -188,7 +188,7 @@ def check_ssrf(url):
         return False, "unknow error"
 ```
 首先判断url是否是一个HTTP协议的URL（如果不检查，攻击者可能会利用file、gophar等协议进行攻击），然后获取url的host，并解析该host，最终将解析完成的IP放入`is_inner_ipaddress`函数中检查是否是内网IP
-### 只要Host指向的IP不是内网IP即可吗？
+## 只要Host指向的IP不是内网IP即可吗？
 第三个问题，是不是做了以上工作，解析并判断了Host指向的IP不是内网IP，即防御了SSRF漏洞？
 
 答案继续是否定的，上述函数并不能正确防御SSRF漏洞。为什么？
@@ -231,7 +231,7 @@ def get(url,params=None,**kwargs):
 3. 检查IP地址是否为内网IP
 4. 请求URL
 5. 如果有跳转，拿出跳转URL，执行1
-## 0x03 使用requests库的hooks属性来检查SSRF
+# 0x03 使用requests库的hooks属性来检查SSRF
 那么，上一章说的5个过程，具体用Python怎么实现？
 
 我们可以写一个循环，循环条件就是“该次请求的状态码是否是30X”，如果是就继续执行循环，继续跟进location，如果不是，则退出循环。代码如下
@@ -417,7 +417,7 @@ def safe_request_url(url, **kwargs):
 
 完美在Python Web开发中解决SSRF漏洞。其他语言的解决方案类似，大家可以自己去探索
 
-## 参考内容
+# 参考内容
 [http://www.luteam.com/?p=211](http://www.luteam.com/?p=211)
 [http://docs.python-requests.org/](http://docs.python-requests.org/)
 [http://blog.orange.tw/2017/07/how-i-chained-4-vulnerabilities-on.html](http://blog.orange.tw/2017/07/how-i-chained-4-vulnerabilities-on.html)
