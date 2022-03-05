@@ -1,18 +1,18 @@
 # 原文链接
 [传送门](https://wooyun.js.org/drops/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%85%A5%E9%97%A8%E6%80%BB%E7%BB%93.html)
-## 0x00 整体
+# 0x00 整体
 学习代码审计的目标是能够独立完成对一个CMS的代码安全监测，其通用的思路有
 - 通读全文代码，从功能函数代码开始阅读，例如include文件夹下的common_fun.php，或者有类似关键字的文件
 - 看配置文件，带有config关键字的文件，找到mysql.class.php文件的connect()函数，查看在数据库连接时是否出现漏洞
 - 继续跟读首页文件index.php，了解程序运作时调用了哪些函数和文件以index.php文件作为标线，一层一层去扩展阅读所包含的文件，了解其功能，之后进入其功能文件夹的首页文件，进行扩展阅读
 
-## 0x01 漏洞
-### 文件操作漏洞
+# 0x01 漏洞
+## 文件操作漏洞
 - 能不用文件名参数就不用，尽量不要让用户可控
 - 平行用户的权限，管理员的权限，操作权限
 - 禁止传入参数类似于这种..，/，\检查传入的参数，做出限制，停止程序往下执行
-#### 文件包含漏洞
-##### 本地文件包含
+### 文件包含漏洞
+#### 本地文件包含
 - 一般存在于模块加载，模板加载，cache调用
 - 包括函数：`include()/include_once()`，`require()/require_once()`寻找可控变量
 1.php
@@ -28,14 +28,14 @@
 <?php phpinfo() ?>
 ```
 ![image](https://img-blog.csdnimg.cn/img_convert/9b318940584db6e0b2efb54af1ec59f9.png)
-##### 远程文件包含
+#### 远程文件包含
 - 前提条件：`allow_url_include = on`
 - 出现频率不如本地包含
-##### 文件包含截断
+#### 文件包含截断
 - %00截断(php版本小于5.3)
 - 问号截断(问号后面相当于请求的参数，伪截断)
 - 英文(.)反斜杠(/)截断
-#### 文件读取(下载)漏洞
+### 文件读取(下载)漏洞
 搜索关键函数
 - file_get_contents()
 - highlight_file()
@@ -47,12 +47,12 @@
 - parse_ini_file()
 - show_source()
 - file()
-#### 文件上传漏洞
+### 文件上传漏洞
 搜索关键函数
 - `move_uploaded_file()`接着看调用这个函数的代码是否存在为限制上传格式或者可以绕过
-##### 未过滤或本地过滤
+#### 未过滤或本地过滤
 - 服务器端未过滤，直接上传PHP格式的文件即可利用
-##### 黑名单扩展名过滤
+#### 黑名单扩展名过滤
 - 限制不够全面：IIS默认支持解析`.asp`,`.cdx`,`.asa`,`.cer`等
 - 扩展名可绕过
 ```php
@@ -75,10 +75,10 @@
 ?>
 ```
 不被允许的文件格式.php，但是我们可以上传文件名为`1.php `(注意后面有一个空格)
-##### 文件头content-type验证绕过
+#### 文件头content-type验证绕过
 - `getimagesize()`函数：验证文件头只要为GIF89a，就会返回真
 - 限制`$_FILES["file"]["type"]`的值就是人为限制content-type为可控变量
-#### 文件删除漏洞
+### 文件删除漏洞
 搜索关键函数
 - `unlink()`利用回溯变量的方式
 - 老版本下的`session_destroy()`，可以删除文件，现已基本被修复
@@ -109,8 +109,8 @@ Metinfo的任意文件删除漏洞
 ```
 `$action = delete`即可删除`.sql`的文件，如果文件不是`sql`直接删除提交的文件名
 `target.com/recovery.php?&action=delete&filename=../../index.php`
-### 代码执行漏洞
-#### 代码执行函数
+## 代码执行漏洞
+### 代码执行函数
 搜索关键函数
 - eval()
 - assert()
@@ -118,7 +118,7 @@ Metinfo的任意文件删除漏洞
 - call_user_func()
 - call_user_func_array()
 - array_map()
-##### `preg_replace()`函数
+#### `preg_replace()`函数
 mixed preg_replace(mixed $pattern,mixed $replacement,mixed $subject[,int $limit = -1[,int &$count]])
 
 当$pattern处存在e修饰符时，$replacement 会被当做php代码执行
@@ -143,8 +143,8 @@ mixed call_user_func( callable $callbank [ , mixed $parameter [ , mixed $…)
 
 > assert("phpinfo()"); = False
 
-#### 动态函数执行
-##### 动态函数后门 
+### 动态函数执行
+#### 动态函数后门 
 ```php
 #!php
 <?php
@@ -152,7 +152,7 @@ $_GET['a']($_GET['b']);
 ?>
 ```
 ![image](https://img-blog.csdnimg.cn/img_convert/6b4b846a16318c12077d94a18faf96e0.png)
-#### 命令执行函数
+### 命令执行函数
 搜索关键函数
 - system()
 - exec()
@@ -161,7 +161,7 @@ $_GET['a']($_GET['b']);
 - pcntl_exec()
 - popen()
 - proc_open()
-##### `popen`和`proc_open()`
+#### `popen`和`proc_open()`
 ```php
 #!php
 <?php 
@@ -169,7 +169,7 @@ popen( 'whoami >> /Users/bingdaojueai/Desktop/1.txt', 'r' );
 ?>
 ```
 所在路径就会出现一个1.txt 里面的内容为命令执行后的结果
-##### 反引号命令执行
+#### 反引号命令执行
 - echo `whoami`; 直接就可以执行命令
 - 双引号和单引号的区别
 ```php
@@ -179,12 +179,12 @@ echo "$a" = output:1
 echo '$a' = output:$a
 ```
 双引号时，可以直接解析变量，造成代码执行漏洞，过狗绕过
-### 变量覆盖漏洞
-#### 函数使用不当
+## 变量覆盖漏洞
+### 函数使用不当
 - int extract(array &$var_array,int $extract_type = EXTR_OVERWRITE,string $prefix = null)
 - void parse_str(string $str,array &$arr)
 - bool import_request_variables(string $type,string $prefix)
-#### $$变量覆盖
+### $$变量覆盖
 ```php
 <?php
 $a = 1;
@@ -198,13 +198,13 @@ echo $a;
 ?>
 ```
 ![image](https://img-blog.csdnimg.cn/img_convert/d7d25e51c1c18df8505a93d83036419e.png)
-### 逻辑漏洞
+## 逻辑漏洞
 需要思考的问题
 - 程序是否可以重复安装
 - 修改密码是否存在越权修改其他用户密码
 - 找回密码验证码是否可以暴力破解
 - cookie是否可以预测验证存在绕过
-### 等于与存在判断绕过
+## 等于与存在判断绕过
 `in_array()`: 比较之前会自动转换类型
 ```php
 <?php
@@ -214,14 +214,15 @@ echo $a;
 ?>
 ```
 ![image](https://img-blog.csdnimg.cn/img_convert/07ec2e4f51c7ef64338022710802307b.png)
-##### is_numeric()
+#### is_numeric()
 当传入参数为hex时 直接通过并返回true 并且MYSQL可以直接使用hex编码代替字符串明文 可以二次注入 并且可能造成XSS漏洞
-##### 双等于==和三等于=== 
+#### 双等于==和三等于=== 
 - 双等于会在变量比较时，进行类转换，与`in_array()`是一样的问题
 - 三等于是type和value的双重比较，相比之下更加安全
-### 账户体系中的越权问题
+## 账户体系中的越权问题
 - 水平越权：A用户能够以B用户的身份，进行B用户的全部权限操作，前提A用户和B用户拥有相同的权限
 - 垂直越权：A用户能够以C用户的身份，进行C用户的全部权限操作，前提C用户比A用户拥有更高的权限
+
 未`exit`/`return`/`die`
 ```php
 #!php
@@ -234,7 +235,7 @@ echo "test";
 ?>
 ```
 test依旧会被输出，替换成安装流程，PHP依旧会进行
-##### 支付漏洞
+#### 支付漏洞
 - 客户端修改单价
 - 客户端修改总价和购买数量
 - 服务端未校验严格
@@ -275,14 +276,14 @@ echo trim($c);
 ?>
 ```
 ![image](https://img-blog.csdnimg.cn/img_convert/a80a299d2211ec1da2b191e030c1fd3e.png)
-### 会话认证漏洞
+## 会话认证漏洞
 COOKIE验证：没有使用SESSION验证，将信息直接保存在COOKIE中
 1. 找到传入sql语句的参数的传递过程 回溯变量到最原始的函数 看它保存在cookie的算法 是否可逆
 2. 和MD5比起 sha1更安全 解密sha1的网站更少
 3. 限制一个用户只能同时在一个IP上登录
 
 审计代码时，查看登录处代码
-### 二次漏洞
+## 二次漏洞
 类型
 - 不是逻辑问题，是可信问题
 - 业务逻辑复杂度，与二次漏洞触发率成正比
@@ -319,8 +320,8 @@ COOKIE验证：没有使用SESSION验证，将信息直接保存在COOKIE中
 </html>
 ```
 ![image](https://img-blog.csdnimg.cn/img_convert/aa17657b96312997fb45e0df77a98664.png)
-#### 技巧
-##### 钻GPC等转义的空子
+### 技巧
+#### 钻GPC等转义的空子
 不受GPC保护的`$_SERVER`变量：PHP5以后，$_SERVER取到的header不再受GPC影响，就算开启特殊字符也不会被转义，存在注入
 编码问题转换
 1. GBK的宽字节注入：`%df '`单引号自动被转义成(%5c)，同时`%df`与`%5c`连在一起组合成運字单引号依然在，成功闭合。【php与mysql交互过程中发生的编码转换问题】
@@ -333,9 +334,10 @@ $sql = "WHERE id='".urldecode("-1%df%5c' == ")."'";
 print_r(mb_convert_encoding($sql,"UTF-8","GBK"));
 ?>
 ```
-##### 字符串问题
+#### 字符串问题
 - 利用报错，找到敏感信息
 - 字符串截断
+
 %00空字符截断：【PHP版本小于5.3】
 ```php
 #!php
