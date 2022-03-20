@@ -1,4 +1,2 @@
 # ctf专题资源
-`第9篇由于文件过大，无法加载，无法呈现`
-
-`此文件的文件后缀为pdf，请下载后观赏`
+`The 9th article cannot be loaded and cannot be rendered because the file is too large`
