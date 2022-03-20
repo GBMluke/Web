@@ -1,2 +1,2 @@
-# 转载资源
-`此目录下的文章均来自于网络，部分文章已经被作者本人删去，此处仅为记录，如有侵权，我会立即删除`
+# Reprinted resources
+`The articles in this directory are all from the Internet, and some articles have been deleted by the author himself. This is only for the record. If there is any infringement, I will delete it immediately.`
