@@ -9,6 +9,8 @@ Attention: I will be taking a break from working on this document for a while du
 All content in this article is presented in Chinese.
 文段中存在重复的问题的地方，会只在一处地方讲解
 Where there are repetitive questions in the passage, they will be explained in one place only.
+一些重要内容会用红色标注，但颜色不会在github界面显示，请谨慎查看
+Some important content will be marked in red, but the colour will not be displayed in the github interface, so please view with caution
 ```
 
 参考资料来源于
