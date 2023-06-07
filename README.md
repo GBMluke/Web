@@ -5,7 +5,10 @@ Attention: I will be taking a break from working on this document for a while du
 # Web
 
 ```text
+本文章内的所有内容均以中文呈现
+All content in this article is presented in Chinese.
 文段中存在重复的问题的地方，会只在一处地方讲解
+Where there are repetitive questions in the passage, they will be explained in one place only.
 ```
 
 参考资料来源于
