@@ -4,19 +4,22 @@ Attention: I will be taking a break from working on this document for a while du
 
 # Web
 
-```text
-本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解
-All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.
 
-文段中存在重复的问题的地方，会只在一处地方讲解
-Where there are repetitive questions in the passage, they will be explained in one place only.
+> 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解
+> 
+> All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.
 
-一些重要内容会用红色标注，但颜色不会在github界面显示，如果可以，请调至code模式观看
-Some important content will be marked in red, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch.
+> 文段中存在重复的问题的地方，会只在一处地方讲解
+> 
+> Where there are repetitive questions in the passage, they will be explained in one place only.
 
-如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)
-If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.)
-```
+> 一些重要内容会用红色标注，但颜色不会在github界面显示，如果可以，请调至code模式观看
+> 
+> Some important content will be marked in red, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch.
+
+> 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)
+> 
+> If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.)
 
 参考资料来源于
 - CSDN
