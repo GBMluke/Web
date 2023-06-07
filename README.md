@@ -5,8 +5,8 @@ Attention: I will be taking a break from working on this document for a while du
 # Web
 
 ```text
-本文章内的所有内容均以中文呈现
-All content in this article is presented in Chinese.
+本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解
+All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.
 
 文段中存在重复的问题的地方，会只在一处地方讲解
 Where there are repetitive questions in the passage, they will be explained in one place only.
