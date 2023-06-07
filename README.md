@@ -1,9 +1,10 @@
-csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
-
-Attention: I will be taking a break from working on this document for a while due to the senior high school entrance exams in China. When I am free again, I will continue to compile the articles in the various folders into a readme file.
+Attention: 
+1. 由于中国的中考，我将停止一段时间来编辑这个文件。当我再次有空时，我将继续把各文件夹中的文章编进readme.md中(I will be taking a break from working on this document for a while due to the senior high school entrance exams in China. When I am free again, I will continue to compile the articles in the various folders into a readme.md.)
+2. 在阅读各内容之前，建议先阅读rules.md文件(It is recommended to read the rules.md file before reading the individual contents)
 
 # Web
 
+csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 
 > 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解
 > 
