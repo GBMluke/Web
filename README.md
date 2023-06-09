@@ -1191,15 +1191,99 @@ e.g.：用户昵称会在很多地方展示，每个界面的语境也可能各�
 > 
 > XSS的防御需要区分情况对待
 
+##### 0004 正确地防御XSS
+> XSS的本质还是一种HTML注入，用户的数据被当成了HTML代码的一部分执行，从而混淆了原本的语义，产生了新的语义，如果网站使用了MVC架构，那么XSS就发生在View层——在应用拼接变量到HTML页面时产生，所以在用户提交数据处进行输入检查的方案，其实并不是在真正发生攻击的地方做防御，想要根治XSS问题，可以列出所有XSS可能发生的场景，再一一解决
+> 
+> 可能存在以下场景
+> 
+> - 在HTML标签中输出
+> 	- 所有在标签中输出的变量，如果未作任何处理，都可能导致直接产生XSS
+> 	- 防御方法：对变量使用HtmlEncode
+> - 在HTML属性中输出
+> 	- 与标签中输出的XSS相似
+> 	- 防御方法：对变量使用HtmlEncode，在OWASP EASAPI中推荐了一种更严格的HtmlEncode——除了字母、数字外，其他所有的特殊字符都被编码成HTMLEnities
+> - 在`<script>`标签中输出
+> 	- 首先应该确保输出的变量在引号中
+> 	- 攻击者需要先闭合引号才能实施XSS攻击
+> 	- 防御方法：使用JavascriptEncode
+> - 在事件中输出
+> - 与`<script>`输出类似
+> - 防御方法：使用JavascriptEncode
+> - 在CSS中输出
+> 	- 防御方法：尽可能禁止用户可控制的变量在`<style>`标签、HTML标签的style属性以及CSS文件中输出，如果一定有这样的需求，OWASP ESAPI中推荐了`encodeForCSS()`函数
+> 	- 原理：类似`ESAPI.encoder().encodeForJavaScript()`函数，除了字母、数字外的所有字符都被编码成十六进制形式(`\uHH`)
+> - 在地址中输出
+> 	1. 在URL的path(路径)或者search(参数)中输出
+> 
+> 		URLEncode会将字符转换为`%HH`形式
+> 
+> 		e.g.：`空格			%20`、`<			%3c`
+> 
+> 		防御方法：使用URLEncode即可
+> 
+> 	2. 整个URL能够被用户完全控制，这是URL的Protocal和Host部分是不能够使用URLEncode的，否则会改变URl的语义
+> 
+> 		在Protocal与Host中，如果使用严格的URLEncode函数，则会吧`:`、`/`、`/`、` `、`、`、`.`等都编码掉 
+> 
+> 		除了javascript作为伪协议可以执行代码外，还有vbscript、dataURI等协议可能导致脚本执行
+> 
+> 		dataURI这个伪协议是Mozilla所支持的，能够将一段代码写在URL里
+> 
+> 		防御方法：如果变量是整个URL，则应该先检查是否以http开头(如果不是则自动添加)以保证不会出现伪协议类的XSS攻击，再对变量进行URLEncode
 
+##### 0005 处理富文本
+> 有些时候，网站需要允许用户提交一些自定义的HTML代码，称之为富文本，在处理富文本时，还是要回到输入检查的思路上来，输入检查的主要问题是在检查时还不知道变量的输出语境，但用户提交的富文本数据，其语义是完整的HTML代码，在输出时也不会`\n`，拼凑到某个标签的属性中，因此可以特殊情况特殊处理，在**正确地防御XSS**中，列出了所有在HTML中可能执行脚本的地方，而一个优秀的XSS Filter，也应该能够找出HTML代码中所有可能执行脚本的地方，HTML是一种结构化的语言，比较好分析，通过htmlparser可以解析出HTML代码的标签、标签属性和事件，在过滤富文本时，事件应该被严格禁止，因为富文本的展示需求里不应该包括事件这种动态效果，而一些危险的标签，如`<iframe>`、`<scroipt>`、`<base>`、`<from>`等，也是应该严格禁止的对象，在标签的选择上，<font color="red">应该使用白名单，避免使用黑名单</font>
+> 
+> e.g.：`<a>`、`<img>`、`<div>`等比较安全的标签
+> 
+> 在富文本过滤中，处理CSS也是一件麻烦的事情，如果允许用户自定义CSS、style，则也可能导致XSS攻击，因此尽可能禁止用户自定义CSS与style，如果一定要允许用户自定义样式，则只能像过滤富文本一样过滤CSS，有一些比较成熟的开源项目，实现了对富文本的XSS检查，Anti-Samy是OWASP上的一个开源项目，也是目前最好的XSS Filter，最早的时候，它是基于Java的，现在已扩展到.NET等语言，[https://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project](https://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project)，在PHP中，可以使用另外一个广受好评的开源项目：HTMLPurify，[http://htmlpurifier.org/](http://htmlpurifier.org/)
 
+##### 0006 防御DOM Based XSS
+> 在button的onclock事件中，执行了定义的一个函数，将HTML代码写入DOM节点，最后导致XSS的发生，事实上，DOM Based XSS是从JavaScript中输出数据到HTML页面里，而前面提到的方法都是针对从服务器应用直接输出到HTML页面的XSS漏洞，因此并不适用于DOM型XSS
+> 
+> 防御方法：从JavaScript输出到HTML页面，也相当于一次XSS输出到过程，需要分语境使用不同的编码函数
+> 
+> 以下几个地方是JavaScript输出到HTML页面的必经之路
+> 
+> - `document.write()`：页面载入过程中用实时脚本创建页面内容，以及用延时脚本创建本窗口或新窗口的内容，在document被加载完后调用`docuemnt.write`方法时将会自动去触发`document.open()`，在载入页面后，浏览器输出流自动关闭，在此之后，任何一个对当前页面进行操作的`document.write()`方法将打开一个新的输出流，它将清除当前页面内容(包括源文档的任何变量或值)(`document.open()`：打开一个新文档，即打开一个流，并擦除当前文档的内容)
+> - `document.writeln()`
+> - `xxx.innerHTML = `
+> - `xxx.outerHTML = `
+> - `innerHTML.replace`：获取或替换html中的内容
+> - `document.attachEvent()`
+> - `window.attachEvent()`：通过`window.attachEvent()`监听小事件
+> - `document.location.replace()`：用一个新文档取代当前文档
+> - `document.location.assign()`：加载一个新的文档
+> - ......
+> 
+> 需要重点关注这几个地方的参数是否可以被用户控制
+> 
+> 除了服务器端直接输出变量到JavaScript外，还有几个地方可能会成为DOM型XSS的输入点，也需要重点关注
+> 
+> - 页面中所有的inputs框
+> - `window.location`(`href`、`hash`等)：用于获得当前页面的地址(URL)，并把浏览器重定向到新的页面
+> - `window.name`：当前window的名称
+> - `document.referrer`：返回一个url，当前页面就是从这个URI所代表的页面跳转或打开的
+> - `document.cookie`
+> - `localstorage`：`localstorage`属性允许在浏览器中存储key-value对的数据
+> - `XMLHttpRsquest`返回的数据：XMLHttpRsquest是一组API函数集，可被JavaScript、JScript、VBScript以及其它web浏览器内嵌的脚本语言调用，通过HTTP在浏览器和web服务器之间收发XML或其它数据
+> - ......
+> 
+> 安全研究者Stefano Di Paola设立了一个DOM型XSS的cheatsheet[http://code.google.com/p/domxsswiki](http://code.google.com/p/domxsswiki)
 
+##### 0007 不同角度看XSS的风险
+> 一般来说，存储型XSS的风险会高于反射型XSS，因为存储型XSS会保存在服务器上，有可能跨网站存在它不改变url的原有结构，因此有时候还能逃过一些IDS的检测
+> 
+> 从攻击过程来说，反射型XSS一般要求攻击者诱使用户点击一个包含XSS代码的URL链接，而存储型XSS只需要让用户浏览一个正常的URL链接
+> 
+> 从风险的角度来看，用户之间有互动的页面，是可能发起XSS Worm攻击的地方，而根据不同页面的PageView高低，也可以分析出哪些页面受XSS攻击后影响会更大
 
-
-
-
-
-
+#### 007 总结
+> 理论上，XSS漏洞虽然复杂，但却是可以彻底解决的，在设计XSS解决方案时，应该深入理解XSS攻击的原理，针对不同的场景使用不同的方法，同时有很多开源项目为我们提供了参考
+> 
+> 过滤输入的数据，包括`'`、`"`、`<`、`>`等特殊字符
+> 
+> 对输出到页面的数据进行相应的编码转换，包括HTMl实体编码、JavaScript编码等
 
 
 
