@@ -4,7 +4,7 @@ Attention:
 3. 我的英语水平非常差，所以本文中的英文可能会出现一些差错，如果发现比较奇怪的英语语法或内容时，建议使用翻译器翻译上方的中文，请谅解(My English is very poor, so there may be some errors in the English in this article. If you find strange English grammar or content, please understand that you are advised to use a translator to translate the Chinese above.)
 4. 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解(All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.)
 5. 文段中存在重复的问题的地方，会只在一处地方讲解(Where there are repetitive questions in the passage, they will be explained in one place only.)
-6. 一些重要内容会用红色标注，但颜色不会在github界面显示，如果可以，请调至code模式观看(Some important content will be marked in red, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch.)
+6. 一些重要内容会用红色标注，标题会用黄色标注，但颜色不会在github界面显示，如果可以，请调至code模式观看，如果将文档下载至本地，则建议使用深色界面观看(Some important content will be marked in red, title will be marked in yellow, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch, if you are downloading a document locally, it is recommended that you use the dark interface to view it)
 7. 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)(If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.))
 8. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
 
@@ -21,11 +21,11 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 - MDN Web Docs
 - 其他小型网站与书籍
 
-## 0x00世界观安全
+## <font color="yellow">0x00世界观安全</font>
 
-### 01 Web发展史
+### <font color="yellow">01 Web发展史</font>
 
-#### 001 静态网页的诞生
+#### <font color="yellow">001 静态网页的诞生</font>
 
 > 1989年，在欧洲粒子物理实验室(粒子物理研究通常与来自世界各地的研究所进行合作)的IT部门工作的Tim Berners-Lee向其领导提出了一项名为Information Management: A Proposal的提议：使来自世界各地的远程站点的研究人员能够组织和汇集信息，在个人计算机上访问大量的科研文献，并建议在文档中链接其他文档，这就是Web的原型
 >
@@ -41,7 +41,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > 1994年11月，Mosaic浏览器的开发人员创建了网景公司(Netscape Communications Corp.)，并发布了Mosaic Netscape 1.0 beta浏览器，后改名为Navigator
 
-#### 002 万维网(W3C)诞生
+#### <font color="yellow">002 万维网(W3C)诞生</font>
 
 > 1994年底，由Tim牵头的万维网联盟(World Wide Web Consortium)成立，这标志着万维网的正式诞生
 >
@@ -51,13 +51,13 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > W3C最重要的工作是发展Web规范(称为推荐，Recommendations)，这些规范描述了Web的通信协议(比如HTML和XHTML)和其他的构建模块
 
-#### 003 JavaScript的诞生
+#### <font color="yellow">003 JavaScript的诞生</font>
 
 > 1995年，网景工程师Brendan Eich花了10天时间设计了JavaScript语言。起初这种脚本语言叫做Mocha，后改名LiveScript，后来为了借助Java语言创造良好的营销效果最终改名为JavaScript。网景公司把这种脚本语言嵌入到了Navigator 2.0之中，使其能在浏览器中运行
 >
 > 与此相对的是，1996年，微软发布了VBScript和JScript。JScript是对JavaScript进行逆向工程的实现，并内置于Internet Explorer 3中。但是JavaScript与JScript两种语言的实现存在差别，这导致了程序员开发的网页不能同时兼容Navigator和Internet Explorer浏览器。Internet Explorer开始抢夺Netscape的市场份额，这导致了第一次浏览器战争
 
-#### 004 第一次浏览器战争
+#### <font color="yellow">004 第一次浏览器战争</font>
 
 > Netscape的市场份额逐年萎缩
 >
@@ -71,7 +71,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 > 
 > 第一次浏览器战争以IE浏览器完胜Netscape而结束，IE开始统领浏览器市场，份额的最高峰达到2002年的96%。随着第一轮大战的结束，浏览器的创新也随之减少
 
-#### 005 动态页面的崛起
+#### <font color="yellow">005 动态页面的崛起</font>
 
 > JavaScript诞生之后，可以用来更改前端DOM的样式，实现一些类似于时钟之类的小功能。那时候的JavaScript仅限于此，大部分的前端界面还很简单，显示的都是纯静态的文本和图片。这种静态页面不能读取后台数据库中的数据，为了使得Web更加充满活力，以PHP、JSP、ASP.NET为代表的动态页面技术相继诞生
 >
@@ -87,7 +87,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 > 
 > 从Web诞生至2005年，一直处于后端重、前端轻的状态
 
-#### 006 XHTML
+#### <font color="yellow">006 XHTML</font>
 
 > 1999年，W3C发布HTML 4.01标准，同年微软推出用于异步数据传输的ActiveX，随即各大浏览器厂商模仿实现了XMLHttpRequest（AJAX雏形）
 >
@@ -99,7 +99,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > 2009年，W3C宣布XHTML 2.0不再继续，宣告死亡
 
-#### 007 AJAX的流行
+#### <font color="yellow">007 AJAX的流行</font>
 
 > 在Web最初发展的阶段，前端页面要想获取后台信息需要刷新整个页面，这是很糟糕的用户体验
 >
@@ -111,7 +111,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > Google Trend: AJAX从2005年开始得到开发人员的广泛关注
 
-#### 008 第二次浏览器大战
+#### <font color="yellow">008 第二次浏览器大战</font>
 
 > 前端兼容性框架的出现
 >
@@ -129,7 +129,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > Google Trend: 蓝色jQuery，红色Dojo，绿色YUI，紫色ExtJS，黄色MooTools
 
-#### 009 HTML5
+#### <font color="yellow">009 HTML5</font>
 
 > 1999年，W3C发布了HTML 4.0.1版本，在之后的几年，没有再发布更新的Web标准。随着Web的迅猛发展，旧的Web标准已不能满足Web应用的快速增长
 >
@@ -149,7 +149,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > 2014年10月28日，W3C正式发布HTML 5.0推荐标准
 
-#### 010 Node.js的爆发
+#### <font color="yellow">010 Node.js的爆发</font>
 
 > 早在1994年，Netspace就公布了其Netspace Enterprise Server中的一种服务器脚本实现，叫做LiveWire，是最早的服务器端JavaScript，甚至早于浏览器中的JavaScript。对于这门图灵完备的语言，Netspace很早就开始尝试将它用在后端
 >
@@ -177,7 +177,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > Node.js也催生了node-webkit等项目，用JavaScript开发跨平台的桌面软件也成为可能。Node.js给开发人员带来了无穷的想象，JavaScript大有一统天下的趋势
 
-#### 011 前端MV*架构
+#### <font color="yellow">011 前端MV*架构</font>
 
 > 随着HTML5的流行，前端不再是人们眼中的小玩意，以前在C/S中实现的桌面软件的功能逐步迁移到了前端，前端的代码逻辑逐渐变得复杂起
 >
@@ -204,7 +204,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > Hybrid一系列技术中很难找出一种方案适应所有应用场景，我们需要根据自身需求对不同技术进行筛选与整合
 
-#### 012 ECMAScript6
+#### <font color="yellow">012 ECMAScript6</font>
 
 > JavaScript语言是ECMAScript标准的一种实现，截止2017年2月，ECMAScript一共发布了7个版本
 >
@@ -228,9 +228,9 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 >
 > ECMAScript以后每年将会发布一个新版本，这无疑将持续促使浏览器厂商不断为JavaScript注入新的功能与特性，JavaScript走上了快速发展的正轨
 
-### 02 安全世界观
+### <font color="yellow">02 安全世界观</font>
 
-#### 001 简介
+#### <font color="yellow">001 简介</font>
 
 用户的最高权限叫做root(administrator) ，黑客最渴望的就是获得root
 
@@ -248,7 +248,7 @@ SQL注入、XSS攻击的出现是Web安全史上的一个里程碑
 
 伴随着Web 2.0 的兴起，XSS、CSRF等攻击已经变得更强大了
 
-#### 002 黑帽子、白帽子
+#### <font color="yellow">002 黑帽子、白帽子</font>
 
 黑帽子：利用黑客技术造成破坏
 1. 工作心态方面：
@@ -269,7 +269,7 @@ SQL注入、XSS攻击的出现是Web安全史上的一个里程碑
     - 对待问题：在设计方案时，如果只看到各种问题组合后产生的效果，就会把事情变得更复杂，难以细致入微地解决根本问题，所以白帽子必然是在不断地分解问题，在对分解后的问题逐个给予解决
     - 选用的方法：客服某种攻击方式，而并非抵御单次攻击
 
-#### 003 安全的本质
+#### <font color="yellow">003 安全的本质</font>
 
 通过安全检测的过程，可与梳理未知的人或物，使其变得可信任，被划分出来的具有不同信任级别的区域，被称为信任域，划分两个信任域的分界线，被称为信任边界
 
@@ -281,7 +281,7 @@ SQL注入、XSS攻击的出现是Web安全史上的一个里程碑
 
 安全是一个持续学习的内容
 
-#### 004 安全三要素
+#### <font color="yellow">004 安全三要素</font>
 
 简称CIA
 
@@ -293,7 +293,7 @@ SQL注入、XSS攻击的出现是Web安全史上的一个里程碑
 
 > 不可抵赖性，又称不可否认性，英文为Non-repudiation，电子商务交易各方在交易完成时要保证的不可抵赖性，指在传输数据时必须携带含有自身特质、别人无法复制的信息，防止交易发生后对行为的否认，通常可通过对发送的消息进行数字签名来实现信息的不可抵赖性
 
-#### 005 如何实施安全评估
+#### <font color="yellow">005 如何实施安全评估</font>
 
 安全评估的过程
 1. 资产等级划分
@@ -379,7 +379,7 @@ SQL注入、XSS攻击的出现是Web安全史上的一个里程碑
 
 `优势：易于扩展与升级，如果是由专职的安全团队长期维护的系统，有些阶段可以只是实施一次`
 
-#### 006 白帽子兵法
+#### <font color="yellow">006 白帽子兵法</font>
 
 1. Secure By Default 原则
 
@@ -445,15 +445,15 @@ Unpredictable
 
 需要用到加密算法、随机数算法、哈希算法
 
-#### 007 总结
+#### <font color="yellow">007 总结</font>
 
 安全是一门朴素的学问，也是一种平衡的艺术
 
-## 0x01 客户端脚本安全
+## <font color="yellow">0x01 客户端脚本安全</font>
 
-### 01 浏览器安全
+### <font color="yellow">01 浏览器安全</font>
 
-#### 001 同源策略(Same Origin Policy)
+#### <font color="yellow">001 同源策略(Same Origin Policy)</font>
 
 是一种约定，它是浏览器最核心、最基本的安全功能，如果缺少了同源策略，浏览器的正常功能可能都会受到影响
 
@@ -474,7 +474,7 @@ XMLHttpRequest可以访问同源对象的内容，但同样收到同源的约束
 
 `同源策略是浏览器的行为，是为了保护本地数据不被JavaScript代码获取回来的数据污染，因此拦截的是客户端发出的请求回来的数据接收，即请求发送了，服务器响应了，但是无法被浏览器接收`
 
-#### 002 浏览器沙箱
+#### <font color="yellow">002 浏览器沙箱</font>
 
 在网页中插入一段恶意代码，利用浏览器漏洞执行任意代码的攻击方式，在黑客圈子里被形象地称为挂马
 
@@ -500,7 +500,7 @@ Sandbox是指一种技术，在这种技术中，软件运行在操作系统受�
 如Azu re和Google App Engime
 ```
 
-#### 003 恶意网址拦截
+#### <font color="yellow">003 恶意网址拦截</font>
 
 工作原理：一般都是浏览器周期性地从服务器获取一份最新的恶意网址黑名单，如果用户上网时访问的网址在黑名单中，浏览器将弹出警告
 
@@ -512,7 +512,7 @@ Sandbox是指一种技术，在这种技术中，软件运行在操作系统受�
 
 EV SSL证书也遵循X509标准，并向前兼容普通证书，如果浏览器不支持EV模式，则会把该证书当作普通证书，如果浏览器支持EV模式，则会在地址栏中特别标注，因此在网站使用了EV SSL证书后，可以教育用户识别真实网站在浏览器地址栏中的绿色表现，以对抗钓鱼网站
 
-#### 004 高速发展的浏览器安全
+#### <font color="yellow">004 高速发展的浏览器安全</font>
 
 现在的浏览器还在不断地更新，不断地推出新的安全功能
 
@@ -522,7 +522,7 @@ CSP(Content Security Policy)这一策略是由安全专家Robert Hanson最早提
 
 浏览器加载的插件也是浏览器安全需要考虑的一个问题：扩展与插件的权限到高于页面JavaScript的权限
 
-#### 005 总结
+#### <font color="yellow">005 总结</font>
 
 浏览器是互联网安全的重要接口，在安全攻防中，浏览器的作用也越来越被人们重视
 
@@ -532,9 +532,9 @@ CSP(Content Security Policy)这一策略是由安全专家Robert Hanson最早提
 
 随着信息技术的发展，恶意网址检测、插件安全等问题都会显得越来越重要
 
-### 02 跨站脚本攻击(XSS)
+### <font color="yellow">02 跨站脚本攻击(XSS)</font>
 
-#### 001 转义字符
+#### <font color="yellow">001 转义字符</font>
 
 首先要认识一下`\`，`\`在JavaScript有着特殊的用途，它是转义的符号
 
@@ -544,7 +544,7 @@ e.g.：`\x3C\x73\x63\x72\x69\x70\x74\x3E\x61\x6C\x65\x72\x74\x28\x27\x70\x6F\x72
 
 接受用户的数据后过滤`<>`，再用JavaScript显示出来，输入经过16进制转换后的字符，这些字符都可以轻松的绕过过滤，完整进入代码中，经过JavaScript还原之后，正确解释出来
 
-#### 002 UBB标签
+#### <font color="yellow">002 UBB标签</font>
 
 UBB标签是目前广泛运用到论坛，留言簿，以及其他网站系统的一种编码标签，类似`[img]url[/img]`这样的，用户在中间输入地址后即可，在发表的时候系统会自动改成`<img src=”url”></img>`，这个URL就是用户输入的图片地址，XSS攻击中，可以利用这个特点来达到无需用户输入`<>`就能执行由用户所输入的代码，我们只要在输入网址的地方输入：`x"/**/οnerrοr="alert(‘poruin’)`，那么经过转换后就变成了`<img src=“x”/**/οnerrοr=“alert(‘poruin’)”>`
 
@@ -552,7 +552,7 @@ UBB标签是目前广泛运用到论坛，留言簿，以及其他网站系统�
 >
 > 在跨站中，String.fromCharCode主要是使到一些已经被列入黑名单的关键字或语句安全通过检测，把关键字或语句转换成为ASCII码，然后再用String.fromCharCode还原，因为大多数的过滤系统都不会把String.fromCharCode加以过滤，例如关键字`alert`被过滤掉，那就可以这么利用：`<img src=“x”/**/οnerrοr=“eval(String.fromCharCode(97,108,101,114,116,40,39,112,111,114,117,105,110,39,41))”>`
 
-#### 003 绕过
+#### <font color="yellow">003 绕过</font>
 
 1. 前端过滤
 > burp抓包改包绕过
@@ -671,7 +671,7 @@ UBB标签是目前广泛运用到论坛，留言簿，以及其他网站系统�
 > 
 > 	`xss:expres/**/sion(if(!window.x){alert(document.domain);window.x=1;})`
 
-#### 004 XSS简介
+#### <font color="yellow">004 XSS简介</font>
 
 XSS(Cross Site Script)跨站脚本攻击
 
@@ -702,9 +702,9 @@ XSS攻击通常指黑客通过HTML注入篡改了网页，插入了恶意脚本�
 > 
 > 	前端
 
-#### 005 XSS攻击进阶
+#### <font color="yellow">005 XSS攻击进阶</font>
 
-##### 0001 初探XSS Payload
+##### <font color="yellow">0001 初探XSS Payload</font>
 
 XSS攻击成功后，攻击者能够对用户当前浏览的页面植入恶意脚本，通过恶意脚本，控制用户的浏览器
 
@@ -716,9 +716,9 @@ XSS Payload实际上就是JavaScript脚本，还可以是Flash或其他富客户
 
 Cookie中一般加密保存了当前用户的登录凭证，如果Cookie丢失，就意味着用户的登录凭证丢失，攻击者就可以不通过密码，直接进入用户的账户
 
-##### 0002 强大的XSSPayload
+##### <font color="yellow">0002 强大的XSSPayload</font>
 
-a. 构造GET与POST请求
+<font color="yellow">a. 构造GET与POST请求</font>
 
 特点(http的特点)
 > 基于tcp/ip、一种网络应用层协议、超文本传输协议HyperText Transfer Protocol
@@ -918,12 +918,14 @@ http状态码
 	
 一个网站的应用只需要接受HTTP协议中的GET或POST请求，即可完成所有操作，对于攻击者来说，仅通过JavaScript就可以让浏览器发起这两个请求，所以XSS攻击后，攻击者除了可以实施Cookie劫持外，还能够通过模拟GET、POST请求操作用户的浏览器，这在某些隔离环境中会非常有用，比如Cookie劫持失效时，或者目标用户的网络不能访问互联网等情况
 
-b. XSS钓鱼
+<font color="yellow">b. XSS钓鱼</font>
+
 > 将XSS与钓鱼结合的思路，利用JavaScript在当前界面伪造一个登录框，当用户在登录框中输入用户名与密码后，其密码会发送到黑客的服务器上
 > 
 > 充分发挥想象力，可以使XSS攻击的威力更加巨大
 
-c. 识别用户浏览器
+<font color="yellow">c. 识别用户浏览器</font>
+
 > 在很多时候，攻击者为了获取更大的利益，往往需要准确地手机用户的个人信息
 > 
 > 但是浏览器的UserAgent是可以伪造的，所以通过JavaScript取出来的这个浏览器对象，信息并不一定准确
@@ -934,7 +936,8 @@ c. 识别用户浏览器
 > 
 > [http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/](http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/)
 
-d. 识别用户安装的软件
+<font color="yellow">d. 识别用户安装的软件</font>
+
 > 知道了用户使用的浏览器、操作系统后，进一步可以识别用户安装的软件
 > 
 > 在IE中，可以通过判断ActiveX控件的classid是否存在，来推测用户是否安装了该软件
@@ -943,12 +946,14 @@ d. 识别用户安装的软件
 > 
 > 浏览器的扩展与插件也能被XSS Payload扫描出来
 
-e. CSS History Hack
+<font color="yellow">e. CSS History Hack</font>
+
 > 通过CSS，可以发现用户曾经访问过的网站
 > 
 > 这个技巧最早被Jeremiah Grossman发现，其原理是利用style的visited属性，如果用户曾经访问过某个链接，那么这个链接的颜色会变得与众不同
 
-f. 获取用户的真实IP地址
+<font color="yellow">f. 获取用户的真实IP地址</font>
+
 > 
 > 通过XSS Payload还有办法获得一些客户端的本地IP地址
 > 
@@ -960,7 +965,8 @@ f. 获取用户的真实IP地址
 > 
 > 可以借助以上两点结合第三方软件使用，获得用户IP地址[http://decloak.net/decloak.html](http://decloak.net/decloak.html)
 
-g. XSS攻击平台
+<font color="yellow">g. XSS攻击平台</font>
+
 > - Attack API
 > 
 > 	[http://code.google.com/p/attackapi/](http://code.google.com/p/attackapi/)
@@ -981,7 +987,8 @@ g. XSS攻击平台
 > 
 > 这些XSS攻击平台有助于深入了解XSS的原理及危害
 
-h. XSS Worm
+<font color="yellow">h. XSS Worm</font>
+
 > 注：一种蠕虫病毒
 > 
 > - Samy Worm
@@ -996,7 +1003,8 @@ h. XSS Worm
 > 
 > 以上两个蠕虫并不是恶意的蠕虫，真正可怕的蠕虫是那些在无声无息地盗取用户的敏感信息的蠕虫，然而这些蠕虫并不会干扰用户的正常使用，非常隐蔽
 
-i. 调试JavaScript
+<font color="yellow">i. 调试JavaScript</font>
+
 > 想写好XSS Payload，需要有很好的JavaScript功底，调试JavaScript也是必不可少的技能
 > 
 > 工具
@@ -1007,7 +1015,8 @@ i. 调试JavaScript
 > 
 > <font color="red">工具只是辅助，并不起关键作用</font>
 
-j. XSS构造技巧
+<font color="yellow">j. XSS构造技巧</font>
+
 
 利用字符编码
 > 百度收藏：将`%c1\`组成新的Unicode字符这样`%c1`把转运符号`\`隐藏起来了，从而绕过了系统的安全检查，实施了XSS攻击
@@ -1071,9 +1080,9 @@ JavaScript开发框架
 > - YUI：翻翻YUI的bugtracker也可以看到类似Dojo的问题
 > - jQuery：jQuery可能是目前最流行的JavaScript框架，它本身出现的XSS漏洞很少，但开发者该记住的是，JavaScript框架只是对JavaScript语言本身的封装，并不能解决代码逻辑上产生的问题，所以开发者的意识才是安全编码的关键所在
 
-#### 006 XSS防御
+#### <font color="yellow">006 XSS防御</font>
 
-##### 0001 HttpOnly
+##### <font color="yellow">0001 HttpOnly</font>
 
 HttpOnly是由微软最早提出的并在IE6中实现，至今已经逐渐成为一个标准，浏览器将禁止页面的JavaScript访问带有HttpOnly属性的Cookie
 
@@ -1100,7 +1109,7 @@ HttpOnly是由微软最早提出的并在IE6中实现，至今已经逐渐成为
 
 使用HttpOnly有助于缓解XSS攻击，但仍然需要其他能够解决XSS漏洞的方案
 
-##### 0002 输入检查
+##### <font color="yellow">0002 输入检查</font>
 
 常见的Web漏洞如XSS、SQL Injection等，都要求攻击者构造一些特殊字符，这些特殊字符可能是正常用户不会用到的，所以输入检查就有存在的必要了
 
@@ -1144,7 +1153,7 @@ e.g.：用户昵称会在很多地方展示，每个界面的语境也可能各�
 
 然而第一个结果显然是用户不希望看到的
 
-##### 0003 输出检查
+##### <font color="yellow">0003 输出检查</font>
 
 安全编码函数
 > 编码分为很多种，针对HTML代码的编码方式是HtmlEncode
@@ -1192,7 +1201,8 @@ e.g.：用户昵称会在很多地方展示，每个界面的语境也可能各�
 > 
 > XSS的防御需要区分情况对待
 
-##### 0004 正确地防御XSS
+##### <font color="yellow">0004 正确地防御XSS</font>
+
 > XSS的本质还是一种HTML注入，用户的数据被当成了HTML代码的一部分执行，从而混淆了原本的语义，产生了新的语义，如果网站使用了MVC架构，那么XSS就发生在View层——在应用拼接变量到HTML页面时产生，所以在用户提交数据处进行输入检查的方案，其实并不是在真正发生攻击的地方做防御，想要根治XSS问题，可以列出所有XSS可能发生的场景，再一一解决
 > 
 > 可能存在以下场景
@@ -1218,7 +1228,7 @@ e.g.：用户昵称会在很多地方展示，每个界面的语境也可能各�
 > 
 > 		URLEncode会将字符转换为`%HH`形式
 > 
-> 		e.g.：`空格			%20`、`<			%3c`
+> 		e.g.：`空格 - %20`、`< - %3c`
 > 
 > 		防御方法：使用URLEncode即可
 > 
@@ -1232,14 +1242,16 @@ e.g.：用户昵称会在很多地方展示，每个界面的语境也可能各�
 > 
 > 		防御方法：如果变量是整个URL，则应该先检查是否以http开头(如果不是则自动添加)以保证不会出现伪协议类的XSS攻击，再对变量进行URLEncode
 
-##### 0005 处理富文本
+##### <font color="yellow">0005 处理富文本</font>
+
 > 有些时候，网站需要允许用户提交一些自定义的HTML代码，称之为富文本，在处理富文本时，还是要回到输入检查的思路上来，输入检查的主要问题是在检查时还不知道变量的输出语境，但用户提交的富文本数据，其语义是完整的HTML代码，在输出时也不会`\n`，拼凑到某个标签的属性中，因此可以特殊情况特殊处理，在**正确地防御XSS**中，列出了所有在HTML中可能执行脚本的地方，而一个优秀的XSS Filter，也应该能够找出HTML代码中所有可能执行脚本的地方，HTML是一种结构化的语言，比较好分析，通过htmlparser可以解析出HTML代码的标签、标签属性和事件，在过滤富文本时，事件应该被严格禁止，因为富文本的展示需求里不应该包括事件这种动态效果，而一些危险的标签，如`<iframe>`、`<scroipt>`、`<base>`、`<from>`等，也是应该严格禁止的对象，在标签的选择上，<font color="red">应该使用白名单，避免使用黑名单</font>
 > 
 > e.g.：`<a>`、`<img>`、`<div>`等比较安全的标签
 > 
 > 在富文本过滤中，处理CSS也是一件麻烦的事情，如果允许用户自定义CSS、style，则也可能导致XSS攻击，因此尽可能禁止用户自定义CSS与style，如果一定要允许用户自定义样式，则只能像过滤富文本一样过滤CSS，有一些比较成熟的开源项目，实现了对富文本的XSS检查，Anti-Samy是OWASP上的一个开源项目，也是目前最好的XSS Filter，最早的时候，它是基于Java的，现在已扩展到.NET等语言，[https://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project](https://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project)，在PHP中，可以使用另外一个广受好评的开源项目：HTMLPurify，[http://htmlpurifier.org/](http://htmlpurifier.org/)
 
-##### 0006 防御DOM Based XSS
+##### <font color="yellow">0006 防御DOM Based XSS</font>
+
 > 在button的onclock事件中，执行了定义的一个函数，将HTML代码写入DOM节点，最后导致XSS的发生，事实上，DOM Based XSS是从JavaScript中输出数据到HTML页面里，而前面提到的方法都是针对从服务器应用直接输出到HTML页面的XSS漏洞，因此并不适用于DOM型XSS
 > 
 > 防御方法：从JavaScript输出到HTML页面，也相当于一次XSS输出到过程，需要分语境使用不同的编码函数
@@ -1272,50 +1284,168 @@ e.g.：用户昵称会在很多地方展示，每个界面的语境也可能各�
 > 
 > 安全研究者Stefano Di Paola设立了一个DOM型XSS的cheatsheet[http://code.google.com/p/domxsswiki](http://code.google.com/p/domxsswiki)
 
-##### 0007 不同角度看XSS的风险
+##### <font color="yellow">0007 不同角度看XSS的风险</font>
+
 > 一般来说，存储型XSS的风险会高于反射型XSS，因为存储型XSS会保存在服务器上，有可能跨网站存在它不改变url的原有结构，因此有时候还能逃过一些IDS的检测
 > 
 > 从攻击过程来说，反射型XSS一般要求攻击者诱使用户点击一个包含XSS代码的URL链接，而存储型XSS只需要让用户浏览一个正常的URL链接
 > 
 > 从风险的角度来看，用户之间有互动的页面，是可能发起XSS Worm攻击的地方，而根据不同页面的PageView高低，也可以分析出哪些页面受XSS攻击后影响会更大
 
-#### 007 总结
+#### <font color="yellow">007 总结</font>
+
 > 理论上，XSS漏洞虽然复杂，但却是可以彻底解决的，在设计XSS解决方案时，应该深入理解XSS攻击的原理，针对不同的场景使用不同的方法，同时有很多开源项目为我们提供了参考
 > 
 > 过滤输入的数据，包括`'`、`"`、`<`、`>`等特殊字符
 > 
 > 对输出到页面的数据进行相应的编码转换，包括HTMl实体编码、JavaScript编码等
 
+### <font color="yellow">03 跨站点请求伪造(CSRF)</font>
 
+#### <font color="yellow">001 绕过Referer</font>
 
+##### <font color="yellow">0001 Refere为空条件下</font>
 
+利用`ftp://`、`http://`、`https://`、`file://`、`javascript:`、`data:`这个时候浏览器地址栏是`file://`开头的，如果这个HTML页面向任何http站点提交请求的话，这些请求的Referer都是空的
 
+e.g.
+- 利用data协议
+- bese64编码
+- 解码即可看到代码
+- 利用https协议
 
+##### <font color="yellow">0002 判断Referer是某域情况下绕过</font>
 
+比如你找的csrf是xxx.com验证的referer是验证的*.xx.com可以找个二级域名之后`<img "csrf地址">`之后在把文章地址发出去就可以伪造
 
+##### <font color="yellow">0003 判断Referer是否存在某关键词</font>
 
+referer判断存在不存在google.com这个关键词，在网站新建一个google.com目录把CSRF存放在google.com目录,即可绕过
 
+##### <font color="yellow">0004 判断referer是否有某域名</font>
 
+判断了Referer开头是否以126.com以及126子域名不验证根域名为126.com 那么我这里可以构造子域名x.126.com.xxx.com作为蠕虫传播的载体服务器，即可绕过
 
+Referer防御CSRF原理：HTTP Referer是header的一部分，当浏览器向web服务器发送请求的时候，一般会带上Referer，告诉服务器我是从哪个页面链接过来的，服务器基此可以获得一些信息用于处理,当用户点击被构造好的CSRF利用页面，那么在执行用户对应操作时，提交的HTTP请求中就有对应的Referer值，此时服务端判断Referer值是否与服务器的域名信息有关,如果不相关则不执行操作
 
+Referer防御代码编写：在PHP中使用`$_SERVER[‘HTTP_REFERER’]`获取页面提交请求中的Referer值(`<?php if(strpos($_SERVER['HTTP_REFERER'],'xx.com') !== false) { 判断成功 } else { 判断失败 } ?>`)
 
+绕过Referer技巧：如果服务端只判断当前的Referer中是否具有域名，那么直接可以新建文件夹进行绕过
 
+Burpsutie自动生成POC
 
+#### <font color="yellow">002 CSRF简介</font>
 
+CSRF(Cross Site Request Forgery)，跨站点请求伪造，它是一种常见的攻击方式，但很多开发者对它很陌生，CSRF也是Web安全中最容易被忽略的一种攻击方式，甚至很多安全工程师都不理解它的利用条件与危害，因此不给予重视，但CSRF在某些时候却能够产生强大的破坏性
 
+#### <font color="yellow">003 CSRF进阶</font>
 
+##### <font color="yellow">0001 浏览器说Cookie策略</font>
 
+> 攻击者伪造的请求之所以能被搜狐服务器验证通过，是因为用户的浏览器成功发送了Cookie的缘故
+> 
+> 浏览器所持有的Cookie分为两种
+> 
+> 1.Session Cookie(又称临时Cookie)：Session Cookie则没有指定Expire时间，所以浏览器关闭后，Session Cookie就失效了
+> 2.Third-party Cookie(又称本地Cookie)：Third-party Cookie是服务器在Set-Cookie时指定了Expire时间，只有到了Expire时间后Cookie才会生效，所以这种Cookie会保存在本地
+> 
+> 如果浏览器从一个域的页面中要加载另一个域的资源，由于安全原因，某些浏览器会组织Third-party Cookie的发送，IE出于安全考虑，默认禁止了浏览器在`<img>`、`<iframe>`、`<script>`、`<link>`等标签中发送第三方Cookie，在Firefox中，默认策略是允许发送第三方Cookie的
+> 
+> 在当前的主流浏览器中，默认会拦截Third-party Cookie的有：IE6、IE7、IE8、Safari
+> 
+> 不会拦截的有：Firefox2、Firefox3、Opera、Google Chrome、Android等
+> 
+> 但若CSRF攻击的目标并不需要使用Cookie，则也不需要顾虑浏览器的Cookie策略了
 
+##### <font color="yellow">0002 P3P头的副作用</font>
 
+> 尽管有些CSRF攻击实施起来不需要认证，不需要发送Cookie，但是不可否认的是，大部分敏感或重要的操作是躲藏在认证之后的，因此浏览器拦截第三方Cookie的发送，在某种程度上来说，降低了CSRF攻击的威力，可是这一情况在P3P头介入后变得复杂起来
+> 
+> P3P Header(The Platform For Privacy Preferences)是W3C制定的一项关于隐私的标准：隐私偏好平台
+> 
+> 如果网站返回给浏览器的HTTP头中包含有P3P头，则某种程度上来说，将允许浏览器发送第三方Cookie
+> 
+> 在网站的业务中，P3P头主要用于类似广告等需要跨域访问的页面，但是，很遗憾的是，P3P头设置后对于Cookie的影响将扩大到整个域中的所有页面，因为Cookie是以域和path为单位的，这并不符合最小权限原则
+> 
+> P3P的策略看起来似乎很难懂，但其实语法很简单，都是一一对应的关系，可以查询W3C标准
+> 
+> e.g.
+> 
+> `CP - Compact Policy`
+> 
+> `CURa - <current/>`
+> 
+> `a - always`
+> 
+> [http://www.w3.org/TR/P3P/](http://www.w3.org/TR/P3P/)
+> 
+> P3P头也可以直接引用一个XML策略文件
+> 
+> 正因为P3P头目前在网站的应用中被广泛应用，因此在CSRF的防御中不能依赖于浏览器对第三方Cookie的拦截策略，不能心存侥幸
 
+##### <font color="yellow">0003 GET/POST</font>
 
+> 在CSRF攻击流行之初，许多人认为CSRF攻击只能有GET请求发起，因此很多开发者都认为只要把重要的操作改成只允许POST请求，就能防止CSRF
+> 
+> 形成错误观点的原因主要在于大多数CSRF攻击发起时，使用的HTML标签都是`<img>`、`<iframe>`、`<script>`等带src属性的标签，这类标签只能发起一次GET请求，但不能发起POST请求
+> 
+> 在禁止GET请求时的攻击方法
+> 
+> 1.在页面中构造好一个from表单，然后使用JavaScript自动提交这个表单
+> 
+> 2.将这个页面隐藏在一个看不见的iframe窗口中，那么整个自动提交表单的过程对于用户来说也是看不见的
+> 
+> 3.安全研究者pdp展示了一个Gmail CSRF漏洞攻击过程，用户登录Gmail账户，一边浏览器获得Gmail的临时Cookie，诱使用户访问一个恶意页面，在这个恶意页面中，隐藏了一个iframe，该iframe的地址指向pdp写的CSRF构造页面，这个链接实际就是把参数生成一个POST的表单，并自动提交，由于浏览器中已经存在Gmail的临时Cookie，所有用户在iframe中对Gmail发起的这次请求会成功，此时，邮箱的Filter中会新创建一条规则，将所有带附件的邮件都转发到攻击者的邮箱中
 
+##### <font color="yellow">0004 Flash CSRF</font>
 
+> Flash中也有很多种方式能够发起网络请求，包括POST，除了URLRequest外，在Flash中还可以使用getURL，loadVars等方式发起请求，在IE6、IE7中，Flash发送的网络请求均可以带上本地Cookie，但IE8起，Flash发起的网络请求已经不再发送本地Cookie了
 
+##### <font color="yellow">0005 CSRF Worm</font>
 
+> 国内的安全组织80sec公布了一个百度的CSRF Worm，漏洞出现在百度用户中心的发送短消息功能中，只需要修改参数sn，即可对指定用户发送短消息，然而百度的另一个接口则能查询出某个用户的所有好友，将两者结合起来，可以组成一个CSRF Worm，让一个百度用户查看一个恶意页面后，将给他的所有好友发送一条短消息，这条短消息中包含一张图片，其地址在次指向CSRF页面，使得这些好友再次将消息发送给他的好友
+> 
+> - 模拟服务器端取得request的参数：定义蠕虫页面服务器地址，取得？、&符号后的字符串，从URL中提取感染蠕虫的用户名和感染者好友的用户名
+> - 好友json数据的动态获取：通过CSRF漏洞从远程加载受害者的好友json数据，根据该接口的json数据格式，提取好友数据为蠕虫的传播流程做准备
+> - 感染信息输出和消息发送的核心部分：将感染者的用户名和需要传播的好友用户名放到入错那个链接内，输出短信息
+> 
+> 这个蠕虫很好地展示了CSRF的破坏性，即使没有XSS漏洞，仅仅依靠CSRF，也是能够发起
 
+#### <font color="yellow">004 CSRF防御</font>
 
+##### <font color="yellow">0001 验证码</font>
 
+> CSRF攻击的过程往往是在用户不知情的情况下构造了网络请求，然而验证码则强制用户必须与应用进行交互，才能完成最终请求，验证码只能作为防御CSRF攻击的一种辅助手段，而不能作为最主要的解决方案
+
+##### <font color="yellow">0002 Referer Check</font>
+
+> Referer Check在互联网中最常见的应用就是防止图片盗链，同理，Referer Check也可以被用于检查请求是否来自合法的源，常见的互联网应用，页面与页面之间都具有一定的逻辑关系，这就使得每个正常请求的Referer具有一定的规律，即使我们能够通过检查Referer是否合法来检查用户是否被CSRF攻击，也仅仅是满足了防御的充分条件，<font color="red">Referer Check的缺陷在于服务器并非什么时候都能取到Referer</font>，在Flash的一些版本中，曾经可以发送自定义的Referer头，虽然Flash在新版本中已经加强了安全限制，不再允许发送自定义的Referer头，但是难免不会有别的客户端插件允许这种操作，出于以上种种原因，我们还是无法依赖于Referer Check作为防御CSRF的主要手段，但是通过Referer Check来监控CSRF的发生却是一种可行的方案
+
+##### <font color="yellow">0003 Anti CSRF Token</font>
+
+> CSRF攻击成功的原因：<font color="red">重要操作的所有参数都是可以被攻击者猜测到的</font>
+> 
+> 攻击者只有预测出URL的所有参数与参数值，才能成功地构造一个伪造的请求，反之，攻击者将无法完成攻击，出于以上原因，可以想到一个解决方案：把参数加密，或者使用一些随机数，从而让攻击者无法猜测到参数值(不可预测性原则)，在攻击者不知道salt的情况下，是无法构造出这个URL的，因此也就无法发起CSRF攻击了，对于服务器来说，可以从Session或Cookie中取得`username = name`的值，再结合salt对整个请求进行验证，正常请求会被认为是合法的，但这个方法也有其对应的问题
+> 
+> - 加密后的URL对用户不友好
+> - 加随机数后的URL用户不能收藏
+> - 普通参数加密后，数据分析会非常困难
+> 
+> 因此我们需要一个更加通用的解决方案——Anti CSRF Token
+> 
+> 要Token足够随机，必须使用足够安全的随机数生成算法，或者采用真随机数生成器(物理随机)，Token因该作为一个秘密，为用户与服务器所共同持有，不能被第三方知晓，在实际应用时，Token可以放在用户的Session中，或者浏览器的Cookie中，Token需要同时放在表单与Session，在提交请求时，只需验证两个Token是否一致，如果不一致(包括空Token)，则有可能发生CSRF攻击
+
+##### <font color="yellow">Token的使用原则</font>
+
+> 防御CSRF攻击的Token是根据不可预测性原则设计的方案，所以Token的生成一定要足够随机，需要使用安全的随机数生成器生成Token，如果Token保存在Cookie中，那么如果用户同时打开多个页面同时操作时，当某个页面消耗点Token时，其他页面的Token还是原先被消耗的Token，就会产生差错
+> 
+> 解决方法：同时生成多个Token，一对一，更放心
+> 
+> 如果Token出现在某个页面的URL中，则可能会通过Referer的方式泄露，如果页面包含了一张攻击者能指定地址的图片，则该请求地址会作为HTTP请求的Referer发送到evil.com的服务器上，从而导致Token泄露，因此在使用Token时，因该尽量把Token放在表单中把敏感操作由GET改为POST以from表单(或者AJAX)到形式提交，可以避免Token泄露，还有一些其他途径可能导致Token泄露，如XSS及跨域漏洞，都可以让攻击者盗取Token的值，CSRF的Token只适用于防范CSRF攻击，当网站中还有XSS漏洞时，这个方案就会变的无效，因为XSS乐意模拟客户端浏览器执行任意操作，在XSS攻击下，攻击者完全可以请求页面后，读出页面里的Token值，然后构造一个合法的请求，此过程称之为XSRF，用以与CSRF进行区分，XSS带来的问题，因该使用XSS的防御方案给予解决，否则CSRF的Token防御就是空中楼阁，安全防御的体系是相辅相成、缺一不可的
+
+#### <font color="yellow">005 总结</font>
+
+> CSRF攻击是攻击者利用用户的身份操作用户账户的一种攻击方式，设计CSRF的防御方案必须先理解CSRF攻击的原理和本质，根据不可预测性原则，我们通常使用Anti CSRF Token来防御CSRF攻击，在使用Token时，要注意Token的保密性和随机性
 
 
 
