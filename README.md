@@ -1447,34 +1447,484 @@ CSRF(Cross Site Request Forgery)，跨站点请求伪造，它是一种常见的
 
 > CSRF攻击是攻击者利用用户的身份操作用户账户的一种攻击方式，设计CSRF的防御方案必须先理解CSRF攻击的原理和本质，根据不可预测性原则，我们通常使用Anti CSRF Token来防御CSRF攻击，在使用Token时，要注意Token的保密性和随机性
 
+### <font color="yellow">04 点击劫持(ClickJacking)</font>
 
+#### <font color="yellow">001 UI-覆盖攻击</font>
 
+通过覆盖不可见的框架误导受害者点击，虽然受害者点击的是他所看到的网页，但其实他所点击的是被黑客精心构建的另一个置于原网页上面的透明页面，这种攻击利用了HTML中`<iframe>`标签的透明属性
 
+修复方法
 
+- X-FRAME-OPTIONS(修改中间件配置)：X-FRAME-OPTIONS是微软提出的一个http头，专门用来防御利用iframe嵌套的点击劫持攻击，并且在IE8、Firefox3.6、Chrome4以上的版本均能很好的支持
 
+	头的值
 
+	- DENY：拒绝任何域加载  
+	- SAMEORIGIN：允许同源域下加载  
+	- ALLOW-FROM：可以定义允许frame加载的页面地址 
 
+	下载SAPI(The OWASP Enterprise Security API)包解决的简单方法
+	- esapi-2.1.0.1.jar，下载地址
 
+		[https://www.owasp.org](https://www.owasp.org)
 
+		[https://download.csdn.net/download/chengcm/11072723](https://download.csdn.net/download/chengcm/11072723)
 
+	- 将esapi-2.1.0.1.jar放到web应用的lib目录下
+	- 在web.xml中增加ClickjackFilter过滤器的设置
+	- 重启服务器
+- 增加js的防御(代码层面的防御)
 
+#### <font color="yellow">002 什么是点击劫持</font>
 
+> 安全专家Robert Hansen与Jeremiah Grossman发现了一种被他们称为ClickJacking(点击劫持)的攻击，这种攻击几乎影响了所有的桌面平台，包括IE、Safari、Firefox、Opera以及Adobe Flash，点击劫持是一种视觉上的欺骗手段，攻击者使用一个透明的、不可见的iframe，覆盖在一个网页上，然后诱使用户在该网站上进行操作，此时用户将在不知情的情况下点击透明的iframe页面，通过调整iframe页面的位置，可以诱使用户恰好点击阿兹iframe页面的一些功能性按钮上，通过控制iframe的长、宽，以及调整top、left的位置，可以把iframe页面内的任意部分覆盖到任何地方，同时设置iframe的position为absolute，并将z-index的值设置为最大，以达到让iframe处于页面的最高层，再通过设置opacity来控制iframe页面的透明度，值为0是完全不可见，点击劫持攻击与CSRF攻击有异曲同工之妙，都是在用户不知情的情况下诱使用户完成一些动作，但是在CSRF攻击过程中，如果出现用户交互的页面，则攻击可能会无法顺利完成，但是点击劫持没有这个顾虑，它利用的就是与用户产生交互的页面
 
+#### <font color="yellow">003 Flash点击劫持</font>
 
+> 攻击者通过通过Flash构造出了点击劫持，在完成一系列复杂操作下，最终控制用户电脑的摄像头
+> 
+> - 攻击者制造一个Flash游戏，并诱使用户来玩此游戏
+> - 该游戏就是诱使用户点击click按钮，每一次点击，这个按钮的位置都会变化
+> - 在一步步操作后，打开了用户的摄像头
+> 
+> 其实该网页隐藏了一个iframe页面，一步步诱使用户点击功能键，从而打开摄像头
 
+#### <font color="yellow">004 图片覆盖攻击</font>
 
+> 点击劫持是一种视觉欺骗，顺着这个思路，还有一些攻击方式也可以起到类似的作用，如图片覆盖，安全研究者sven.vetsch最先提出了这种Cross Site Image Overlaying攻击，简称XSIO，sven.vetsch通过调整图片的style使得图片能够覆盖在他所指定的任意位置XSIO不同于XSS，它利用的是图片的style，或者能够控制CSS如果应用没有下肢style的position为absolute的话，图片就可以覆盖到页面上的任意位置，形成点击劫持，百度空间也曾出现过此问题，[http://hi.baidu.com/aullik5/blog/item/e031985175a02c685352416.html](http://hi.baidu.com/aullik5/blog/item/e031985175a02c685352416.html)，图片还可以伪装得像一个正常的链接、按钮，或者在图片中构造一些文字覆盖在关键的位置，这样就不需要用户点击，也可以达到欺骗的作用，由于`<img>`标签在很多系统中是对用户开放的，因此在现实中有非常多的站点存在被XSIO攻击的可能，在防御XSIO时，需要检查用户提交的HTML代码中，`<img>`标签的style属性是否可能导致浮出
 
+#### <font color="yellow">005 拖拽劫持、数据盗取</font>
 
+> 安全研究者Paul Stone在BlackHat 2010大会上发表了题为Next Generation Clickjacking的演讲，在该演讲中提出了浏览器拖拽事件导致的安全问题，目前很多浏览器都支持使用Drag & Drop的API，对于用户来说，拖拽使他们的操作更加简单，浏览器中的拖拽对象可以是链接、文字、窗口，因此拖拽不受同源策略的限制，拖拽劫持的思路是诱使用户从隐藏的iframe中拖拽出攻击者希望得到的数据，然后放到攻击者能控制的另一个页面中，从而盗取数据，在JavaScript或Java API的支持下，这个攻击过程会变得非常隐蔽，因为它突破了传统ClickJacking一些先天的局限，所以这种新型的拖拽劫持能够造成更大的破坏，国内安全研究者xisigr曾经构造了一个针对Gmail的POC，[http://hi.baidu.com/blog/item/2c2b7a110ec848f0c2ce79ec.html](http://hi.baidu.com/blog/item/2c2b7a110ec848f0c2ce79ec.html)
 
+#### <font color="yellow">006 触屏劫持</font>
 
+> 手机上的触屏劫持攻击被斯坦福的安全研究者公布，这意味着ClickJacking的攻击方式跟进一步，斯坦福安全研究者的将其称为TapJacking，[http://seclab.stanford.edu/websec/framebusting/tapjacking.pdf](http://seclab.stanford.edu/websec/framebusting/tapjacking.pdf)，从手机OS的角度看，触屏实际上是一个事件，OS捕捉这些事件，并执行相应的操作，一次触屏可能对应一下操作
+> 
+> - touchstart，手指触摸屏幕时产生
+> - touchend，手指离开屏幕时产生
+> - touchmove，手指滑动时发生
+> - touchcancel，系统可取消touch
+> 
+> 通过将一个不可见的iframe覆盖到当前网页上，可以劫持用户的触屏操作，2010年12月，研发者发现TapJacking可以更改系统安全设置，[http://blog.mylookout.com/look-10-007-tapjacking/](http://blog.mylookout.com/look-10-007-tapjacking/)，[http://vimeo.com/17648348](http://vimeo.com/17648348)
 
+#### <font color="yellow">007 防御ClickJacking</font>
 
+##### <font color="yellow">0001 frame busting</font>
 
+> 可以写一段JavaScript代码，禁止iframe的嵌套，这种方法叫frame busting，但frame busting存在一些缺陷，由于它是JavaScript写的，控制能力不是特别强，因此有许多方法饶过它，此外，像HTML5中iframe的sandbox属性、IE中iframe的security属性等，都可以限制iframe页面中的JavaScript脚本执行，从而可以使得frame busting失效，斯坦福的Gustav Rydstedt等人总结了一片关于攻击frame busting的paper，[http://seclab.stanford.edu/websec/framebusting/framebust.pdf](http://seclab.stanford.edu/websec/framebusting/framebust.pdf)
 
+##### <font color="yellow">0002 X-Frame-Options</font>
 
+> 因为frame busting容易被绕过，所以我们需要一个更好的解决方案----HTTP头的X-Frame-Options
+> 
+> X-Frame-Options可以说是专门为ClickJacking准备的，以下浏览器已开始支持X-Frame-Options
+> 
+> - IE 8+
+> - Opera 10.50+
+> - Safari 4+
+> - Chrome 4.1.249.1042+
+> - Firefox 3.6.9(or earlier with NoScript)
+> 
+> 它有三个可选的值
+> 
+> - DECY：拒绝访问任何iframe
+> - SAMEORIGN：只能访问同源域名下的iframe
+> - ALLOW-FROM Origin：允许frame加载页面地址
+> 
+> 网页安全政策(CSP(Content Security Policy))，一种白名单制度
 
+#### <font color="yellow">008 总结</font>
 
+XSS与CSRF需要诱使用户与界面产生交互，而ClickJacking在未来仍然有可能被攻击者利用在钓鱼、欺诈、广告作弊等方面，不可不察
 
+### <font color="yellow">05 JSON劫持</font>
+
+JSON，全称是JavaScript Object Notation，即JavaScript对象标记法，JSON是一种轻量级(Light-Meight)、基于文本的(Text-Based)、可读的(Human-Readable)格式，JSON的名称中虽然带有JavaScript，但这是指其语法规则是参考JavaScript对象的，而不是指只能用于JavaScript语言，JSON无论对于人，还是对于机器来说，都是十分便于阅读和书写的，而且相比XML(另一种常见的数据交换格式)，文件更小，因此迅速成为网络上十分流行的交换格式，近年来JavaScript已经成为浏览器上事实上的标准语言，JavaScript的风靡，与JSON的流行也有密切的关系，因为JSON本身就是参考JavaScript对象的规则定义的，其语法与JavaScript定义对象的语法几乎完全相同，JSON格式的创始人声称此格式永远不升级，这就表示这种格式具有长时间的稳定性，10年前写的文件，10年后也能用，没有任何兼容性问题
+
+#### <font color="yellow">001 JSON的语法规则</font>
+
+JSON的语法规则十分简单，可称得上优雅完美，总结起来有
+
+- 数组(Array)用方括号([])表示
+- 对象(Object)用大括号({})表示
+- 名称/值对(name/value)组合成数组和对象
+- 名称(name)置于双引号中，值(value)有字符串、数值、布尔值、null、对象和数组
+- 并列的数据之间用逗号(,)分隔
+
+```json
+{
+	"name": "xdr630",
+	"favorite": "programming"
+}
+```
+
+#### <font color="yellow">002 JSON和XML</font>
+
+JSON常被拿来与XML做比较，因为JSON的诞生本来就多多少少要有取代XNL的意思，相比XML，JSON的优势如下
+
+- 没有结束标签，长度更短，读写更快
+- 能够直接被JavaScript解释器解析
+- 可以使用数组
+
+两者比较
+
+1. JSON
+```json
+{
+	"name":"兮动人",
+	"age":22,
+	"fruits":["apple","pear","grape"]
+}
+```
+2. XML
+```xml
+	<root>
+		<name>兮动人</name>
+		<age>22</age>
+		<fruits>apple</fruits>
+		<fruits>pear</fruits>
+		<fruits>grape</fruits>
+	</root>
+```
+
+#### <font color="yellow">003 JSON的解析和生成(JSON和JS对象互转)</font>
+
+在JavaScript中，有两个方法与此相关
+
+- `JSON.parse`
+- `JSON.stringify`
+
+JSON和JS对象互转
+
+要实现从JSON字符串转换为JS对象，使用JSON.parse()方法
+
+```javascript
+<script>
+	var str = '{"name": "兮动人","age":22}';
+	var obj = JSON.parse(str);
+	console.log(obj);
+</script>
+```
+
+要实现从JS对象转换为JSON字符串，使用JSON.stringify()方法
+
+```javascript
+<script>
+	var str = '{"name": "兮动人","age":22}';
+	var obj = JSON.parse(str);
+	console.log(obj);
+	var jsonstr = JSON.stringify(obj);
+	console.log(jsonstr);
+</script>
+```
+
+#### <font color="yellow">004 JSON格式规定</font>
+
+1. 对象(Object)
+
+> 对象用大括号({})括起来，大括号里是一系列的名称/值对
+> 
+> 两个并列的数据之间用逗号(,)隔开，注意两点
+> 
+> 1. 使用英文的逗号(,)，不要用中文的逗号(，)
+> 2. 最后一个名称/值对之后不要加逗号
+> 
+> [JSON在线检查语法https://www.json.cn/](https://www.json.cn/)	
+
+2. 数组(Array)
+
+> 数组表示一系列有序的值，用方括号([])包围起来，并列的值之间用逗号分隔
+> 
+> 以下的数组是合法的
+> 
+> ```json
+> [1,2,"three","four",true,false,null,[1,2],{"name":"兮动人"}]
+> ```
+
+3. 名称/值对(Name/Value)
+
+> 名称(Name)是一个字符串，要用双引号括起来，不能用单引号，也不能没有引号，这一点与JavaScript不同
+> 
+> 值的类型只有七种
+> 
+> - 字符串(string)
+> - 数值(number)
+> - 对象(object)
+> - 数组(array)
+> - true
+> - false
+> - null
+> 
+> 不能有这之外的类型，例如undefined、函数等
+
+4. 字符串(string)的规则如下
+
+> 英文双引号括起来,不能用单引号，也不能没有
+> 
+> 字符串中不能单独出现双引号(”)和右斜杠(\)
+> 
+> 如果要打双引号或右斜杠，需要使用右斜杠+字符的形式，例如\”和\\
+
+5. 转义字符
+
+> ```json
+> {
+> 	"string":"\\ \" "
+> }
+> ```
+
+6. 数值类型，可以使用科学计数法表示
+
+> ```json
+> {
+> 	"number":1e3,
+> 	"n1":1e2,
+> 	"n2":-100
+> }
+> ```
+
+#### <font color="yellow">005 字符串转化成对象</font>
+
+解析：是指将符合JSON语法规则的字符串转换成对象的过程，不同的编程语言都提供了解析JSON字符串的方法，在这里主要讲解JavaScript中的解析方法
+
+主要有三种
+
+- 使用`eval()`
+- 使用`JSON.parse()`
+- 使用第三方库，例如JQuery等
+
+`eval()`函数的参数是一个字符串，其作用是直接执行其中的JavaScript代码
+
+`eval()`解析字符串
+```javascript
+<script>
+	var str = "console.log('hello')";
+	eval(str);
+</script>
+```
+
+`eval()`能够解析JSON字符串，从这里也可以看得出，JSON和JavaScript是高度嵌合的
+
+`eval()`解析JSON字符串
+
+```javascript
+<script>
+	var str = '{"name":"兮动人","age":22}';
+	var obj = eval("("+str+")");
+	console.log(obj)
+</script>
+```
+
+但是，现在已经很少直接使用`eval()`来解析了，如果您的浏览器版本真的是很旧，可能才需要这个方法
+
+此外，`eval()`是一个相对危险的函数，因为字符串中可能含有未知因素
+
+在这里，作为学习，还是要知道这也是一种方法
+
+请注意`eval()`的参数，在字符串两旁加了括号，这是必须的，否则会报错
+
+因为JSON字符串是被大括号({})包围的，直接放到`eval()`会被当成语句块来执行，因此要在两旁加上括号，使其变成表达式
+
+`JSON. parse()`
+
+现在绝大多数浏览器都以支持`JSON.parse()`，是推荐使用的方式
+
+如果输入了不符合规范的字符串，会报错
+
+JSON字符串转换为JS对象
+
+```javascript
+<script>
+	var str = '{"name":"兮动人","age":22}';
+	var obj = JSON.parse(str)
+	console.log(obj)
+</script>
+```
+
+`JSON.parse()`可以有第二个参数，是一个函数
+
+此函数有两个参数
+
+- name
+- value
+
+分别代表名称和值
+
+当传入一个JSON字符串后，JSON的每一组名称/值对都要调用此函数
+
+该函数有返回值，返回值将赋值给当前的名称(name)
+
+利用第二个参数，可以在解析JSON字符串的同时对数据进行一些处理
+
+```javascript
+<script>
+	var str = '{"name":"兮动人","age":22}';
+	var obj = JSON.parse(str,fun);
+	function fun(name,value){
+		console.log(name+":"+value);
+		return value
+	}
+	console.log(obj)
+</script>
+```
+
+可以做判断处理，当JSON字符串的`name=age`时，设置age的`value=14`
+
+```javascript
+<script>
+	var str = '{"name":"兮动人","age":22}';
+	var obj = JSON.parse(str,fun);
+	function fun(name,value){
+	if (name == "age")
+		value = 14;
+		return value
+	}
+ 	console.log(obj)
+</script>
+```
+
+#### <font color="yellow">006 JS对象转化为字符串</font>
+
+序列化，指将JavaScript值转化为JSON字符串的过程
+
+`JSON.stringify()`能够将JavaScript值转换成JSON字符串
+
+`JSON.stringify()`生成的字符串可以用`JSON.parse()`再还原成JavaScript值
+
+参数的含义
+
+```javascript
+JSON.stringify(value[, replacer[, space]])
+```
+
+- value
+
+	必选参数
+
+	被变换的JavaScript值，一般是对象或数组
+
+- replace
+
+	可以省略
+
+	有两种选择
+
+	- 函数
+	- 数组
+
+如果是函数，则每一组名称/值对都会调用此函数，该函数返回一个值，作为名称的值变换到结果字符串中，如果返回`undefined`，则该成员被忽略
+
+```javascript
+<script>
+        var obj = {
+            name: "兮动人",
+            age: 22
+        };
+        console.log(obj);
+        var jsonstr = JSON.stringify(obj,fun);
+        function fun(name,value) {
+            if (name=="age")
+                value = 18;
+                return value;
+         }
+        console.log(jsonstr)
+</script>
+```
+
+如果是数组，则只有数组中存在名称才能够被转换，且转换后顺序与数组中的值保持一致
+
+```javascript
+<script>
+        var obj = {
+            a: 1,
+            b: 2,
+            c: 3,
+            d: 4
+        };
+        console.log(obj);
+        var jsonstr = JSON.stringify(obj,["a","b","c"]);
+        console.log(jsonstr)
+</script>
+```
+
+把顺序改下，对应转换的JSON字符串的数值不变
+
+```javascript
+var jsonstr = JSON.stringify(obj,["c","a","b"]);
+```
+
+space：可以省略，这是为了排版、方便阅读而存在的，可以在JSON字符串中添加空白或制表符等
+
+value的用法
+
+```javascript
+<script>
+var obj = {
+            name: "兮动人",
+            age: 22
+        }
+	console.log(obj);
+	var jsonstr = JSON.stringify(obj);
+	console.log(jsonstr)
+</script>
+```
+
+当有不符合JSON语法规则时，就不会被转换成JSON字符串
+
+数组中有函数时会被转换成null
+
+```javascript
+<script>
+	var obj = {
+            name: "兮动人",
+            age: 22,
+            a: undefined,
+            f: function () {
+            },
+            b:[function () {}]
+        }
+	console.log(obj);
+	var jsonstr = JSON.stringify(obj);
+	console.log(jsonstr)        
+</script>
+```
+
+replace的用法
+
+space的用法
+
+在上面的基础上添加
+
+```javascript
+<script>
+        var obj = {
+            a: 1,
+            b: 2,
+            c: 3,
+            d: 4
+        };
+        console.log(obj);
+        var jsonstr = JSON.stringify(obj,["c","a","b"],"one");
+        console.log(jsonstr)
+</script>
+```
+
+改成制表符：`\t`
+
+```javascript
+<script>
+        var obj = {
+            a: 1,
+            b: 2,
+            c: 3,
+            d: 4
+        };
+        console.log(obj);
+        var jsonstr = JSON.stringify(obj,["c","a","b"],"\t");
+        console.log(jsonstr)
+</script>
+```
 
 
 
