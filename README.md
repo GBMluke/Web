@@ -1926,6 +1926,913 @@ space的用法
 </script>
 ```
 
+### <font color="yellow">06 HTML5安全</font>
+
+#### <font color="yellow">001 浏览器支持</font>
+
+微软MIX10技术大会上宣布其推出的IE9浏览器已经支持HTML5
+
+Mozilla基金会发布了即将推出的Firefox4浏览器的第一个早期测试版，该版本中Firefox浏览器中进行了大幅改进，包括新的HTML5语法分析器，以及支持更多的HTML5语法分析器，以及支持更多的HTML5形式的控制等，从官方文档来看，Firefox4对HTML5是完全级别的支持
+
+谷歌Gears项目经理通过微博宣布，谷歌将放弃对Gears浏览器插件项目的支持，以重点开发HTML5项目，目前在谷歌看来，Gears应用用于HTML5的诸多创新非常相似，并且谷歌一直积极发展HTML5项目，因此只要谷歌不断以加强网络标准的应用功能为工作重点，那么为Gears增加新功能就无太大意义了，另外，Gears面临的需求也在日益下降，这也是谷歌做出吊证的重要原因
+
+苹果在开发者发布会公布Safari5，这款浏览器支持10个以上的HTML5新技术，包括全屏幕播放、HTML5视频、HTML5地理位置、HTML5切片元素、HTML5的可拖动属性、HTML5的形式验证、HTML5的Ruby、HTML5的Ajaxl.ishi和WebSocket字幕
+
+Opera软件公司首席技术官，号称“CSS之父”的Hakon Wium Lie认为，HTML5和CSS3，将会是全球互联网发展的未来趋势，包括目前Opera在内的诸多浏览器厂商，纷纷研发HTML5的相关产品，web未来属于HTML5
+
+#### <font color="yellow">002 开发工具</font>
+
+Notepad++ [https://notepad-plus-plus.org/](https://notepad-plus-plus.org/)
+
+Visual Studio Code [https://code.visualstudio.com/](https://code.visualstudio.com/)
+
+HBuilderX [https://www.dcloud.io/hbuilderx.html](https://www.dcloud.io/hbuilderx.html)
+
+Dreamweaver(收费) [https://www.adobe.com/cn/products/dreamweaver.html](https://www.adobe.com/cn/products/dreamweaver.html)
+	
+Sublime Text(收费) [http://www.sublimetext.com/](http://www.sublimetext.com/)
+
+Webstorm(收费) [https://www.jetbrains.com/webstorm/](https://www.jetbrains.com/webstorm/)
+
+#### <font color="yellow">003 HTML5语法</font>
+
+1. 基本结构
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> </title>
+</head>
+<body>
+
+</body>
+</html>
+```
+
+2. 语法规范
+
+> HTML5中不区分大小写，但是我们一般都使用小写
+> 
+> HTML5中的注释不能嵌套
+> 
+> HTML5标签必须结构完整，要么成对出现，要么自结束标签
+> 
+> HTML5标签可以嵌套，但是不能交叉嵌套
+> 
+> HTML5标签中的属性必须有值，且值必须加引号(双引号单引号都可以)
+> 
+
+3. 标签规范
+
+单标签
+
+```html
+<标签名 [属性名=属性值,...]>
+```
+
+标签对
+
+```html
+<标签名 [属性名=属性值,...]></标签名>
+```
+
+#### <font color="yellow">004 HTMl5标签</font>
+
+##### <font color="yellow">0001 标题标签</font>
+
+```html
+<h1>这是一级标题</h1>
+<h2>这是二级标题</h2>
+<h3>这是三级标题</h3>
+<h4>这是四级标题</h4>
+<h5>这是五级标题</h5>
+<h6>这是六级标题</h6>
+```
+
+##### <font color="yellow">0002 段落标签</font>
+
+```html
+<p>这是一个段落</p>
+```
+
+##### <font color="yellow">0003 链接标签</font>
+
+```html
+<a href="https://www.baidu.com">打开百度，你就知道！</a>
+```
+常见属性
+
+|属性|值|描述|
+|-|-|-|
+|href|URL|规定链接的目标URL|
+|target|_blank、_parent、_self、_top、framename|规定链接在何处打开目标URL(仅在href属性存在时使用)|
+
+##### <font color="yellow">0004 图像标签</font>
+
+```html
+<img src="https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png" alt="百度LOGO">
+```
+
+##### <font color="yellow">0005 表格标签</font>
+
+```html
+<table border="1px" cellpadding="0px" cellspacing="0px">
+    <tr>
+        <th>表头一</th>
+        <th>表头二</th>
+        <th>表头三</th>
+        <th>表头四</th>
+    </tr>
+    <tr>
+        <td>单元格一</td>
+        <td>单元格二</td>
+        <td>单元格三</td>
+        <td>单元格四</td>
+    </tr>
+</table>
+```
+
+##### <font color="yellow">0006 列表标签</font>
+
+1. 无序列表
+
+```html
+<ul>
+    <li>列表项</li>
+    <li>列表项</li>
+    <li>列表项</li>
+    <li>列表项</li>
+</ul>
+```
+
+2. 有序列表
+
+```html
+<ol>
+    <li>列表项</li>
+    <li>列表项</li>
+    <li>列表项</li>
+    <li>列表项</li>
+</ol>
+```
+
+3. 自定义列表
+
+```html
+<dl>
+    <dt>+</dt><dd>列表项</dd>
+    <dt>+</dt><dd>列表项</dd>
+    <dt>+</dt><dd>列表项</dd>
+</dl>
+```
+
+##### <font color="yellow">0007 分组标签</font>
+
+```html
+<div>具体内容</div>
+```
+
+```html
+<span>具体内容</span>
+```
+
+##### <font color="yellow">0008 语义标签</font>
+
+常见标签
+
+- `<header>`，规定文档或节的页眉
+- `<footer>`，定义文档或节的页脚
+- `<main>`，规定文档的主内容
+- `<section>`，定义文档的节
+- `<article>`，定义文档的文章
+- `<aside>`，定义页面内容以外的内容
+- `<nav>`，定义导航链接
+- `<mark>`，定义重要的或强调的文本
+- `<figure>`，规定自包含内容
+- `<figcaption>`，定义`<figure>`元素的标题
+- `<details>`，定义用户能够查找或隐藏的额外细节
+- `<summary>`，定义`<details>`元素的可见标题
+- `<time>`，定义时间
+
+基本布局
+
+- `<header>`
+- `<nav>`
+- `<section>`
+- `<aside>`
+- `<article>`
+- `<footer>`
+
+##### <font color="yellow">表单标签</font>
+
+常见标签
+- `<from>`，定义供用户输入的表单
+- `<input>`，定义输入域
+- `<label>`，定义了`<input>`元素的标签，一般为输入标题
+- `<textarea>`，定义文本域 (一个多行的输入控件)
+- `<fieldset>`，定义了一组相关的表单元素，并使用外框包含起来
+- `<legend>`，定义了`<fieldset>`元素的标题
+- `<select>`，定义了下拉选项列表
+- `<optgroup>`，定义选项组
+- `<option>`，定义下拉列表中的选项
+- `<button>`，定义一个点击按钮
+- `<datalist>`，指定一个预先定义的输入控件选项列表
+- `<keygen>`，指定一个预先定义的输入控件选项列表
+- `<output>`，定义一个计算结果
+
+演示
+
+form、input、label演示
+
+```html
+<form action="" method="get">
+    <p>
+        <label for="username">账户：</label>
+        <input type="text" name="username" id="username">
+    </p>
+    <p>
+        <label for="password">密码：</label>
+        <input type="password" name="password" id="password">
+    </p>
+    <p><input type="submit"></p>
+</form>
+```
+
+textarea演示
+
+```html
+<form action="" method="post">
+    <textarea name="mycontext" cols="30" rows="10"></textarea>
+    <input type="submit">
+</form>
+```
+
+fieldset、legend、select、optgroup、option演示
+
+```html
+<form action="" method="post">
+    <fieldset>
+        <legend>请选择你的爱好：</legend>
+
+        <select name="myhobby" id="myhobby">
+            <optgroup label="运动">
+                <option value="篮球">篮球</option>
+                <option value="足球">足球</option>
+            </optgroup>
+            <optgroup label="电子">
+                <option value="看电影">看电影</option>
+                <option value="看电视">看电视</option>
+            </optgroup>
+        </select>
+    </fieldset>
+</form>
+```
+
+datalist演示
+
+```html
+<form action="" method="post">
+    <input list="browsers">
+    <datalist id="browsers">
+        <option value="Internet Explorer">
+        <option value="Firefox">
+        <option value="Chrome">
+        <option value="Opera">
+        <option value="Safari">
+    </datalist>
+</form>
+```
+
+单选框演示
+
+```html
+<form action="" method="post">
+    <input type="radio" name="sex" id="male" value="male" checked>
+    <label for="male">Male</label>
+
+    <input type="radio" name="sex" id="female" value="female">
+    <label for="female">female</label>
+</form>
+```
+
+复选框演示
+
+```html
+<form action="" method="post">
+    <input type="checkbox" name="vehicle" id="bike" value="bike">
+    <label for="bike">I have a bike</label>
+
+    <input type="checkbox" name="vehicle" id="car" value="car">
+    <label for="car">I have a car</label>
+</form>
+```
+
+框架标签
+
+```html
+<iframe src="https://www.baidu.com" frameborder="0" width="500px" height="500px"></iframe>
+```
+
+音频标签
+
+```html
+<audio controls>
+    <source src="horse.ogg" type="audio/ogg">
+    <source src="horse.mp3" type="audio/mpeg">
+    您的浏览器不支持 Audio 标签
+</audio>
+```
+
+视频标签
+
+```html
+<video width="320" height="240" controls>
+	<source src="movie.mp4" type="video/mp4">
+	<source src="movie.ogg" type="video/ogg">
+	您的浏览器不支持 Video 标签
+</video>
+```
+
+其他标签
+
+- 水平线：`<hr>`
+- 换行：`<br>`
+- `<b>粗体文本</b>`
+- `<code>计算机代码</code>`
+- `<em>强调文本</em>`
+- `<i>斜体文本</i>`
+- `<kbd>键盘输入</kbd>`
+- `<pre>预格式化文本</pre>`
+- `<small>更小的文本</small>`
+- `<strong>重要的文本</strong>`
+- `<abbr>缩写词或者首字母缩略词</abbr>`
+- `<address>联系信息</address>`
+- `<bdo>文字方向</bdo>`
+- `<blockquote>从另一个源引用的部分</blockquote>`
+- `<cite>工作的名称</cite>`
+- `<del>删除的文本</del>`
+- `<ins>插入的文本</ins>`
+- `<sub>下标文本</sub>`
+- `<sup>上标文本</sup>`
+
+头部标签
+- `<head>`，定义了文档的信息
+- `<title>`，定义了文档的标题
+- `<base>`，定义了页面链接标签的默认链接地址
+- `<link>`，定义了一个文档和外部资源之间的关系
+- `<meta>`，定义了HTML文档中的元数据
+- `<script>`，定义了客户端的脚本文件
+- `<style>`，定义了HTML文档的样式文件
+
+#### <font color="yellow">005 HTML5属性</font>
+
+HTML5标签可以设置属性，属性总是以名称/值对的形式出现，如name=value，它的主要作用是控制或修饰标签
+
+通用属性
+
+- `accesskey`，设置访问元素的键盘快捷键
+- `class`，规定元素的类名(`classname`)
+- `contenteditable`，规定是否可编辑元素的内容
+- `contextmenu`，指定一个元素的上下文菜单，当用户右击该元素，出现上下文菜单
+- `data-*`，用于存储页面的自定义数据
+- `dir`，设置元素中内容的文本方向
+- `draggable`，指定某个元素是否可以拖动
+- `dropzone`，指定是否将数据复制，移动，或链接，或删除
+- `hidden`，`hidden`属性规定对元素进行隐藏
+- `id`，规定元素的唯一`id`
+- `lang`，设置元素中内容的语言代码
+- `spellcheck`，检测元素是否拼写错误
+- `style`，规定元素的行内样式(inline style)
+- `tabindex`，设置元素的 Tab 键控制次序
+- `title`，规定元素的额外信息(可在工具提示中显示)
+- `translate`，指定是否一个元素的值在页面载入时是否需要翻译
+
+#### <font color="yellow">006 HTML5事件</font>
+		
+HTML5事件可以触发浏览器中的行为，比方说当用户点击某个 HTML 元素时启动一段 JavaScript
+
+##### <font color="yellow">0001 窗口事件</font>
+
+由窗口触发该事件(同样适用于`<body>`标签)
+
+|属性|值|描述|
+|-|-|-|
+|onafterprint|script|在打印文档之后运行脚本|
+|onbeforeprint|script|在文档打印之前运行脚本|
+|onbeforeonload|script|在文档加载之前运行脚本|
+|onblur|script|当窗口失去焦点时运行脚本|
+|onerror|script|当错误发生时运行脚本|
+|onfocus|script|当窗口获得焦点时运行脚本|
+|onhashchange|script|当文档改变时运行脚本|
+|onload|script|当文档加载时运行脚本|
+|onmessage|script|当触发消息时运行脚本|
+|onoffline|script|当文档离线时运行脚本|
+|ononline|script|当文档上线时运行脚本|
+|onpagehide|script|当窗口隐藏时运行脚本|
+|onpageshow|script|当窗口可见时运行脚本|
+|onpopstate|script|当窗口历史记录改变时运行脚本|
+|onredo|script|当文档执行再执行操作(redo)时运行脚本|
+|onresize|script|当调整窗口大小时运行脚本|
+|onstorage|script|当Web Storage区域更新时(存储空间中的数据发生变化时)运行脚本|
+|onundo|script|当文档执行撤销时运行脚本|
+|onunload|script|当用户离开文档时运行脚本|
+
+##### <font color="yellow">0002 表单事件</font>
+
+表单事件在HTML表单中触发(适用于所有 HTML 元素，但该HTML元素需在form表单内)
+
+|属性|值|描述|
+|-|-|-|
+|onblur|script|当元素失去焦点时运行脚本|
+|onchange|script|当元素改变时运行脚本|
+|oncontextmenu|script|当触发上下文菜单时运行脚本|
+|onfocus|script|当元素获得焦点时运行脚本|
+|onformchange|script|当表单改变时运行脚本|
+|onforminput|script|当表单获得用户输入时运行脚本|
+|oninput|script|当元素获得用户输入时运行脚本|
+|oninvalid|script|当元素无效时运行脚本|
+|onselect|script|当选取元素时运行脚本|
+|onsubmit|script|当提交表单时运行脚本|
+
+##### <font color="yellow">0003 键盘事件</font>
+
+通过键盘触发事件，类似用户的行为
+
+|属性|值|描述|
+|-|-|-|
+|onkeydown|script|当按下按键时运行脚本|
+|onkeypress|script|当按下并松开按键时运行脚本|
+|onkeyup|script|当松开按键时运行脚本|
+
+##### <font color="yellow">0004 鼠标事件</font>
+
+通过鼠标触发事件，类似用户的行为
+
+|属性|值|描述|
+|-|-|-|
+|onclick|script|当单击鼠标时运行脚本|
+|ondblclick|script|当双击鼠标时运行脚本|
+|ondrag|script|当拖动元素时运行脚本|
+|ondragend|script|当拖动操作结束时运行脚本|
+|ondragenter|script|当元素被拖动至有效的拖放目标时运行脚本|
+|ondragleave|script|当元素离开有效拖放目标时运行脚本|
+|ondragover|script|当元素被拖动至有效拖放目标上方时运行脚本|
+|ondragstart|script|当拖动操作开始时运行脚本|
+|ondrop|script|当被拖动元素正在被拖放时运行脚本|
+|onmousedown|script|当按下鼠标按钮时运行脚本|
+|onmousemove|script|当鼠标指针移动时运行脚本|
+|onmouseout|script|当鼠标指针移出元素时运行脚本|
+|onmouseover|script|当鼠标指针移至元素之上时运行脚本|
+|onmouseup|script|当松开鼠标按钮时运行脚本|
+|onmousewheel|script|当转动鼠标滚轮时运行脚本|
+|onscroll|script|当滚动元素的滚动条时运行脚本|
+
+##### <font color="yellow">0005 媒体事件</font>
+
+通过视频(videos)，图像(images)或音频(audio)触发该事件，多应用于HTML媒体元素比如：`<embed>`，`<object>`，`<img>`，`<audio>`和`<video>`
+|属性|值|描述|
+|-|-|-|
+|onabort|script|当发生中止事件时运行脚本|
+|oncanplay|script|当媒介能够开始播放但可能因缓冲而需要停止时运行脚本|
+|oncanplaythrough|script|当媒介能够无需因缓冲而停止即可播放至结尾时运行脚本|
+|ondurationchange|script|当媒介长度改变时运行脚本|
+|onemptied|script|当媒介资源元素突然为空时(网络错误、加载错误等)运行脚本|
+|onended|script|当媒介已抵达结尾时运行脚本|
+|onerror|script|当在元素加载期间发生错误时运行脚本|
+|onloadeddata|script|当加载媒介数据时运行脚本|
+|onloadedmetadata|script|当媒介元素的持续时间以及其他媒介数据已加载时运行脚本|
+|onloadstart|script|当浏览器开始加载媒介数据时运行脚本|
+|onpause|script|当媒介数据暂停时运行脚本|
+|onplay|script|当媒介数据将要开始播放时运行脚本|
+|onplaying|script|当媒介数据已开始播放时运行脚本|
+|onprogress|script|当浏览器正在取媒介数据时运行脚本|
+|onratechange|script|当媒介数据的播放速率改变时运行脚本|
+|onreadystatechange|script|当就绪状态(ready-state)改变时运行脚本|
+|onseeked|script|当媒介元素的定位属性不再为真且定位已结束时运行脚本|
+|onseeking|script|当媒介元素的定位属性为真且定位已开始时运行脚本|
+|onstalled|script|当取回媒介数据过程中(延迟)存在错误时运行脚本|
+|onsuspend|script|当浏览器已在取媒介数据但在取回整个媒介文件之前停止时运行脚本|
+|ontimeupdate|script|当媒介改变其播放位置时运行脚本|
+|onvolumechange|script|当媒介改变音量亦或当音量被设置为静音时运行脚本|
+|onwaiting|script|当媒介已停止播放但打算继续播放时运行脚本|
+	
+##### <font color="yellow">0006 其他事件</font>
+
+|属性|值|描述|
+|-|-|-|
+|onshow|script|当`<menu>`元素在上下文显示时触发|
+|ontoggle|script|当用户打开或关闭`<details>`元素时触发|
+
+#### <font color="yellow">007 HTML5新标签</font>
+
+HTML5是W3C制定的新一代HTML语言的标准，这个标准现在还在不断地修改，但是主流的浏览器厂商都已经开始逐渐支持这些新功能，离HTML5真正的普及还有很长一段路要走，但是由于浏览器已经开始支持部分功能，所以HTML5的影响已经显现，可以预见到，在移动互联网领域，HTML5会有着广阔的发展前景
+
+#### <font color="yellow">008 新标签的XSS</font>
+
+HTML5中定义了很多新标签、新事件，可能导致新的XSS攻，一些XSS Filter如果建立一个黑名单的话，则可能就不会覆盖到HTML5新增的标签和功能，从而避免产生XSS，HTML5中新增的一些标签和属性，使得XSS等Web攻击产生了新的变化，为了总结这些变化，安全研究者建立了一个HTML5 Security Cheatsheet项目[http://code.google.com/p/html5security](http://code.google.com/p/html5security)
+
+#### <font color="yellow">009 iframe的sandbox</font>
+
+`<iframe>`标签一直以来都为人所诟病，挂马、XSS、ClickJacking等都需运用它，在HTML5中，专门为iframe定义了一个新的属性----sandbox使用sandbox属性后，`<iframe>`标签加载的内容将被视为一个独立的源，其中的脚本将被禁止执行，表单被禁止提交，插件被禁止加载，只想其他浏览对象的链接也会被禁止
+
+sandbox属性可以通过参数来支持更精确的控制，有以下几个值可以选择：
+
+- allow-same-origin，允许同源访问
+- allow-top-navigation，允许防伪顶层窗口
+- allow-forms，允许提交表单
+- allow-scripts，允许执行脚本
+
+可是有的行为即便是设置了allow-scripts，也是不允许的，如弹出窗口
+
+#### <font color="yellow">010 Link Types：noreferrer</font>
+
+在HTML5中，为`<a>`、`<area>`这两个标签定义了一个新的Link Types----noreferrer
+
+标签指定了noreferrer后，浏览器在请求该标签指定的地址是将不再发送Referer，这种设计是出于保护敏感信息和隐私的考虑，因为通过Referer，可能会泄露一些敏感信息，这个标签需要开发者手动添加到页面的标签中，对于有需要的标签可以选择使用noreferrer
+
+#### <font color="yellow">011 Canvas的妙用</font>
+
+Canvas是HTML5的最大创新之一，`<canvas>`标签让JavaScript可以在页面中直接操作图片对象，也可以直接操作像素，构造出图片区域，Canvas的出现极大的挑战了传统富客户端插件的地位，开发者甚至可以通过Canvas在浏览器上写一个小游戏
+
+以下浏览器中，开始支持`<canvas>`标签
+
+- IE 7+
+- Firefox 3.0+
+- Safari 3.0+
+- Chrome 3.0+
+- Opera 10.0+
+- iPhone 1.0+
+- Android 1.0+
+
+Dive Into HTML5很好地介绍了Canvas及其他HTML5的特性，[http://diveintohtml.info/canvas.html](http://diveintohtml.info/canvas.html)
+
+Canvas提供的强大功能，甚至可以破解验证码，Shaun Firedle写了一个GreaseMonkey的脚本，通过操作Canvas中的每一个像素点，成功地识别了Megaupload提供的验证码，[http://userscript.org/scripts/review/38736](http://userscript.org/scripts/review/38736)
+
+HTML5使过去难以做到的事情变得可能
+
+#### <font color="yellow">012 其他安全问题</font>
+
+##### <font color="yellow">0001 Cross-Origin Resource Sharing</font>
+
+> 浏览器实现的同源策略限制了脚本的跨域请求，但互联网的发展趋势是越来越开放的，因此跨域访问的需求也变得越来越迫切，同源策略给Web开发者带来了很多困扰，他们不得不想方设法地实现一些合法的跨域技术，由此诞生了jsonp、iframe跨域等技巧，W3C委员会决定制定一个新的标准来解决日益迫切的跨域访问问题，[http://www.w3.org/TR/cors/](http://www.w3.org/TR/cors/)，Origin Header用于标记HTTP发起的源，服务器端通过识别浏览器自动带上端这个Origin Header，来判断浏览器的请求是否来自一个合法的源，Origin Header可以用于防范CSRF，它不像Referer那么容易被伪造或清空
+
+##### <font color="yellow">0002 postMessage——跨窗口传递信息</font>
+跨站脚本攻击中提到`window.name`几乎不受同源策略限制，<font color="red">postMessage允许每一个window对象往其他的窗口发送本地信息，从而实现跨窗口的消息传递，这个功能是不受同源策略限制的</font>
+
+使用时的注意事项
+
+- 在必要时，可以接收窗口验证Oomain，甚至验证URL，以防来自非法页面的消息，这实际上是在代码中实现一次同源策略的验证过程
+- 如果将消息写入innerHTML，甚至直接写入script中，可能导致DOM型XSS产生，根据Secure By Default原则，在接受窗口不应该信任接收到的消息，需要对消息进行安全检查
+
+使用postMessage也会让XSS Payload变得更加灵活，Gareth Heyes曾经实现过一个JavaScript运行环境的sandbox，其原理是创建一个iframe，将JavaScript限制于其中执行，但通过研究发现，利用postMessage()给父窗口发消息可以突破sandbox
+	
+##### <font color="yellow">0003 Web Storage</font>
+
+过去浏览器的储存方式哟有以下几种
+
+- Cookie：主要用于保存登录凭证和少量信息
+- Flash Shared Object：是Adobe自己的功能
+- IE UserData：是微软自己的功能
+
+W3C委员会希望能在客户端有一个强大和方便的本地储存功能，就是Web Storage
+
+Web Storage分为Session Storage和Local Storage
+
+- Session Storage：关闭浏览器就会失效
+- Local Storage：会一直存在
+
+Web Storage就像一个非关系型数据库，由Key - Value对组成，可以通过JavaScript对其进行操作
+
+```javascript
+设置一个值 = window.sessionStorage.setItem(key,value)
+读取一个值 = window.sessionStorage.getItem(key)
+```
+
+Web Storage也收到同源策略的约束，每个域所拥有的信息只会保存在自己的域下，Web Storage让Web开发更加灵活多变，它的强大功能也为XSS Payload打开方便之门，攻击者有可能将恶意代码保存在Web Storage中，从而实现跨页面攻击，当Web Storage存有敏感信息时，也可能成为攻击目标，而XSS攻击正好能够实现这一过程，可以预见，Web Storage会被越来越多的开发者所接受，也会带来更多安全挑战
+
+#### <font color="yellow">013 总结</font>
+
+HTML5是互联网未来的大势所趋，虽然目前距离全面普及还有很长的路要走，但随着浏览器开始支持越来越多的HTML5功能攻击面也随之产生了新的变化，攻击者有可能利用HTML5的特性，来绕过未及时更新的防御方案，要对抗这些新型的攻击，就必须了解HTML5的方方面面，对与HTML5来说，在移动互联网的普及进程可能会快一些，因此未来HTML5攻防的主战场，很可能会发生在移动互联网上
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
