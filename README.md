@@ -3812,7 +3812,7 @@ SQL注入带来的威胁主要有以下几点
 
 其实所有的类型都是根据数据库本身表的类型所产生的，在我们创建表的时候会发现其后总有个数据类型的限制，而不同的数据库又有不同的数据类型，但是无论怎么分常用的查询数据类型总是以数字与字符来区分的，所以就会产生注入点为何种类型
 
-OS注入
+<font color="yellow">OS注入</font>
 
 调用OS命令引起的安全隐患：Web开发所使用的编程语言中，大多数都能通过Shell执行OS(操作系统)命令，通过Shell执行OS命令时，或者开发中用到的某个方法其内部利用了Shell时，就有可能出现OS命令被任意执行的情况，这种现象被称为OS命令注入
 
@@ -3877,7 +3877,7 @@ e.g.
 > 
 > 错误回显披露了敏感信息，对于攻击者来说，构造SQL注入的语句就可以更加得心应手了
 
-盲注(Blibd Injection)
+<font color="yellow">盲注(Blibd Injection)</font>
 
 布尔盲注
 
@@ -3949,7 +3949,7 @@ Burp中的爆破模块
 
 盲注原理：攻击者通过简单的条件判断，再对比页面返回结果的差异，就可以判断SQL漏洞是否存在
 
-Timing Attack
+<font color="yellow">Timing Attack</font>
 
 黑客TinKode在著名的安全邮件列表Full Disclosure上公布了一些他入侵mysql.com搜获得的细节
 
@@ -3957,7 +3957,7 @@ Timing Attack
 
 #### <font color="yellow">019 数据库攻击技巧</font>
 
-常见的攻击技巧
+##### <font color="yellow">0001 常见的攻击技巧</font>
 
 SQL注入是基于数据库的一种攻击，不同的数据库有着不同的功能、不同的算法和函数，因此，针对不同数据库，SQL注入的技巧也有所不同
 
@@ -3992,3 +3992,351 @@ id=5 union all select 1,2,passwd from admin
 写入文件的技巧，经常被用于导出一个Webshel，为攻击者的进一步攻击做铺垫
 
 因此在设计数据库安全方案时，可以禁用普通数据库用户具备操作文件的权限
+
+##### <font color="yellow">0002 命令执行</font>
+
+<font color="red">在MySQL中，除了可以通过带出Webshell间接执行命令外，还可以利用用户自定义函数的技巧，即UDF(User-Defined Funcions)来执行命令</font>
+
+在流行的数据库中，一般都支持从本地文件系统中导入一个共享文件作为自定义函数，使用如下语法可以创建UDF
+
+```sql
+CREATE FUNCTION f_name INTEGER SONAME shared_library
+```
+
+在MySQL4的服务器上，Marco Ivaldi公布了一段代码，可以通过UDF执行系统命令，尤其是当运行mysql进程的用户为root时，将直接获得root
+
+但这段代码在MySQL5+将会受到限制，因为其创建自定义函数但过程并不符合新的版本规范，且返回值永远为0
+
+后来，安全研究者找到了另外的方法，通过lib_mysqludf_sys提供的几个函数执行系统命令，其中最主要的函数是sys_eval()和sys_exec()
+
+在攻击过程中，将lib_mysqludf_sys.so上传到数据库能访问到的路径下，在创建UDF之后，就可以只用sys_eval()等函数了
+
+- `sys_eval`，执行任意命令，并输出返回
+- `sys_exec`，执行任意命令，并退出码返回
+- `sys_get`，获得一个环境变量
+- `sys_set`，创建或修改一个环境变量
+
+`lib_mysqludf_sys`的相关信息可以在官方网站获得[http://www.mysqludf.org/lib_mysqludf_sys/index.php](http://www.mysqludf.org/lib_mysqludf_sys/index.php)
+
+UDF不仅仅是MySQL的特性，其他数据库也有着类似的功能，利用UDF的功能实施攻击的技巧也大同小异，查阅数据库的相关文档将会有所帮助
+
+在MS SQL Server中，则可以使用储存过程xp_cmdshell执行系统命令
+
+在Oracle数据库中，如果服务器同时还有Java环境，那么也有可能造成命令执行，当SQL注入后可以执行多语句的情况下，可以在Oracle中创建Java的存储过程执行系统命令
+
+一般来说，在数据库执行系统命令，要求具有较高的权限，在数据库加固时，可以参阅官方文档给出的安全指导文档
+
+在建立数据库账户时应该遵循最小权限原则，尽量避免给Web应用使用数据库的管理员权限
+
+##### <font color="yellow">0003 攻击储存过程</font>
+
+存储过程为数据库提供了强大的功能，它与UDF很像，但存储过程必须使用CALL或者EXECUTE来执行，在MS SQL Server和Oracle数据库中，都有大量内置存储过程，在注入攻击但过程中，存储过程将为攻击者提供极大的便利
+
+在MS SQL Server中，存储过程xp_cmdshell可以说是臭名昭著了，无数的黑客教程在讲到注入SQL Server时都是使用它执行系统命令
+
+```sql
+EXEC master.dbo.xp_cmdshell 'cmd.exe dir c:'
+EXEC master.dbo.xp_cmdshell 'ping'
+```
+
+xp_cmdshell在SQL Server 2000中默认是开启的，但在SQL Server 2005+中默认是禁止的，但是如果当前数据库用户拥有sysadmin权限，则可以使用sp_configure重新开启它，如果在SQL Server 2000中禁用了xp_cmdshell，则可以使用sp_addextendedproc开启它
+
+除了xp_cmdshell外，还有一些其他的存储过程对攻击过程也是有帮助的
+
+e.g.(可操作注册表的存储过程)
+
+- `xp_regaddmultistring`
+- `xp_regdeletekey`
+- `xp_regdeletevalue`
+- `xp_regenumkeys`
+- `xp_regenumvalues`
+- `xp_regread`
+- `xp_regremovemultisting`
+- `xp_regwrite`
+
+此外，以下存储过程对攻击者也非常有用
+
+- xp_servicecontrol，允许用户启动、停止服务
+	
+	```sql
+	(exec master..xp_servicecontrol 'start','schedule'
+	exec master..xp_servicecontrol 'start','server')
+	```
+
+- xp_availablemedia，显示机器上有用的驱动器
+- xp_dirtree，允许获得一个目录树
+- xp_enumdsn，列举服务器上的ODBC数据源
+- xp_loginconfig，获取服务器安全信息
+- xp_makecab，允许用户在服务器上创建一个压缩文件
+- xp_ntsec_enumdomains，列举服务器可以进入的域
+- xp_terminate_process，提供进程ID，终止此进程
+
+<font color="red">除了利用存储过程外，存储过程本身也可能会存在注入漏洞</font>
+
+##### <font color="yellow">0004 编码问题</font>
+
+在有些时候，不同的字符编码也有可能会导致一些安全问题，在注入的历史上，曾经出现过基于字符集的注入技巧
+
+注入攻击中常常会用到`'`、`"`等特殊字符在应用中，开发者为了安全，经常会使用转义字符`\`来转义这些特殊字符，但当数据库使用了宽字符集时，可能产生一些意想不到但漏洞
+
+解决方法：统一数据库、操作系统、Web应用所使用的字符集，以避免各层对字符的理解存在差异(统一设置为UTF-8)
+
+基于字符集的攻击并不局限于SQL注入，凡是会解析数据的地方都可能存在此问题
+
+如果因为种种原因无法统一字符编码，则需要单独实现一个用于过滤或转义的安全函数，在其中需要考虑到字符的可能范围
+
+根据系统使用的不同字符集来限制用户输入数据的字符允许范围，以实现安全过滤
+
+##### <font color="yellow">0005 SQL Column Truncation</font>
+
+黑客Stefan Esser提出了一种名为SQL Column Truncation的攻击方式[http://www.suspekt.org/2008/08/18/mysql-and-sql-column-truncation-vulnerabilities](http://www.suspekt.org/2008/08/18/mysql-and-sql-column-truncation-vulnerabilities)
+
+在MySQL的配置选项中，有一个sql_mode选项，当MySQL的sql_mode设置为default时，即没有开启STRICT_ALL_TABLES选项时，MySQL对于用户插入的超长值只会提示warning，而不是error，这可能会导致发生一些问题
+
+测试过程如下(MySQL5)
+
+1. 首先开启strict模式：在strict模式下，因为输入的字符超出了长度限制，因此数据库返回一个error信息，同时数据插入不成功
+2. 然后关闭strict模式：数据库只返回一个warning信息，但数据插入成功
+3. 此时如果插入两个相同的数据会有什么结果
+
+	根据不同业务可能会造成不同的逻辑问题
+
+	如下面这段代码
+
+	```sql
+	$userdata = null;
+	if (isPasswordCorrect($username,$password))
+	{
+		$userdata = getUserDataByLogin($username);
+		... ...
+	}
+	```
+
+	它使用下面这条SQL语句来验证用户名和密码
+	
+	```sql
+	SELECT username FROM users WHERE username = ? AND passhash = ?
+	```
+
+	但如果攻击者插入一个同名但数据，则可以通过此认证，在之后但授权过程中，如果系统仅仅通过用户名来进行授权，则可能造成一些越权访问
+	
+	```sql
+	SELECT * FROM users WHERE username = ?
+	```
+
+在这个问题公布不久，WordPass就出现了一个真实案例
+
+注册一个用户名为admin(55个空格)x的用户，就可以修改愿管理员的密码了
+
+但这个漏洞并未造成严重的后果，因为攻击者在此只能修改管理员的密码，而新密码仍然会发送到管理员的邮箱
+
+尽管如此，我们并不能忽视SQL Column Truncation的危害，因为也许下一次漏洞被利用时，就没有那么好的运气了
+
+#### <font color="yellow">020 正确地防御SQL注入</font>
+
+从防御的角度看，要做的事情有两个
+
+- 找到所有的SQL注入漏洞
+- 修复这些漏洞
+
+SQL注入的防御并不是一件简单的事，开发者常常会走入一些误区，如只对用户输入做一些escape处理，而这是不够的
+
+`mysql_real_escape_string()`仅仅会转义
+
+- `'`
+- `"`
+- `\r`
+- `\n`
+- `NULL`
+- `Control-Z`
+
+这几个字符，在本例中SQL注入所使用的Payload完全没有用到这几个字符
+
+那是不是在增加一些过滤字符，就可以了呢？
+
+如处理包括()、空格在内的一些特殊字符，以及一些SQL保留字，如SELECT、INSERT等
+
+其实，这种基于黑名单的方法，都或多或少地存在一些问题，如下面的例子
+
+```sql
+SELECT /* */passwd/* */from/* */user
+SELECT(passwd)from(user)
+```
+
+不需要括号、引号的例子，其中0x61646D696E是字符串admin的十六进制编码
+
+```sql
+SELECT passwd from users where user=0x61646D696E
+```
+
+而SQL保留字中，像HAVING、ORDER BY等都有可能出现在自然语言中，用户提交的正常数据可能也会有这些单词，从而造成误杀，因此不能轻易过滤
+
+1. 使用预编译语句
+
+<font color="red">防御SQL注入的最佳方式，就是使用预编译语句绑定变量</font>
+
+使用预编译语句的SQL语句语义不会发生改变，在SQL语句中，变量用？表示，攻击者无法改变SQL的结构
+
+2. 使用储存过程
+
+<font color="red">了使用预编译语句外，我们还可以使用安全的储存过程对抗SQL注入，使用储存过程的效果和使用预编译语句类似，其区别就是存储过程需要先将SQL语句定义在数据库中，但需要注意的是，存储过程中也有可能会存在注入问题，因此因该尽量避免在存储过程内使用动态的SQL语句</font>
+
+如果无法避免，则因该使用严格的输入过滤或者是编码函数来处理用户的输入数据
+
+但是有的时候，可能无法使用预编译语句或存储过程，这时候只能在此回到输入过滤和编码等方法上来
+
+3. 检查数据类型
+
+检查输入数据但数据类型，在很大程度上可以对抗SQL注入
+
+其他的数据格式或类型检查也是有用的
+
+但数据类型检查并非万能，如果需求就是需要用户提交字符串，则需要依赖其他的方法防范SQL注入
+
+4. 使用安全函数
+
+一般来说，各种Web语言都实现了一些编码函数，可以帮助对抗SQL注入，但前文介绍了一些编码函数被绕过但例子，因此我们需要一个足够安全但编码函数
+
+从数据库自身的角度来看，因该使用最小权限原则，避免Web应用直接使用root、dbowner等高级权限账户直接链接数据库
+
+如果有多个不同的应用在使用同一个数据库，则也应该为每个应用分配不同的账户，Web应用使用的数据库账户不应该有创建自定义函数、操作本地文件的权限
+
+#### <font color="yellow">021 其他注入攻击</font>
+
+除了SQL注入外，在Web安全领域还有其他的注入攻击，这些注入攻击都有相同的特点，就是应用违背了数据与代码分离原则
+
+1. XML注入
+
+XML是一种常用的标记语言，通过标签对数据进行结构化表示
+
+XML与HTML都是SGML(Standard Generalized Markup Language(标准通用标记语言))
+
+XML与HTML一样，也存在注入攻击，甚至在注入方法上也非常类似
+
+XML注入也需要满足注入攻击的条件，与HTML注入的修补方法类似，对用户输入数据中包含的语言本身的保留字符进行转义即可
+
+2. 代码注入
+
+代码注入比较特别的一点是其与命令注入往往都是有一些不安全的函数或者方法引起的，其中的典型代表就是eval()
+
+在Java中也可以实施代码注入
+
+JSP的动态include也可能导致代码注入
+
+严格来说，PHP、JSP的动态include(文件包含漏洞)导致的代码执行，都可以算是一种代码注入
+
+代码注入多见于脚本语言，有时候代码注入也易造成命令注入(Command Injection)system()函数在执行时，缺乏必要的安全检查，攻击者可以由此注入额外的命令
+
+对抗代码注入、命令注入时，需要禁用eval()、system()等可以执行命令的函数，如果一定要使用这些函数，则需要对用户的输入数据进行处理，此外在PHP、JSP中避免动态include远程文件，或者安全地处理它
+
+代码注入往往是由于不安全的编程习惯所造成的，危险函数因该尽量避免在开发中使用，可以在开发规范中明确指出那些函数是禁止使用的，这些危险函数一般在开发语言的官方文档中可以查遭到一些建议
+
+3. CRLF注入
+
+CRLF实际上是两个字符，CR是Carriage Return(ASCII 13，`\r`)，LF是Line Feed(ASCII 10，`\n`)，`\r`、`\n`都表示换行，其十六进制编码是0x0d、0x0a
+
+CRLF常被用作不同语义之间的分隔符，因此通过注入CRLF字符，就有可能改变原有的语义
+
+CRLF注入并非仅能用于log注入，凡事使用CRLF作为分隔符的地方都可能存在注入，如注入HTTP头
+
+在HTTP协议中，HTTP头是通过\r、\n来分隔的，因此如果服务器端没有过滤\r、\n而又把用户输入的数据放在HTTP头中，则有可能导致安全隐患，这种在HTTP头中的CRLF注入，又可以称为Http Response Splitting
+
+Cookie是最容易被用户控制的地方，应用经常会将一些用户信息写入Cookie中，从而被用户控制
+
+但是HTTP Response Splitting并非只能通过两次CRLF注入到HTTP Body，有时候注入一个HTTP头，也会带来安全问题
+
+可以说HTTP Response Splitting的危害比XSS还要大，因为他破坏了HTTP协议的完整性
+
+对抗CRLF的方法很简单，只需要管理好\r、\n这两个保留字符即可，尤其是那些使用换行符作为分隔符的应用
+
+#### <font color="yellow">022 总结</font>
+
+注入攻击是应用违背了数据与代码费力原则导致的结果，它有两个条件
+
+在对抗注入攻击时，只要牢记数据与代码分离原则，在拼凑发生的地方进行安全检查，就能避免此类问题
+
+SQL注入是Web安全中的一个重要领域
+
+理论上，通过设计和实施合理的安全解决方案，注入攻击是可以彻底杜绝的
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
