@@ -4727,6 +4727,812 @@ OAuth是一个在不提供用户名和密码的情况下，授权第三方应用
 
 还分别介绍了垂直权限管理，它是一种基于角色的访问控制，以及水平权限管理，它是一种基于数据的访问控制，这两种访问控制方式，在进行安全设计时会经常用到，访问控制与业务需求息息相关，并非一个单纯的安全问题，因此在解决此类问题或者设计权限控制方案时，要重视业务的意见，无论选择哪种访问控制方式，在设计方案时都应该满足最小权限原则，这是权限管理的黄金法则
 
+### <font color="yellow">05 加密算法与随机数</font>
+
+#### <font color="yellow">001 使用加密算法的目的</font>
+
+- 数据保密性，防止用户数据被窃取或泄露
+- 数据完整性，防止用户传输的数据被篡改
+- 通信双方身份确认，确保数据来源合法
+
+#### <font color="yellow">002 常见的加密算法</font>
+
+- 单向散列加密算法
+	- md5
+    - sha1
+    - sha256
+- 对称加密算法
+	- des
+	- 3des
+	- aes
+- 非对称加密算法
+    - rsa
+    - ecc
+
+#### <font color="yellow">003 加密算法对比</font>
+
+- 单向散列加密算法
+
+    - md5
+
+        运行速度：快
+        安全性：中
+
+    - sha1
+
+        运行速度：慢
+        安全性：高
+
+    - sha256
+
+        运行速度：极慢
+        安全性：极高
+
+- 对称加密算法
+
+    - des
+
+        密钥：56位
+        运行速度：较快
+        安全性：低
+        资源消耗：中
+
+    - 3des
+
+        密钥：112位或168位
+        运行速度：慢
+        安全性：中
+        资源消耗：高
+
+    - aes
+
+        密钥：128位或192位或256位
+        运行速度：快
+        安全性：高
+        资源消耗：低
+
+- 非对称加密算法
+
+    - rsa
+
+        成熟度：高
+        安全性：高
+        运算速度：中
+        资源消耗：中
+
+    - ecc
+
+        成熟度：高
+        安全性：高
+        运算速度：慢
+        资源消耗：高
+
+#### <font color="yellow">004 单向散列加密</font>
+
+单向散列加密算法常用于提取数据，验证数据的完整性，发送者将明文通过单向加密算法加密生成定长的密文串，然后将明文和密文串传递给接收方，接收方在收到报文后，将解明文使用相同的单向加密算法进行加密，得出加密后的密文串，随后与发送者发送过来的密文串进行对比，若发送前和发送后的密文串相一致，则说明传输过程中数据没有损坏，若不一致，说明传输过程中数据丢失了，其次也用于密码加密传递存储，单向加密算法只能用于对数据的加密，无法被解密，其特点为定长输出、雪崩效应
+
+##### <font color="yellow">0001 md5加密</font>
+
+MD5加密算法用的是哈希函数，一般应用于对信息产生信息摘要，防止信息被篡改，最常见的使用是对密码加密、生成数字签名，从严格意义上来说，MD5是摘要算法，并非加密算法，MD5生成密文时，无论要加密的字符串有多长，它都会输出长度为128bits的一个密文串，通常16进制时为32个字符
+
+```java
+public static final byte[] computeMD5(byte[] content) 
+    {
+    try 
+        {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            return md5.digest(content);
+        } 
+    catch (NoSuchAlgorithmException e) 
+        {
+            throw new RuntimeException(e);
+        }
+    }
+```
+
+##### <font color="yellow">0002 sha1加密</font>
+
+SHA1加密算法，与MD5一样，也是目前较流行的摘要算法，但SHA1比MD5的安全性更高，对长度小于2^64位的消息，SHA1会产生一个160位的消息摘要，基于MD5、SHA1的信息摘要特性以及不可逆，可以被应用在检查文件完整性，数字签名等场景
+
+```java
+public static byte[] computeSHA1(byte[] content)
+    {
+    try 
+        {
+          MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+          return sha1.digest(content);
+        } 
+    catch (NoSuchAlgorithmException e) 
+        {
+          throw new RuntimeException(e);
+        }
+    }
+```
+
+##### <font color="yellow">0003 sha256加密</font>
+
+SHA256是SHA2算法中的一种
+
+如SHA2加密算法中有
+
+- SHA244
+- SHA256
+- SHA512
+
+SHA2属于SHA1的升级，SHA1是160位的哈希值，而SHA2是组合值，有不同的位数，其中最受欢迎的是256位(SHA256算法)，SSL行业选择SHA作为数字签名的散列算法，从2011到2015，一直以SHA-1位主导算法，但随着互联网技术的提升，SHA-1的缺点越来越突显，2001年，SHA-2成为了新的标准，所以现在签发的SSL证书，必须使用该算法签名
+
+```java
+public static byte[] getSHA256(String str) 
+    {
+    MessageDigest messageDigest;
+    String encodestr = "";
+    try
+        {
+        messageDigest = MessageDigest.getInstance("SHA-256");
+        messageDigest.update(str.getBytes("UTF-8"));
+        return messageDigest.digest());
+        } 
+    catch (NoSuchAlgorithmException e) 
+        {
+        e.printStackTrace();
+        } 
+    catch (UnsupportedEncodingException e) 
+        {
+        e.printStackTrace();
+        }
+    }
+```
+
+#### <font color="yellow">005 对称加密</font>
+
+对称加密算法采用单密钥加密，在数据传输过程中，发送方将原始数据分割成固定大小的块，经过密钥和加密算法逐个加密后，发送给接收方，接收方收到加密后的报文后，结合密钥和解密算法解密组合后得出原始数据，由于加解密算法是公开的，因此在这过程中，密钥的安全传递就成为了至关重要的事了，而密钥通常来说是通过双方协商，以物理的方式传递给对方，或者利用第三方平台传递给对方，一旦这过程出现了密钥泄露，不怀好意的人就能结合相应的算法拦截解密出其加密传输的内容，AES、DES、3DES都是对称的块加密算法，加解密的过程是可逆的
+
+##### <font color="yellow">0001 des算法</font>
+
+DES算法为密码体制中的对称密码体制，又被称为美国数据加密标准，是1972年美国IBM公司研制的对称密码体制加密算法，明文按64位进行分组，密钥长64位，密钥事实上是56位参与DES运算(第8、16、24、32、40、48、56、64位是校验位，使得每个密钥都有奇数个1)分组后的明文组和56位的密钥按位替代或交换的方法形成密文组的加密方法，DES加密算法是对密钥进行保密，公开加密和解密算，只有知道发送方相同密钥的人才能解读获取的密文数据，想破译DES加密算法，就要搜索密钥的编码，对于56位长度的密钥来说，用穷举法，其运算次数为2^56次，
+
+##### <font color="yellow">0002 3des算法</font>
+
+3DES又称Triple DES，是DES加密算法的一种模式，它使用2条不同的56位的密钥对数据进行三次加密，DES使用56位密钥和密码块的方法，而在密码块的方法中，文本被分成64位大小的文本块然后再进行加密，比起最初的DES，3DES更为安全
+```java
+public class Des3
+    {
+    private static final String Algorithm = "DESede"; 
+    /**
+     * 加密
+     * @param keybyte
+     * @param src
+     * @return
+     */
+    public static byte[] encryptMode(byte[] keybyte, byte[] src) 
+        {
+        try 
+            {
+            // 生成密钥
+            SecretKey deskey = new SecretKeySpec(keybyte, Algorithm);
+            // 加密
+            Cipher c1 = Cipher.getInstance(Algorithm);
+            c1.init(Cipher.ENCRYPT_MODE, deskey);
+            return c1.doFinal(src);
+            } 
+        catch (java.security.NoSuchAlgorithmException e1) 
+            {
+            e1.printStackTrace();
+            } 
+        catch (javax.crypto.NoSuchPaddingException e2) 
+            {
+            e2.printStackTrace();
+            } 
+        catch (java.lang.Exception e3) 
+            {
+            e3.printStackTrace();
+            }
+        return null;
+        }
+    /**
+     * 解密
+     * @param keybyte 为加密密钥，长度为24字节
+     * @param src 为加密后的缓冲区
+     * @return
+     */
+    public static byte[] decryptMode(byte[] keybyte, byte[] src) 
+        {
+        try 
+            {
+            // 生成密钥
+            SecretKey deskey = new SecretKeySpec(keybyte, Algorithm);
+            // 解密
+            Cipher c1 = Cipher.getInstance(Algorithm);
+            c1.init(Cipher.DECRYPT_MODE, deskey);
+            return c1.doFinal(src);
+            } 
+        catch (Exception e) 
+            {
+            e.printStackTrace();
+            }
+        return null;
+        }
+    // 转换成十六进制字符串
+    public static String byte2hex(byte[] b) 
+        {
+        String hs = "";
+        String stmp = "";
+        for (int n = 0; n < b.length; n++) 
+            {
+            stmp = (java.lang.Integer.toHexString(b[n] & 0XFF));
+            if (stmp.length() == 1) 
+                {
+                hs = hs + "0" + stmp;
+                } 
+            else 
+                {
+                hs = hs + stmp;
+                }
+            if (n < b.length - 1) 
+                {
+                hs = hs + ":";
+                }
+            }
+        return hs.toUpperCase();
+        }
+    }
+```
+
+##### <font color="yellow">0003 aes算法</font>
+AES算法是密码学中的高级加密标准，同时也是美国联邦政府采用的区块加密标准，这个标准用来替代原先的DES，已经被多方分析且广为全世界所使用，算法采用对称分组密码体制，密钥长度的最少支持为128位、192位、256位，分组长度128位，算法应易于各种硬件和软件实现，AES本身就是为了取代DES的，AES具有更好的安全性、效率和灵活性
+```java
+public class AESUtils 
+    {
+    /**
+     * 加密
+     *
+     * @param content
+     * @param strKey
+     * @return
+     * @throws Exception
+     */
+    public static byte[] encrypt(String content, String strKey) throws Exception 
+        {
+        SecretKeySpec skeySpec = getKey(strKey);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec iv = new IvParameterSpec("0102030405060708".getBytes());
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+        return cipher.doFinal(content.getBytes());
+        }
+
+
+    /**
+     * 解密
+     *
+     * @param strKey
+     * @param content
+     * @return
+     * @throws Exception
+     */
+    public static String decrypt(byte[] content, String strKey) throws Exception 
+        {
+        SecretKeySpec skeySpec = getKey(strKey);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec iv = new IvParameterSpec("0102030405060708".getBytes());
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+        byte[] original = cipher.doFinal(content);
+        String originalString = new String(original);
+        return originalString;
+        }
+
+
+    private static SecretKeySpec getKey(String strKey) throws Exception 
+        {
+        byte[] arrBTmp = strKey.getBytes();
+        byte[] arrB = new byte[16]; 
+        for (int i = 0; i < arrBTmp.length && i < arrB.length; i++) 
+            {
+            arrB[i] = arrBTmp[i];
+            }
+        SecretKeySpec skeySpec = new SecretKeySpec(arrB, "AES");
+        return skeySpec;
+        }
+    }
+```
+
+#### <font color="yellow">006 非对称加密算法</font>
+
+非对称加密算法采用公钥(publickey)和私钥(privatekey)两种不同的密钥来进行加解密，公钥与私钥是一对，如果用公钥对数据进行加密，只有用对应的私钥才能解密，反之亦然，因为加密和解密使用的是两个不同的密钥，所以这种算法叫作非对称加密算法，非对称加密算法实现机密信息交换的基本过程是，甲方生成一对密钥并将公钥公开，需要向甲方发送信息的其他角色(乙方)使用该密钥(甲方的公钥)对机密信息进行加密后再发送给甲方，甲方再用自己私钥对加密后的信息进行解密，甲方想要回复乙方时正好相反，使用乙方的公钥对数据进行加密，同理，乙方使用自己的私钥来进行解密
+
+##### <font color="yellow">0001 rsa算法</font>
+
+RSA是目前最有影响力的公钥加密算法，也是被普遍认为是目前最优秀的公钥方案之一，RSA算法是第一个能同时用于加密和数字签名的算法，也易于理解和操作，RSA是被研究得最广泛的公钥算法，从提出到现今的三十多年里，经历了各种攻击的考验，逐渐为人们接受，截止2017年被普遍认为是最优秀的公钥方案之一，也已被ISO推荐为公钥数据加密标准
+
+```java
+public class RSAUtils 
+    {
+    
+    public static final String KEY_ALGORITHM = "RSA";
+    private static final String PUBLIC_KEY = "RSAPublicKey";
+    private static final String PRIVATE_KEY = "RSAPrivateKey";
+
+    /**
+     * 私钥解密
+     *
+     * @param data 已加密数据
+     * @param privateKey 私钥(BASE64编码)
+     * @return
+     * @throws Exception
+     */
+    public static String decryptByPrivateKey(String data, String privateKey) throws Exception 
+        {
+        byte[] keyBytes = Base64.decodeBase64(privateKey);
+        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
+        Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+        cipher.init(Cipher.DECRYPT_MODE, privateK);
+        byte[] buff = cipher.doFinal(Base64.decodeBase64(data));
+        return new String(buff);
+        }
+
+
+    /**
+     * 公钥解密
+     *
+     * @param data 已加密数据
+     * @param publicKey 公钥(BASE64编码)
+     * @return
+     * @throws Exception
+     */
+    public static String decryptByPublicKey(String data, String publicKey) throws Exception 
+        {
+        byte[] keyBytes = Base64.decodeBase64(publicKey);
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        Key publicK = keyFactory.generatePublic(x509KeySpec);
+        Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+        cipher.init(Cipher.DECRYPT_MODE, publicK);
+        // 执行解密操作
+        byte[] buff = cipher.doFinal(Base64.decodeBase64(data));
+        return new String(buff);
+        }
+
+
+    /**
+     * 公钥加密
+     *
+     * @param data 源数据
+     * @param publicKey 公钥(BASE64编码)
+     * @return
+     * @throws Exception
+     */
+    public static String encryptByPublicKey(String data, String publicKey) throws Exception 
+        {
+        byte[] keyBytes = Base64.decodeBase64(publicKey);
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        Key publicK = keyFactory.generatePublic(x509KeySpec);
+        // 对数据加密
+        Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+        cipher.init(Cipher.ENCRYPT_MODE, publicK);
+        byte[] buff = cipher.doFinal(data.getBytes());
+        return Base64.encodeBase64String(buff);
+        }
+
+
+    /**
+     * 私钥加密
+     *
+     * @param data 源数据
+     * @param privateKey 私钥(BASE64编码)
+     * @return
+     * @throws Exception
+     */
+    public static String encryptByPrivateKey(String data, String privateKey) throws Exception 
+        {
+        byte[] keyBytes = Base64.decodeBase64(privateKey);
+        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
+        Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+        cipher.init(Cipher.ENCRYPT_MODE, privateK);
+        byte[] buff = cipher.doFinal(data.getBytes());
+        // 执行加密操作。加密后的结果通常都会用Base64编码进行传输
+        return Base64.encodeBase64String(buff);
+        }
+
+
+    /**
+     * 获取私钥
+     *
+     * @param keyMap 密钥对
+     * @return
+     * @throws Exception
+     */
+    public static String getPrivateKey(Map<String, Object> keyMap) throws Exception 
+        {
+        Key key = (Key) keyMap.get(PRIVATE_KEY);
+        return Base64.encodeBase64String(key.getEncoded());
+        }
+
+
+    /**
+     * 获取公钥
+     *
+     * @param keyMap 密钥对
+     * @return
+     * @throws Exception
+     */
+    public static String getPublicKey(Map<String, Object> keyMap) throws Exception 
+        {
+        Key key = (Key) keyMap.get(PUBLIC_KEY);
+        return Base64.encodeBase64String(key.getEncoded());
+        }
+
+
+    /**
+     * 生成密钥对(公钥和私钥)
+     *
+     * @return
+     * @throws Exception
+     */
+    public static Map<String, Object> initKey() throws Exception 
+        {
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
+        keyPairGen.initialize(1024);
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+        Map<String, Object> keyMap = new HashMap<String, Object>(2);
+        keyMap.put(PUBLIC_KEY, publicKey);
+        keyMap.put(PRIVATE_KEY, privateKey);
+        return keyMap;
+        }
+    }
+```
+
+##### <font color="yellow">0002 ecc算法</font>
+
+ECC(椭圆加密算法)是一种公钥加密体制，主要优势是在某些情况下它比其他的方法使用更小的密钥——比如RSA加密算法——提供相当的或更高等级的安全，不过一个缺点是加密和解密操作的实现比其他机制时间长，它相比RSA算法，对CPU消耗严重
+
+```java
+public abstract class ECCCoder extends Coder 
+    {
+    public static final String ALGORITHM = "EC";
+    private static final String PUBLIC_KEY = "ECCPublicKey";
+    private static final String PRIVATE_KEY = "ECCPrivateKey";
+
+
+    /**
+     * 用私钥解密
+     * @param data
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    public static byte[] decrypt(byte[] data, String key) throws Exception 
+        {
+        // 对密钥解密
+        byte[] keyBytes = decryptBASE64(key);
+        // 取得私钥
+        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = ECKeyFactory.INSTANCE;
+        ECPrivateKey priKey = (ECPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
+        ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(priKey.getS(),priKey.getParams());
+        // 对数据解密
+        Cipher cipher = new NullCipher();
+        cipher.init(Cipher.DECRYPT_MODE, priKey, ecPrivateKeySpec.getParams());
+        return cipher.doFinal(data);
+        }
+    /**
+     * 用公钥加密
+     * @param data
+     * @param privateKey
+     * @return
+     * @throws Exception
+     */
+    public static byte[] encrypt(byte[] data, String privateKey) throws Exception 
+        {
+        // 对公钥解密
+        byte[] keyBytes = decryptBASE64(privateKey);
+        // 取得公钥
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = ECKeyFactory.INSTANCE;
+        ECPublicKey pubKey = (ECPublicKey) keyFactory.generatePublic(x509KeySpec);
+        ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(pubKey.getW(), pubKey.getParams());
+        Cipher cipher = new NullCipher();
+        cipher.init(Cipher.ENCRYPT_MODE, pubKey, ecPublicKeySpec.getParams());
+        return cipher.doFinal(data);
+        }
+
+    /**
+     * 取得私钥
+     * @param keyMap
+     * @return
+     * @throws Exception
+     */
+    public static String getPrivateKey(Map<String, Object> keyMap) throws Exception 
+        {
+        Key key = (Key) keyMap.get(PRIVATE_KEY);
+        return encryptBASE64(key.getEncoded());
+        }
+    /**
+     * 取得公钥
+     * @param keyMap
+     * @return
+     * @throws Exception
+     */
+    public static String getPublicKey(Map<String, Object> keyMap) throws Exception 
+        {
+        Key key = (Key) keyMap.get(PUBLIC_KEY);
+        return encryptBASE64(key.getEncoded());
+        }
+    }
+```
+
+#### <font color="yellow">007 md5详解</font>
+
+##### <font color="yellow">0001 md5的用处</font>
+
+无论是密码记录用户验证还是文件完整性存储，笼统的说就是验证数据是否匹配，数据库中使用明文记录密码明显是不可行的，但是使用MD5就不同了，MD5算法的高明之处就是不可逆，因为在算法中采取了抽样、分组等等算法，他不会将数据的所有内容加入运算，而是根据规则选择指定内容运算，所以，同样的字符串或者内容进行MD5运算的时候，得到的结果也是一样的，所以使用MD5记录密码，可以很有效的解决一些明文带来的问题，至于验证数据准确性就更加不用说了
+
+##### <font color="yellow">0002 md5有相同</font>
+
+MD5有相同这个已经算是被承认的，但是几率非常小，MD5相同的情况叫做碰撞，现在网络中已经出现了两个相同的MD5可执行文件，你可能会问，MD5相同到底会造成什么问题，一些网盘使用的是MD5的方式来验证文件是否已经被上传过，如果上传过就直接告诉用户上传过就好了，也就不用再次上传去占用而外的空间，假设Win9现在发布了，我马上就构造一个假的包含病毒的但是MD5和官方镜像相同的安装镜像放置到A网盘，A网盘使用MD5验证数据是否相同，那么现在的问题就是，用户下载的全部都是我制作的光盘，而非微软官方的，当然，这种构造的方法仍然是非常高级的东西，不是很容易能够做到的，字符串1：`4d c9 68 ff 0e e3 5c 20 95 72 d4 77 7b 72 15 87 d3 6f a7 b2 1b dc 56 b7 4a 3d c0 78 3e 7b 95 18 af bf a2 00 a8 28 4b f3 6e 8e 4b 55 b3 5f 42 75 93 d8 49 67 6d a0 d1 55 5d 83 60 fb 5f 07 fe a2`，字符串2：`4d c9 68 ff 0e e3 5c 20 95 72 d4 77 7b 72 15 87 d3 6f a7 b2 1b dc 56 b7 4a 3d c0 78 3e 7b 95 18 af bf a2 02 a8 28 4b f3 6e 8e 4b 55 b3 5f 42 75 93 d8 49 67 6d a0 d1 d5 5d 83 60 fb 5f 07 fe a2`，两个字符串的MD5值完全相同
+
+##### <font color="yellow">0003 需要担心的问题</font>
+
+MD5会发生碰撞已经是被发现的了，但是我们需要担心吗，我要说的是，目前为止还不用担心，首先要构造MD5碰撞是非常难的，理论上字符串越长MD5就越不可能相同，并且借助SHA-1算法的帮助，双管齐下，也就没有太大问题了，所以现在MD5还没有轮到被弃用的时候
+
+##### <font color="yellow">0004 sha-1是否会碰撞</font>
+
+SHA-1也会发生碰撞，但是几率比MD5小的多
+
+##### <font color="yellow">0005 如何解决碰撞</font>
+
+解决碰撞其实可以通过MD5和SHA-1结合使用来实现，我是这样做的，首先将文件A的MD5值记为B再把A的SHA-1记为C，之后用将B和C相加之后再次运算MD5值就好了，MD5值碰撞的几率已经很小，再结合SHA-1的话，基本上就不会发生碰撞的问题出现了，在新的算法普及之前，MD5还是可以继续使用的
+
+#### <font color="yellow">008 概述</font>
+
+加密算法与伪随机数算法是开发中经常会用到的东西，但加密算法的专业性非常强，在Web开发中，如果对加密算法和伪随机数算法缺乏一定的了解，则很可能会错误地使用它们，最终导致应用出现安全问题，密码学有着悠久的历史，它满足了人们对安全的最基本需求————保密性，密码学可以说是安全领域发展的基础，在Web应用中，常常可以见到加密算法的身影，最常见的就是网站在将敏感信息保存到Cookie时使用的加密算法，加密算法的运用是否正确，与网站的安全息息相关，常见的加密算法通常分为分组加密算法与流密码加密算法，两者的实现原理不同，分组加密算法基于分组(block)进行操作，根据算法的不同，每个分组的长度可能不同
+
+分组加密算法的代表
+
+- DES
+- 3-DES
+- Blowfish
+- IDEA
+- AES
+- ...
+
+流密码加密算法，则每次只处理一个字节，密钥独立于消息之外，两者通过异或实现加密与解密
+
+流密码加密算法的代表
+
+- RC4
+- ORYX
+- SEAL
+- ...
+
+针对加密算法的攻击，一般根据攻击者能获得的信息，可以分为
+
+- 唯密文攻击
+
+    攻击者有一些密文，它们是使用同一加密算法和同一密钥加密的
+    这种攻击是最难的
+
+- 已知明文攻击
+
+    攻击者除了能得到一些密文外，还能得到这些密文对应的明文
+
+- 选择明文攻击
+
+    攻击者不仅能得到一些密文和明文，还能选择用于加密的明文
+
+- 选择密文攻击
+
+    攻击者可以选择不同的密文来解密
+    Padding Oracle Attack就是一种选择密文攻击
+
+密码学在整个安全领域中是非常大的一个课题
+
+#### <font color="yellow">009 Stream Cipher Attack</font>
+
+流密码是常用的一种加密算法，与分组加密算法不同，流密码的加密是基于异或(XOR)操作进行的，每次都只操作一个字节，但流密码加密算法的性能非常好，因此也是非常受开发者欢迎的一种加密算法
+
+常见的流密码加密算法
+
+- RC4
+- ORYX
+- SEAL
+- ...
+
+##### <font color="yellow">0001 Reused Key Attack</font>
+
+在流密码的使用中，最常见的错误便是使用同一个密钥进行多次加/解密，这将使得破解流密码变得非常简单，这种攻击被称为Reused Key Attack，在这种攻击下，攻击者不需要知道密钥，即可还原出明文，假设有密钥C、明文A、明文B，那么XOR可以表示为
+
+```
+E(A) = A xor C
+E(B) = B xor C
+```
+
+这种密文是公开于众的，因此很容易计算
+
+```
+E(A) xor E(B)
+```
+
+因为两个相同的数进行XOR运算的结果是0
+
+```
+E(A) xor E(B) = (A xor C) xor (B xor C) = A xor B xor C xor C = A xor B
+```
+
+这意味着4个数据中，只需要知道3个，就可以推导出剩下的一个，如果存在初始化向量，则相同明文每次加密的结果均不同，将增加破解的难度，即不受此攻击影响，因此当`$ckey_length = 4;`时，`authcode()`将产生随机密钥，算法的强度也就增加了，如果IV不够随机，攻击者有可能找到相同的IV，则在相同IV的情况下仍然可以实施Reused Key Attack
+
+##### <font color="yellow">0002 Bit-flipping Attack</font>
+
+再次回到这个公式
+
+```
+E(A) xor E(B) = A xor B
+```
+
+由此可以得出
+
+```
+A xor E(A) xor B = E(B)
+```
+
+这意味着当知道A的明文、B的明文、A的密文时，可以推导出B的密文，这在实际应用中非常有用，比如一个网站应用，使用Cookie作为用户身份的认证凭证，而Cookie的值是通过XOR加密而得的，认证的过程就是服务器端解密Cookie后，检查明文是否合法，假设明文是`username + role`，那么当攻击者注册了一个普通用户A时，获取了A的Cookie为`Cookie(A)`，就有可能构造出管理员的Cookie，从而获得管理员权限
+
+```
+(accountA + member) xor Coolie(A) xor (admin_account + manager) = Coolie(admin)
+```
+
+在密码学中，攻击者在不知道明文的情况下，通过改变密文，使得明文按其需要的方式发生改变的攻击方式，被称为Bit-flipping Attack[http://en.wikipedia.org/wili/Bit-flipping_attack](http://en.wikipedia.org/wili/Bit-flipping_attack)，解决Bit-flipping攻击的方法是验证密文的完整性，最常见的方法是增加带有KEY的MAC(消息验证码，Message Authentication Code)，通过MAC验证密文是否被篡改，通过哈希算法来实现的MAC，称为HMAC，HMAC由于其性能较好，而被广泛使用在`authcode()`中，其实已经实现了HMAC，所以攻击者在不知晓加密KEY的情况下，是无法完成Bit-flipping攻击的，其中，密文的前10个字节用于验证时间是否有效，10~26个字节即为HMAC，用于验证密文是否被篡改，26个字节之后才是真正的密文，这个值与两个因素有关，一个是真正的密文`:substr($result，26)`，一个是`$keyb`，而`$keyb?`又是由加密密钥KEY变化得到的，因此在不知晓KEY的情况下，这个HMAC的值是无法伪造出来的，因此HMAC有效地保证了密文不会被篡改
+
+##### <font color="yellow">0003 弱随机IV问题</font>
+
+在`authcode()`函数中，它默认使用了4字节的IV(就是函数中的keyc)，使得破解难度增大，但其实4字节的IV是很脆弱的，它不够随机，我们完全可以通过暴破的方式找到重复的IV，为了验证这一点，调整一下破解程序，在大约16秒后，共遍历了19295个不同的XOR KEY，找到了相同的IV，顺利破解出明文
+
+#### <font color="yellow">010 WEP破解</font>
+
+流密码加密算法存在Reused Key Attack和Bit-flipping Attack等攻击方式，而在现实中，一种最著名的针对流密码的攻击可能就是WEP密钥的破解，WEP是一种常用的无线加密传输协议，破解了WEP的密钥，就可以以此密钥连接无线的Access Point，WEP采用RC4算法，也存在这两种攻击方式，WEP在加密过程中，有两个关键因素，一个是初始化向量IV，一个是对消息的CRC-32校验，而这两者都可以通过一些方法克服，IV以明文的形式发送，在WEP中采用24bit的IV，但这其实不是很大的一个值，假设一个繁忙的AP，以11Mbps的速度发送大小为1500bytes的包，则1500*8/(11*10^6)*2^24 =~18000秒，约为5个小时，因此最多5个小时，IV就将耗光，不得不开始出现重复的IV，在实际情况中，并非每个包都有1500bytes大小，因此时间会更短，IV一旦开始重复，就会使得Reused Key Attack成为可能，同时通过收集大量的数据包，找到相同的IV，构造出相同的CRC-32校验值，也可以成功实施Bit-flipping Attack，破解WEP的理论变得可行了，Berkly的Nikita Borisov，Ian Goldberg以及David Wagner共同完成了一篇很好的论文Security of the WEP algorithm，其中深入阐述了WEP破解的理论基础[http://www.isaac.cs.berkeley.edu/isaac/wep-faq.html](http://www.isaac.cs.berkeley.edu/isaac/wep-faq.html)
+
+实际破解WEP的步骤要稍微复杂一些，Aircrack实现了这一过程
+
+- 加载目标
+- 与目标网络进行协商
+- 生成密钥流
+- 构造ARP包
+- 生成自己的ARP包
+- 开始暴破
+
+最终成功破解出WEP的KEY，可以免费蹭网了
+
+#### <font color="yellow">011 ECB模式的缺陷</font>
+
+前面讲到了流密码加密算法中的几种常见的攻击方法，在分组加密算法中，也有一些可能被攻击者利用的地方，如果开发者不熟悉这些问题，就有可能错误地使用加密算法，导致安全隐患，对于分组加密算法来说，除去算法本身，还有一些通用的加密模式，不同的加密算法会支持同样的几种加密模式
+
+常见的加密模式
+
+- ECB
+- CBC
+- CFB
+- OFB
+- CTR
+- ...
+
+如果加密模式被攻击，那么不论加密算法的密钥有多长，都可能不再安全，ECB模式(电码簿模式)是最简单的一种加密模式，它的每个分组之间相对独立，但ECB模式最大的问题也是出在这种分组的独立性上，攻击者只需要对调任意分组的密文，在经过解密后，所得明文的顺序也是经过对调的3-DES每个分组为8个字节，对比plain加密后的密文，可以看到，仅仅block 1的密文不同，而block 2的密文是完全一样的，也就是说，block 1并未影响到block 2的结果，这与链式加密模式(CBC)等是完全不同的，链式加密模式的分组前后之间会互相关联，一个字节的变化，会导致整个密文发生变化，这一特点也可以用于判断密文是否是用ECB模式加密的，对于ECB模式来说，改变分组密文的顺序，将改变解密后的明文顺序，替换某个分组密文，解密后该对应分组的明文也会被替换，而其他分组不受影响，ECB模式并未完全混淆分组间的关系，因此当分组足够多时，仍然会暴露一些私密信息，而链式模式则避免了此问题，当需要加密的明文多于一个分组的长度时，应该避免使用ECB模式，而使用其他更加安全的加密模式
+
+#### <font color="yellow">012 Padding Oracle Attack</font>
+
+在Eurocrypt 2002 大会上，Vaudenay介绍了针对CBC模式的Padding Oracle Attack，它可以在不知道密钥的情况下，通过对padding bytes的尝试，还原明文，或者构造出任意明文的密文，在2010年的BlackHat欧洲大会上，Juliano Rizzo与Thai Duong介绍了Padding Oracle在实际中的攻击案例[http://net.ifera.com/research/](http://net.ifera.com/research/)，并公布了ASP.NET存在的Padding Oracle问题[http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3332](http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-3332)，在2011年的Pwnie Rewards中，ASP.NET的这个漏洞被评为最具价值的服务器端漏洞[http://pwnies.com/winners](http://pwnies.com/winners)，分组加密算法在实现加/解密时，需要把消息进行分组(block)，block的大小常见的有
+
+- 64bit
+- 128bit
+- 256bit
+
+在解密完成后，如果最后的padding值不正确，解密程序往往会抛出异常(padding error)，而利用应用的错误回显，攻击者往往可以判断出padding是否正确，所以Padding Oracle实际上是一种边信道攻击，攻击者只需要知道密文的解密结果是否正确即可，而这往往有许多途径，比如在Web应用中，如果是padding不正确，则应用程序很可能会返回500的错误，如果padding正确，但解密出来的内容不正确，则可能会返回200的自定义错误
+
+正确的padding值只可能为
+
+- 1个字节的padding为0x01
+- 2个字节的padding为0x02,0x02
+- 3个字节的padding为0x03,0x03,0x03
+- 4个字节的padding为0x04,0x04,0x04,0x04
+
+因此慢慢调整IV的值，以希望解密后，最后一个字节的值为正确的padding byte，比如一个0x01，因为Intermediary Value是固定的(我们此时不知道Intermediary Value的值是多少)，因此从0x00到0xFF之间，只可能有一个值与Intermediary Value的最后一个字节进行XOR后，结果是0x01，通过遍历这255个值，可以找出IV需要的最后一个字节，通过XOR运算，可以马上推导出此Intermediary Byte的值，在正确匹配了padding为0x01后，需要做的是继续推导出剩下的Intermediary Byte，根据padding的标准，当需要padding两个字节时，其值应该为0x02，0x02，而我们已经知道了最后一个Intermediary Byte为0x3D，因此可以更新IV的第8个字节为0x3D ^ 0x02 = 0x3F，此时可以开始遍历IV的第7个字节(0x00~0xFF)，获得Intermediary Value后，通过与原来的IV进行XOR运算，即可得到明文，在这个过程中仅仅用到了密文和IV，通过对padding的推导，即可还原出明文，而不需要知道密钥是什么，而IV并不需要保密，它往往是以明文形式发送的，如何通过Padding Oracle使得密文能够解密为任意明文呢，实际上通过前面的解密过程可以看出，通过改变IV，可以控制整个解密过程，因此在已经获得了Intermediary Value的情况下，很快就可以通过XOR运算得到可以生成任意明文的IV，而对于多个分组的密文来说，从最后一组密文开始往前推，以两个分组为例，第二个分组使用的IV是第一个分组的密文(cipher text)，因此当推导出第二个分组使用的IV时，将此IV值当做第一个分组的密文，再次进行推导，Brian Holyfield实现了一个叫padbuster的工具，可以自动实施Padding Oracle攻击，[http://bole.gdssecurity.com/labs/2010/9/14/automated-padding-oracle-attacks-with-padbuster.html](http://bole.gdssecurity.com/labs/2010/9/14/automated-padding-oracle-attacks-with-padbuster.html)，[http://github.com/GDSSecurity/PadBuster](http://github.com/GDSSecurity/PadBuster)，[http://hi.baidu.com/aullik5/blog/item/7e769d2ec68b2d241f3089ce.html](http://hi.baidu.com/aullik5/blog/item/7e769d2ec68b2d241f3089ce.html)，Padding Oracle Attack的关键在于攻击者能够获知解密的结果是否符合padding，在头现和使用CBC模式的分组加密算法时，注意这一点即可
+
+#### <font color="yellow">013 密钥管理</font>
+
+密码学基本原则：密码系统的安全性应该依赖于密钥的复杂性，而不应该依赖于算法的保密性
+
+在安全领域里，选择一个足够安全的加密算法不是困难的事情，难的是密钥管理，在一些实际的攻击案例中，直接攻击加密算法本身的案例很少，而因为密钥没有妥善管理导致的安全事件却很多，对于攻击者来说，他们不需要正面破解加密算法，如果能够通过一些方法获得密钥，则是件事半功倍的事情，密钥管理中最常见的错误，就是将密钥硬编码在代码里，同样的，将加密密钥、签名的salt等key硬编码在代码中，是非常不好的习惯
+
+硬编码的密钥，在以下几种情况下可能被泄露
+
+- 代码被广泛传播
+
+    这种泄露途径常见于一些开源软件
+    有的商业软件并不开源，但编译后的二进制文件被用户下载，也可能被逆向工程反编译后，泄露硬编码的密钥
+
+- 软件开发团队的成员都能查看代码，从而获知硬编码的密钥
+
+    开发团队的成员如果流动性较大，则可能会由此泄露代码
+
+对于第一种情况，如果一定要将密钥硬编码在代码中，我们尚可通过Diffie-Hellman交换密钥体系，生成公私钥来完成密钥的分发，对于第二种情况，则只能通过改善密钥管理来保护密钥，对于Web应用来说，常见的做法是将密钥(包括密码)保存在配置文件或者数据库中，在使用时由程序读出密钥并加载进内存，密钥所在的配置文件或数据库需要严格的控制访问权限，同时也要确保运维或DBA中具有访问权限的人越少越好，在应用发布到生产环境时，需要重新生成新的密钥或密码，以免与测试环境中使用的密钥相同，当黑客已经入侵之后，密钥管理系统也难以保证密钥的安全性，比如攻击者获取了一个webshell，那么攻击者也就具备了应用程序的一切权限，由于正常的应用程序也需要使用密钥，因此对密钥的控制不可能限制住webshell的正常请求，密钥管理的主要目的，还是为了防止密钥从非正常的渠道泄露，定期更换密钥也是一种有效的做法，一个比较安全的密钥管理系统，可以将所有的密钥(包括一些敏感配置文件)都集中保存在一个服务器(集群)上，并通过Web Service的方式提供获取密钥的API，每个Web应用在需要使用密钥时，通过带认证信息的API请求密钥管理系统，动态获取密钥，Web应用不能把密钥写入本地文件中，只加载到内存，这样动态获取密钥最大程度地保护了密钥的私密性，密钥集中管理，降低了系统对于密钥的耦合性，也有利于定期更换密钥
+
+#### <font color="yellow">014 伪随机数问题</font>
+
+伪随机数(pseudo random number)问题——伪随机数不够随机，是程序开发中会出现的一个问题，一方面，大多数开发者对此方面的安全知识有所欠缺，很容易写出不安全的代码，另一方面，伪随机数问题的攻击方式在多数情况下都只存在于理论中，难以证明，因此在说服程序员修补代码时也显得有点理由不够充分，但伪随机数问题是真实存在的、不可忽视的一个安全问题，伪随机数，是通过一些数学算法生成的随机数，并非真正的随机数，密码学上的安全伪随机数应该是不可压缩的，真随机数，则是通过一些物理系统生成的随机数，比如电压的波动、硬盘磁头读/写时的寻道时间、空中电磁波的噪声
+
+##### <font color="yellow">0001 弱伪随机数的麻烦</font>
+
+Luciano Bello发现了Debian上的OpenSSL包中存在弱伪随机数算法，产生这个问题的原因，是由于编译时会产生警告(warning)信息，因此下面的代码被移除了，这直接导致的后果是，在OpenSSL的伪随机数生成算法中，唯一的随机因子是pid，而在Linux系统中，pid的最大值也是32768，这是一个很小的范围，因此可以很快地遍历出所有的随机数，受到影响的有，从2006.9到2008.5.13的debian平台上生成的所有ssh key的个数是有限的，都是可以遍历出来的，这是一个非常严重的漏洞，同时受到影响的还有OpenSSL生成的key以及OpenVPN生成的key，Debian随后公布了这些可以被遍历的key的名单，这次事件的影响很大，也让更多的开发者开始关注伪随机数的安全问题，在Web应用中，使用伪随机数的地方非常广泛，密码、key、SessionID、token等许多非常关键的secret往往都是通过伪随机数算法生成的，如果使用了弱伪随机数算法，则可能会导致非常严重的安全问题
+
+##### <font color="yellow">0002 时间真的随机吗</font>
+
+很多伪随机数算法与系统时间有关，而有的程序员甚至就直接使用系统时间代替随机数的生成，这样生成的随机数，是根据时间顺序增长的，可以从时间上进行预测，从而存在安全隐患，比如下面这段代码，其逻辑是用户取回密码时，会由系统随机生成一个新的密码，并发送到用户邮箱
+
+```php
+function sendPSW()
+{
+    ......
+    $messenger = &$this->system->loadModel('system/messenger');echo microtime()."<br/>";
+    $passwd = substr(md5(print_r(microtime(),true)),0,6);
+    ......
+}
+```
+
+这个新生成的`$passwd`，是直接调用了`microtime()`后，取其MD5值的前6位，由于MD5算法是单向的哈希函数，因此只需要遍历`microtime()`的值，再按照同样的算法，即可猜解出`$passwd`的值，PHP中的`microtime()`由两个值合并而成，一个是微秒数，一个是系统当前秒数，因此只需要获取到服务器的系统时间，就可以以此时间为基数，按次序递增，即可猜解出新生成的密码，因此这个算法是存在非常严重的设计缺陷的，程序员预想的随机生成密码，其实并未随机，<font color="red">在开发程序时，要切记不要把时间函数当成随机数使用</font>
+
+##### <font color="yellow">0003 破解伪伪随机数算法的种子</font>
+
+在PHP中，常用的随机数生成算法有`mnd()`、`mt_rand()`，可见，`rand()`的范围其实是非常小的，如果使用`rand()`生成的随机数用于一些重要的地方，则会非常危险，其实PHP中的`mt_rand()`也不是很安全，Stefan Esser在他著名的papermt_srand and not so random numbers中提出了PHP的伪随机函数`mt_rand()`在实现上的一些缺陷[http://www.suspekt.org/2008/8/17/mt_srand-and-not-so-ranfom-numbers/](http://www.suspekt.org/2008/8/17/mt_srand-and-not-so-ranfom-numbers/)，伪随机数是由数学算法实现的，它真正随机的地方在于种子(seed)，种子一旦确定后，再通过同一伪随机数算法计算出来的随机数，其值是固定的，多次计算所得值的顺序也是固定的，在PHP4.2.0之前的版本中，是需要通过`srand()`或`mt_srand()`给`rand()`、`mt_rand()`播种的，在PHP 4.2.0之后的版本中不再需要事先通过`srand()`、`mt_srand()`播种，比如直接调用`mt_rand()`，系统会自动播种，在PHP 4.2.0之后的版本中，如果没有通过播种函数指定seed，而直接调用`mt_rand()`，则系统会分配一个默认的种子，在32位系统上默认的播种的种子最大值是2^32，因此最多只需要尝试2^32次就可以破解seed，可以看出，当seed确定时，第一次到第n次通过`mt_rand()`产生的值都没有发生变化
+
+建立在这个基础上，就可以得到一种可行的攻击方式
+
+- 通过一些方法猜解出种子的值
+- 通过mt_srand()对猜解出的种子值进行播种
+- 通过还原程序逻辑，计算出对应的mt_rand()产生的伪随机数的值
+
+需要注意的是，在PHP 5.2.1及其之后的版本中调整了随机数的生成算法，但强度未变，因此在实施猜解种子时，需要在对应的PHP版本中运行猜解程序，在Stefan Esser的文中还提到了一个小技巧，可以通过发送Keep-Alive HTTP头，迫使服务器端使用同一PHP进程响应请求，而在该PHP进程中，随机数在使用时只会在一开始播种一次，在一个Web应用中，有很多地方都可以获取到随机数，从而提供猜解种子的可能，Stefan Esser提供了一种Cross Application Attacks的思路，即通过前一个应用在页面上返回的随机数值，猜解出其他应用生成的随机数值，如果服务器端将$search_id返回到页面上，则攻击者就可能猜解出当前的种子，这种攻击确实可行，比如一个服务器上同时安装了WordPress与phpBB,可以通过phpBB猜解出种子，然后利用WordPress的密码取回功能猜解出新生成的密码
+
+Stefan Esser描述这个攻击过程如下
+
+- 使用Keep-Alive HTTP请求在phpBB2论坛中搜索字符串'a'
+- 搜索必然会出来很多结果，同时也泄露了search_id
+- 很容易通过该值猜解出随机数的种子
+- 攻击者仍然使用Keep-Alive HTTP头发送一个重置admin密码的请求给WordPress blog
+- WordPress mt_rand()生成确认链接，并发送到管理员邮箱
+- 攻击者根据已算出的种子，可以构造出此确认链接
+- 攻击者确认此链接(仍然使用Keep-Alive头)，WordPress将向管理员邮箱发送新生成的密码
+- 因为新密码也是由mt_rand()生成的，攻击者仍然可以计算出来
+- 从而攻击者最终获取了新的管理员密码
+
+##### <font color="yellow">0004 使用安全的随机数</font>
+
+我们需要谨记，在重要或敏感的系统中，一定要使用足够强壮的随机数生成算法，在Java中，可以使用`java.security.SecureRandom`，而在Linux中，可以使用`/dev/random`或者`/dev/urandom`来生成随机数，只需要读取即可，而在PHP 5.3.0及其之后的版本中，若是支持openSSL扩展，也可以直接使用函数来生成随机数，除了以上方法外，从算法上还可以通过多个随机数的组合，以增加随机数的复杂性，比如通过给随机数使用MD5算法后，再连接一个随机字符，然后再使用MD5算法一次，这些方法，也将极大地增加攻击的难度
+
+#### <font color="yellow">015 总结</font>
+
+在加密算法的选择和使用上，有以下最佳实践
+
+- 不要使用ECB模式
+- 不要使用流密码(比如RC4)
+- 使用HMAC-SHA1代替MD5(甚至是代替SHA1)
+- 不要使用相同的key做不同的事情
+- salts与IV需要随机产生
+- 不要自己实现加密算法，尽量使用安全专家已经实现好的库
+- 不要依赖系统的保密性
+
+当你不知道该如何选择时，有以下建议
+
+- 使用CBC模式的AES256用于加密
+- 使用HMAC-SHA512用于完整性检查
+- 使用带salt的SHA-256 或SHA-512 用于Hashing
+
+### <font color="yellow">06 Web框架安全</font>
+
+
 
 
 
