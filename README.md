@@ -1,13 +1,13 @@
-# Attention: 
-## 1. 由于学业的繁忙，我将不定期编辑这个文件。我会继续把各文件夹中的文章编进readme.md中，毕竟各文件夹内的文档可视性并不高(Due to my academic commitments, I will be editing this document from time to time. I will continue to compile the articles in the various folders into a readme.md. After all, there is not much visibility of the documents in each folder.)
-## 2. 在阅读各内容之前，建议先阅读rules.md文件(It is recommended to read the rules.md file before reading the individual contents.)
-## 3. 我的英语水平非常差，所以本文中的英文可能会出现一些差错，如果发现比较奇怪的英语语法或内容时，建议使用翻译器翻译上方的中文，请谅解(My English is very poor, so there may be some errors in the English in this article. If you find strange English grammar or content, please understand that you are advised to use a translator to translate the Chinese above.)
-## 4. 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解(All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.)
-## 5. 文段中存在重复的问题的地方，会只在一处地方讲解(Where there are repetitive questions in the passage, they will be explained in one place only.)
-## 6. 一些重要内容会用红色标注，标题会用黄色标注，其中可能还会出现其他颜色，但颜色不会在github界面显示，如果可以，请调至code模式观看，如果将文档下载至本地，则建议使用深色界面观看(Some important content will be marked in red, title will be marked in yellow, and other colours may also appear in it, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch, if you are downloading a document locally, it is recommended that you use the dark interface to view it)
-## 7. 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)(If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.))
-## 8. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
-## 9. 以下内容和各文件夹(文件夹不包括reprint、thematic topic and analysis、tools)中的内容一致，仅为更可观的版本存在于此(The following content corresponds to the content in each folder (folders excluding reprint, thematic topic and analysis, tools), only the more substantial version exists here.)
+Attention: 
+> 1. 由于学业的繁忙，我将不定期编辑这个文件。我会继续把各文件夹中的文章编进readme.md中，毕竟各文件夹内的文档可视性并不高(Due to my academic commitments, I will be editing this document from time to time. I will continue to compile the articles in the various folders into a readme.md. After all, there is not much visibility of the documents in each folder.)
+> 2. 在阅读各内容之前，建议先阅读rules.md文件(It is recommended to read the rules.md file before reading the individual contents.)
+> 3. 我的英语水平非常差，所以本文中的英文可能会出现一些差错，如果发现比较奇怪的英语语法或内容时，建议使用翻译器翻译上方的中文，请谅解(My English is very poor, so there may be some errors in the English in this article. If you find strange English grammar or content, please understand that you are advised to use a translator to translate the Chinese above.)
+> 4. 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解(All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.)
+> 5. 文段中存在重复的问题的地方，会只在一处地方讲解(Where there are repetitive questions in the passage, they will be explained in one place only.)
+> 6. 一些重要内容会用红色标注，标题会用黄色标注，其中可能还会出现其他颜色，但颜色不会在github界面显示，如果可以，请调至code模式观看，如果将文档下载至本地，则建议使用深色界面观看(Some important content will be marked in red, title will be marked in yellow, and other colours may also appear in it, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch, if you are downloading a document locally, it is recommended that you use the dark interface to view it)
+> 7. 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)(If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.))
+> 8. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
+> 9. 以下内容和各文件夹(文件夹不包括reprint、thematic topic and analysis、tools)中的内容一致，仅为更可观的版本存在于此(The following content corresponds to the content in each folder (folders excluding reprint, thematic topic and analysis, tools), only the more substantial version exists here.)
 
 csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 
@@ -6886,16 +6886,389 @@ WampServer中修改上传文件的大小
 
 #### <font color="yellow">002 文件包含漏洞</font>
 
+PHP是一种非常流行的Web开发语言，在Python、Ruby等语言兴起的今天，PHP仍然是众多开发者所喜爱的选择，在中国尤其如，PHP的语法过于灵活，这也给安全工作带来了一些困，同时PHP也存在很多历史遗留的安全问，在PHP语言诞生之初，互联网安全问题尚不突出，许多今天已知的安全问题在当时并未显现，因此PHP语言设计上一开始并没有过多地考虑安，时至今日，PHP遗留下来的历史安全问题依然不少，但PHP的开发者与整个PHP社区也想做出一些改，严格来说，文件包含漏洞是代码注入的一，注入攻击里曾经提到过代码注入这种攻击，其原理就是注入一段用户能控制的脚本或代码，并让服务器端执，代码注入的典型代表就是文件包含(File Inclusion，文件包含可能会出现在JSP、PHP、ASP等语言中，常见的导致文件包含的函数如下
+- PHP
+    
+	`include()`
+    `include_once()`
+    `require()`
+    `require_once()`
+    `fopen()`
+    `readfile()`
 
+- JSP/Servlet
 
+    `ava.io.File()`
+    `java.io.FileReader()`
 
+- ASP
 
+    `include file`
+    `include virtual`
 
+在互联网的安全历史中，PHP的文件包含漏洞已经臭名昭著了，因为黑客们在各种各样的PHP应用中挖出了数不胜数的文件包含漏洞，且后果都非常严重，文件包含是PHP的一种常见用法，主要由4个函数完成
 
+- `include()`
+- `require()`
+- `include_once()`
+- `require_once()`
 
+当使用这4个函数包含一个新的文件时，该文件将作为PHP代码执行，PHP内核并不会在意该被包含的文件是什么类型，所以如果被包含的是txt文件、图片文件、远程URL，也都将作为PHP代码执行，这一特性，在实施攻击时将非常有用，要想成功利用文件包含漏洞，需要满足下面两个条件
 
+- `include()`等函数通过动态变量的方式引入需要包含的文件
+- 用户能够控制该动态变量
 
+##### <font color="yellow">0001 本地文件包含</font>
 
+能够打开并包含本地文件的漏洞，被称为本地文件包含漏洞(Local File Inclusion，简称LFI)，比如下面这段代码，就存在LFI漏洞，PHP内核是由C语言实现的，因此使用了C语言中的一些字符串处理函数，在连接字符串时，0字节(\x00)将作为字符串结束符，所以在这个地方，攻击者只要在最后加入一个0字节，就能截断file变量之后的字符串，但这样并没有解决所有问题，国内的安全研究者cloie发现了一个技巧——利用操作系统对目录最大长度的限制，可以不需要0字节而达到截断的目的，目录字符串，在Windows下256字节、Linux下4096字节时会达到最大值，最大值长度之后的字符将被丢弃，除了`indude()`等4个函数外，PHP中能够对文件进行操作的函数都有可能出现漏洞，虽然大多数情况下不能执行PHP代码，但能够读取敏感文件带来的后果也是比较严重的，文件包含漏洞能够读取敏感文件或者服务器端脚本的源代码，从而为攻击者实施进一步攻击奠定基础，在上面的例子中可以看到，使用了`../../../`这样的方式来返回到上层目录中，这种方式又被称为目录遍历(Path Traversal)常见的目录遍历漏洞，还可以通过不同的编码方式来绕过一些服务器端逻辑
+
+- `%2e%2e%2f`等同于`../`
+- `%2e%2e/`等同于`../`
+- `..%2f`等同于`../`
+- `%2e%2e%5c`等同于`„\`
+- `%2e%2e\`等同于`..\`
+- `..%5c`等同于`..\`
+- `%252e%252e%255c`等同于`..\`
+- `..%255c`等同于`..\and so on.`
+
+某些Web容器支持的编码方式
+
+- `..%c0%af`等同于`../`
+- `..%cl%9c`等同于`..\`
+
+比如CVE-2008-2938，就是一个Tomcat的目录遍历漏洞，如果context.xml或server.xml允许`'allowLinking’`和`'URIencoding'`为`'UTF-8'`，攻击者就可以以Web权限获得重要的系统文件内容，http://www.target.com/%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%aeetcpasswd目录遍历漏洞是一种跨越目录读取文件的方法，但当PHP配置了`open_basedir`时，将很好地保护服务器，使得这种攻击无效，`open_basedir`的作用是限制在某个特定目录下PHP能打开的文件，其作用与`safe_mode`是否开启无关，比如在测试环境下，当没有设置`open_basedir`时，文件包含漏洞可以访问任意文件，要解决文件包含漏洞，应该尽量避免包含动态的变量，尤其是用户可以控制的变量，一种变通方式，则是使用枚举，`$file`的值被枚举出来，也就避免了任意文件包含的风险
+
+##### <font color="yellow">0002 远程文件包含</font>
+
+如果PHP的配置选项`allow_url_include`为`ON`的话，则`include/require`函数是可以加载远程文件的，这种漏洞被称为远程文件包含漏洞(Remote File Inclusion，简称RFI)，在变量`$basePath`前没有设置任何障碍，因此攻击者可以构造类似如下的攻击URL，问号后面的代码被解释成URL的querystring，也是一种截断，这是在利用远程文件包含漏洞时的常见技巧同样的，%00也可以用做截断符号
+
+##### <font color="yellow">0003 本地文件包含的利用技巧</font>
+
+本地文件包含漏洞，其实也是有机会执行PHP代码的，这取决于一些条，远程文件包含漏洞之所以能够执行命令，就是因为攻击者能够自定义被包含的文件内容因此本地文件包含漏洞想要执行命令，也需要找到一个攻击者能够控制内容的本地文件，经过不懈的研究，安全研究者总结出了以下几种常见的技巧，用于本地文件包含后执行PHP代码
+
+    * 包含用户上传的文件
+    * 包含data://或php://input等伪协议
+    * 包含Session文件
+    * 包含日志文件，比如Web Server的access log
+    * 包含/proc/self/environ文件
+    * 包含上传的临时文件(RFC1867)
+    * 包含其他应用创建的文件，比如数据库文件、缓存文件、应用日志等，需要具体情况具体分析
+
+包含用户上传的文件很好理解，这也是最简单的一种方法，用户上传的文件内容中如果包含了PHP代码，那么这些代码被`include()`加载后将会执行，但包含用户上传文件能否攻击成功，取决于文件上传功能的设计，比如要求知道用户上传后文件所在的物理路径，有时这个路径很难猜到，文件上传漏洞给出了很多设计安全文件上传功能的建议，伪协议如`php://input`等需要服务器支持，同时要求`allow_url_include`设置为`ON`，在PHP 5.2.0之后的版本中支持data:伪协议，可以很方便地执行代码，它同样要求`allow_url_include`为`ON`，包含日志文件是一种比较通用的技巧，因为服务器一般都会往Web Server的`access_log`里记录客户端的请求信息，在`error_log`里记录出错请求，因此攻击者可以间接地将PHP代码写入到日志文件中，在文件包含时，只需要包含日志文件即可，但需要注意的是，如果网站访问量大的话，日志文件有可能会很大(比如一个日志文件有2GB)，当包含一个这么大的文件时，PHP进程可能会僵死，但Web Server往往会滚动日志，或每天生成一个新的日志文件，因此在凌晨时包含日志文件，将提高攻击的成功性，因为此时的日志文件可能非常小，如果PHP的错误回显没有关闭，那么构造一些异常也许能够暴露出Web目录所在位置，包含`/proc/self/envircm`是一种更为通用的方法，因为它根本不需要猜测被包含文件的路径，同时用户也能控制它的内容，以上这些方法，都要求PHP能够包含这些文件，而这些文件往往都处于Web目录之外，如果PHP配置了`open_basedir`，则很可能会使得攻击失效，但PHP创建的上传临时文件，往往处于PHP允许访问的目录范围内，包含这个临时文件的方法，其理论意义大于实际意义，PHP会为上传文件仓键临时文件，其目录在php.ini的`upload_temp_dir`中定义，但该值默认为空，此时在 Linux下会使用`/tmp`目录，在Windows下会使用`C:\windows\temp`目录，该临时文件的文件名是随机的，攻击者必须准确猜测出该文件名才能成功利用漏洞，PHP在此处并没有使用安全的随机函数，因此使得暴力猜解文件名成为可能，在Windows下，仅有65535种不同的文件名，Gynvael Coldwind深入研究了这个课题，并发表了paper，PHP LFI to arbitratry code execution via rfcl867 file upload temporary files[http://www.exploit-db.com/download_pdf/17010/](http://www.exploit-db.com/download_pdf/17010/)
+
+#### <font color="yellow">003 变量覆盖漏洞</font>
+
+##### <font color="yellow">0001 全局变量覆盖</font>
+
+变量如果未被初始化，且能被用户所控制，那么很可能会导致安全问题，而在PHP中，这种情况在`register_globals`为`ON`时尤其严重，在PHP 4.2.0之后的版本中，`register_globals`默认由`ON`变为了`OFF`，这在当时让很多程序员感到不适应，因为程序员习惯了滥用变量，PHP中使用变量并不需要初始化，因此`register_globals=ON`时，变量来源可能是各个不同的地方，比如页面的表单、Cookie等，回到变量覆盖上来，即便变量经过了初始化，但在PHP中还是有很多方式可能导致变量覆盖，当用户能够控制变量来源时，将造成一些安全隐患，严重的将引起XSS、SQL注入等攻击，或者是代码执行
+
+##### <font color="yellow">0002 `extract()`变量覆盖</font>
+
+`extract()`函数能将变量从数组导入当前的符号表，其中，第一个参数指定函数将变量导入符号表时的行为，最常见的两个值是`EXTR_OVERWRITE和EXTR_SKIP`，当值为`EXTR_OVERWRITE`时，在将变量导入符号表的过程中，如果变量名发生冲突，则覆盖已有变量，值为`EXTR_SKIP`则表示跳过不覆盖，若第二个参数未指定，则在默认情况下使用`EXTR_OVERWRITE`，当`extract()`函数从用户可以控制的数组中导出变量时，可能发生变量覆盖，一种较为安全的做法是确定`register_globals=OFF`后，在调用`extract()`时使用`EXTR_SKIP`保证已有变量不会被覆盖，但`extract()`的来源如果能被用户控制，则仍然是一种非常糟糕的使用习惯，同时还要留意变量获取的顺序，在PHP中是由php.ini中的`variables_order`所定义的顺序来获取变量的，类似`extract()`，下面几种场景也会产生变量覆盖的问题
+
+##### <font color="yellow">0003 遍历初始化变量</font>
+
+常见的一些以遍历的方式释放变量的代码，可能会导致变量覆盖，若提交参数`chs`，则可覆盖变量`$chs`的值，在代码审计时需要注意类似`$$k`的变量赋值方式有可能覆盖已有的变量，从而导致一些不可控制的结果
+
+##### <font color="yellow">0004 `import_request_variables`变量覆盖</font>
+
+`import_request_variables()`将GET、POST、Cookie中的变量导入到全局，使用这个函数只需要简单地指定类型即可，其中第二个参数是为导入的变量添加的前缀，如果没有指定，则将覆盖全局变量
+
+##### <font color="yellow">0005 `parse_str()`变量覆盖</font>
+
+`parse_str()`函数往往被用于解析URL的query string，但是当参数值能被用户控制时，很可能导致变量覆盖，如果指定了`parse_str()`的第二个参数，则会将query string中的变量解析后存入该数组变量中因此在使用`parse_str()`时，应该养成指定第二个参数的好习惯，与`parse_str()`类似的函数还有`mb_parse_str()`
+
+还有一些变量覆盖的方法，难以一次列全，但有以下安全建议
+
+- 确保`register_globals=OFF`，若不能自定义php.ini，则应该在代码中控制
+- 熟悉可能造成变量覆盖的函数和方法，检查用户是否能控制变量的来源
+- 养成初始化变量的好习惯
+
+#### <font color="yellow">004 代码执行漏洞</font>
+
+PHP中的代码执行情况非常灵活，但究其原因仍然离不开两个关键条件
+
+- 第一是用户能够控制的函数输入
+- 第二是存在可以执行代码的危险函数
+
+但PHP代码的执行过程可能是曲折的，有些问题很隐蔽，不易被发现，要找出这些问题，对安全工程师的经验有较高的要求
+
+##### <font color="yellow">0001 危险函数执行代码</font>
+
+文件包含漏洞是可以造成代码执行的，但在PHP中，能够执行代码的方式远不止文件包含漏洞一种，比如危险函数`popen()`、`system()`、`passthru()`、`exec()`等都可以直接执行系统命令，此外，`eval()`函数也可以执行PHP代码，还有一些比较特殊的情况，比如允许用户上传PHP代码，或者是应用写入到服务器的文件内容和文件类型可以由用户控制，都可能导致代码执行，下面通过几个真实案例，来帮助深入理解PHP中可能存在的代码执行漏洞
+
+###### <font color="yellow">a. phpMyAdmin3.4.3.1远程代码执行漏洞</font>
+
+在phpMyAdmin版本3.3.10.2与3.4.3.1以下存在一个变量覆盖漏洞，漏洞编号为CVE-2011-2505，漏洞代码存在于`libraries/auth/swekey/swekey.auth.lib.php`中，但是这个函数的逻辑很短，到最后直接就exit了，原本做不了太多事情，但是注意到Session变量是可以保存在服务器端，并常驻内存的，因此通过覆盖`$_SESSION`变量将改变很多逻辑，原本程序逻辑执行到`session_destroy()`将正常销毁Session，但是在此之前`session_write_close()`已经将Session保存下来，然后到`session_id()`处试图切换Session，这个漏洞导致的后果，就是所有从Session中取出的变量都将变得不再可信任，可能会导致很多XSS、SQL注入等问题，但我们直接看由CVE-2011-2506导致的静态代码注入——在setup/lib/ConfigGenerator.class.php中
+
+###### <font color="yellow">b. MyBB1.4远程代码执行漏洞</font>
+
+接下来看另外一个案例，这是一个间接控制`eval()`函数输入的例子，这是由安全研究者flyh4t发现的一个漏洞，MyBB 1.4 admin remote code execution vulnerability
+
+- 在MyBB的代码中存在`eval()`函数，挖掘漏洞的过程，通常需要先找到危险函数，然后回灌函数的调用过程，最终看在整个调用的过程中用户是否有可能控制输入
+- 原来`get()`函数获得的内容是从数据库中取出的
+
+根据该应用的功能，不难看出这完全是用户提交的数据，通过编辑模板功能可以将数据写入数据库，然后通过调用前台文件使得`eval()`得以执行，唯一需要处理的是一些敏感字符，这个案例清晰地展示了如何从找到敏感函数`eval()`到成为一个代码执行漏洞的过程，虽然这个漏洞要求具备应用管理员的身份才能编辑模板，但是攻击者可能会通过XSS或其他手段来完成这一点
+
+##### <font color="yellow">0002 文件写入执行代码</font>
+
+在PHP中对文件的操作一定要谨慎，如果文件操作的内容用户可以控制，则也极容易成为漏洞，下面这个`Discuz! admin\database.inc.php get-webshell`bug由ring04h发现，将控制文件后缀为`.sql`，但是其检查并不充分，攻击者可以利用Apache的文件名解析特性，构造文件名为`081127_k4pFUs3C-l.php.sql`，此文件名在Apache下默认会作为PHP文件解析，从而获得代码执行
+
+##### <font color="yellow">0003 其他执行代码方式</font>
+
+通过上面的几个真实案例，让我们对PHP中代码执行漏洞的复杂性有了初步的了解，如果对常见的代码执行漏洞进行分类，则可以总结出一些规律，熟悉并理解这些可能导致代码执行的情况，对于代码审核及安全方案的设计有着积极意义
+
+1. 直接执行代码的函数
+
+> PHP中有不少可以直接执行代码的函数
+> 
+> - `eval()`
+> - `assert()`
+> - `system()`
+> - `exec()`
+> - `shell_exec()`
+> - `passthru()`
+> - `escapeshellcmd()`
+> - `pcntl_exec()`
+> 
+> 一般来说，最好在PHP中禁用这些函数，在审计代码时则可以检查代码中是否存在这些函数，然后回溯危险函数的调用过程，看用户是否可以控制输入
+
+2. 文件包含
+
+> 文件包含漏洞也是代码注入的一种，需要高度关注能够包含文件的函数
+> 
+> - `include()`
+> - `include_once()`
+> - `requir()`
+> - `require_once()`
+
+3. 本地文件写入
+
+> 能够往本地文件里写入内容的函数都需要重点关注
+> 
+> 这样的函数较多
+> 
+> - `file_put_contents()`
+> - `fwrite()`
+> - `fputs()`
+> 
+> 需要注意的是，写入文件的功能可以和文件包含、危险函数执行等漏洞结合，最终使得原本用户无法控制的输入变成可控，在代码审计时要注意这种组合类漏洞
+
+4. `preg_replace()`代码执行
+
+> `preg_replace()`的第一个参数如果存在`/e`模式修饰符，则允许代码执行，需要注意的是，即便第一个参数中并没有`/e`模式修饰符，也是有可能执行代码的，这要求第一个参数中包含变量，并且用户可控，有可能通过注入`/e%00`的方式截断文本，注入一个`/e`，当`preg_replace()`的第一个参数中包含了`/e`时，用户无论是控制了第二个参数还是第三个参数，都可以导致代码执行
+
+5. 动态函数执行
+
+> 用户自定义的动态函数可以导致代码执行，需要注意这种情况，`create_function()`函数也具备此能力
+
+6. Curly Syntax
+
+> PHP的Curly Syntax也能导致代码执行，它将执行花括号间的代码，并将结果替换回去，`is`命令将列出本地目录的文件，并将结果返回，很多函数都可以执行回调函数，当回调函数用户可控时，将导致代码执行，`ob_start()`实际上也可以执行回调函数，需要特别注意
+
+7. `unserialize()`导致代码执行
+
+> `unserialize()`这个函数也很常见，它能将序列化的数据重新映射为PHP变量，但是`unserialize()`在执行时如果定义了`destruct()`函数，或者是`wakeup()`函数，则这两个函数将执行
+> 
+> `unserialize()`代码执行有两个条件
+> 
+> 1. 一是`unserialize()`的参数用户可以控制，这样可以构造出需要反序列化的数据结构
+> 2. 二是存在`_destruct()`函数或者`_wakeup()`函数，这两个函数实现的逻辑决定了能执行什么样的代码
+> 
+> 攻击者可以通过`unserialize()`控制`_destruct()`或`_wakeup()`中函数的输入，攻击payload可以先模仿目标代码的实现过程，然后再通过调用`serialize()`获得，以上为一些主要的导致PHP代码执行的方法，在代码审计时需要重点关注这些地方
+
+#### <font color="yellow">005 定制安全的PHP环境</font>
+
+除了熟悉各种PHP漏洞外，还可以通过配置php.ini来加固PHP的运行环境，PHP官方也曾经多次修改php.ini的默认设置
+
+- `register_globals`
+
+> 当`register_globals=ON`时，PHP不知道变量从何而来，也容易出现一些变量覆盖的问题，因此从最佳实践的角度，强烈建议设置`register_globals=OFF`，这也是PHP新版本中的默认设置
+
+- `open_basedir`
+
+> `open_basedir`可以限制PHP只能操作指定目录下的文件，这在对抗文件包含、目录遍历等攻击时非常有用，我们应该为此选项设置一个值，需要注意的是，如果设置的值是一个指定的目录，则需要在目录最后加上一个`/`，否则会被认为是目录的前缀
+
+- `allow_url_include`
+
+> 为了对抗远程文件包含，请关闭此选项，一般应用也用不到此选项，同时推荐关闭的还有`allow_url_fopen`
+
+- `display_errors`
+
+> 错误回显，一般常用于开发模式，但是很多应用在正式环境中也忘记了关闭此选项，错误回显可以暴露出非常多的敏感信息，为攻击者下一步攻击提供便利，推荐关闭此选项
+
+- `log_errors`
+
+> 在正式环境下用这个就行了，把错误信息记录在日志里，正好可以关闭错误回显
+
+- `magic_quotes_gpc`
+
+> 推荐关闭，它并不值得依赖注入攻击，已知已经有若干种方法可以绕过它，甚至由于它的存在反而衍生出一些新的安全问题，XSS、SQL注入等漏洞，都应该由应用在正确的地方解决，同时关闭它还能提高性能
+
+- `cgi.fix_pathinfo`
+
+> 若PHP以CGI的方式安装，则需要关闭此项，以避免出现文件解析问题
+
+- `session.cookie_httponly`
+
+> 开启HttpOnly
+
+- `session.cookie_secure`
+
+> 若是全站HTTPS则请开启此项
+
+- `safe_mode`
+
+> PHP的安全模式是否应该开启的争议一直比较大，一方面，它会影响很多函数，另一方面，它又不停地被黑客们绕过，因此很难取舍，如果是共享环境(比如App Engine)，则建议开启`safe_mode`，可以和`disable_functions`配合使用，如果是单独的应用环境，则可以考虑关闭它，更多地依赖于`disable_functions`控制运行环境安全，需要特别注意的是，如果开启了`safe_mode`，则`exec()`、`system()`、`passthru()`、`popen()`等函数并非被禁用，而是只能执行在`safe_mode_exec_dir`所指定目录下存在的可执行文件，如果要允许这些函数，则请设置好`safe_mode_exec_dir`的值并将此目录设置为不可写，`safe_mode`被绕过的情况，往往是因为加载了一些非官方的PHP扩展，扩展自带的函数可以绕过`safe_mode`，因此请谨慎加载非默认开启的PHP扩展，除非能确认它们是安全的
+
+- `disable_functions`
+
+> `disable_functions`能够在PHP中禁用函数，这是把双刃剑，禁用函数可能会为开发带来不便，但禁用的函数太少又可能增加开发写出不安全代码的几率，同时为黑客获取webshell提供便利，一般来说，如果是独立的应用环境，则推荐禁用以下函数
+> 
+> - `disable_functions = escapeshellarg`
+> - `escapeshellcmd`
+> - `exec`
+> - `passthru`
+> - `proc_close`
+> - `proc_get_status`
+> - `proc_open`
+> - `proc_nice`
+> - `proc_terminate`
+> - `shell exec`
+> - `system`
+> - `ini_restore`
+> - `popen`
+> - `dl`
+> - `disk_free_space`
+> - `diskfreespace`
+> - `set_time_limit`
+> - `tmpfile`
+> - `fopen`
+> - `readfile`
+> - `fpassthru`
+> - `fsockopen`
+> - `mail`
+> - `inialter`
+> - `highlight file`
+> - `openlog`
+> - `show_source`
+> - `symlink`
+> - `apache_child terminate`
+> - `apache_get_modules`
+> - `apache_get_version`
+> - `apache_getenv`
+> - `apache_note`
+> - `apache_setenv`
+> - `parse_ini_file`
+> 
+> 如果是共享环境(比如App Engine)，则需要禁用更多的函数，这方面可以参考新浪推出的SAE平台，在共享的PHP环境下，禁用的函数列表如下
+> 
+> 禁用的函数
+> 
+> - `php_real_logo_guid`
+> - `php_egg_logo_guid`
+> - `php_ini_scanned_files`
+> - `php_ini_loaded_file`
+> - `readlink`
+> - `linkinfo`
+> - `symlink`
+> - `link`
+> - `exec`
+> - `system`
+> - `escapeshellcmd`
+> - `escapeshellarg`
+> - `passthru`
+> - `shell_exec`
+> - `proc_open`
+> - `proc_close`
+> - `proc_terminate`
+> - `proc_get_status`
+> - `proc_nice`
+> - `getmyuid`
+> - `getmyinode`
+> - `putenv`
+> - `getopt`
+> - `sys_getloadavg`
+> - `getrusage`
+> - `get_current_user`
+> - `magic_quotes_mntime`
+> - `set_magic_quotes_runtime`
+> - `import_request_variables`
+> - `debug_zval_dump`
+> - `ini_alter`
+> - `dl`
+> - `pclose`
+> - `popen`
+> - `stream_select`
+> - `stream_filter_prepend`
+> - `stream_filter_append`
+> - `stream_filter_remove`
+> - `stream_socket_client`
+> - `stream_socketserver`
+> - `stream_socketaccept`
+> - `stream_socket_get_name`
+> - `stream_socke am_socket_shutdown`
+> - `stream_socket_pair`
+> - `stream_copy_to_stream`
+> - `stream_get_contents`
+> - `stream_set_write_buffer`
+> - `set_file_buffer`
+> - `set_socket_blocking`
+> - `stream_set_blocking`
+> - `socket_set_blocking`
+> - `stream_get_meta_data`
+> - `streamget_line`
+> - `stream_register_wrapper`
+> - `stream_wrapper_restore`
+> - `stream_get_transports`
+> - `stream_is_local`
+> - `get_headers`
+> - `stream_set_timeout`
+> - `socket_get_status`
+> - `mail`
+> - `openlog`
+> - `syslog`
+> - `closelog`
+> - `apc_add`
+> - `apc_cache_info`
+> - `apc_clear_cache`
+> - `apc_compile_file`
+> - `apc_define_constants`
+> - `apc_delete`
+> - `apc_load_constants`
+> - `apc_sma_info`
+> - `apc_store`
+> - `flock`
+> - `pfsockopen`
+> - `posix_kill`
+> - `apache_child_terminate`
+> - `apache_get_modules`
+> - `apache_get_version`
+> - `apache_getenv`
+> - `apache_lookup_uri`
+> - `apache_reset_timeout`
+> - `apache_response_headers`
+> - `apache_setenv`
+> - `virtual `
+> 
+> `_pconnect`禁用的类
+> 
+> - `XMLWriter`
+> - `DOMDocument`
+> - `DOMNotation`
+> - `DOMXPath`
+> - `SQLiteDatabase`
+> - `SQLiteResult`
+> - `SQLite Unbuffered`
+> - `SQLiteException`
+> 
+> 对于PHP 6来说，安全架构发生了极大的变化，`magic_quotes_gpc`、`safe_mode`等都已经取消，同时提供了一些新的安全功能，由于PHP6离普及尚有很长一段时间，很多功能尚未稳定
+
+#### <font color="yellow">006 总结</font>
+
+> PHP是一门被广泛使用的Web开发语言，它的语法和使用方式非常灵活，这也导致了PHP代码安全评估的难度相对较高
+
+### <font color="yellow">09 Web Server配置安全</font>
 
 
 
