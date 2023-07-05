@@ -6103,6 +6103,856 @@ Web框架本身也是应用程序的一个组成部分，只是这个组成部�
 
 ### <font color="yellow">07 应用层拒绝服务攻击</font>
 
+#### <font color="yellow">001 DDOS简介</font>
+
+DDOS又称为分布式拒绝服务，全称是Distributed Denial of Service，DDOS本是利用合理的请求造成资源过载，导致服务不可用，服务器的负荷过载，不能正常工作了，这种情况就是拒绝服务，分布式拒绝服务攻击，将正常请求放大了若干倍，通过若干个网络节点同时发起攻击，以达成规模效应，这些网络节点往往是黑客们所控制的肉鸡，数量达到一定规模后，就形成了一个僵尸网络，大型的僵尸网络，甚至达到了数万、数十万台的规模，如此规模的僵尸网络发起的DDOS攻击，几乎是不可阻挡的
+
+常见的DDOS攻击
+
+- SYN flood
+- UDP flood
+- ICMP
+- flood
+- ...
+
+其中SYN flood是一种最为经典的DDOS攻击，其发现于1996年，但至今仍然保持着非常强大的生命力，SYN flood如此猖獗是因为它利用了TCP协议设计中的缺陷，而TCP/IP协议是整个互联网的基础，牵一发而动全身，如今想要修复这样的缺陷几乎成为不可能的事情
+
+在正常情况下，TCP三次握手过程如下
+
+- 客户端向服务器端发送一个SYN包，包含客户端使用的端又号和初始序列号x
+- 服务器端收到客户端发送来的SYN包后，向客户端发送一个SYN和ACK都置位的TCP报文，包含确认号X+1和服务器端的初始序列号y
+- 客户端收到服务器端返回的SYN+ACK报文后，向服务器端返回一个确认号为y+i、序号为x+1的ACK报文，一个标准的TCP连接完成
+
+而SYN flood在攻击时，首先伪造大量的源IP地址，分别向服务器端发送大量的SYN包，此时服务器端会返回SYN/ACK包，因为源地址是伪造的，所以伪造的IP并不会应答，服务器端没有收到伪造IP的回应，会重试3~5次并且等待一个SYN Time(—般为30秒至2分钟)，如果超时则丢弃这个连接，攻击者大量发送这种伪造源地址的SYN请求，服务器端将会消耗非常多的资源(CPU和内存)来处理这种半连接，同时还 要不断地对这些IP进行SYN+ACK重试，最后的结果是服务器无暇理睬正常的连接请求，导致拒绝服务，对抗SYN flood的主要措施有SYN Cookie/SYN Proxy、safereset等算法，SYN Cookie的主要思想是为每一个IP地址分配一个Cookie，并统计每个IP地址的访问频率，如果在短时间内收到大量的来自同一个IP地址的数据包，则认为受到攻击，之后来自这个IP地址的包将被丢弃，在很多对抗DDOS的产品中，一般会综合使用各种算法，结合一些DDOS攻击的特征，对流量进行清洗，对抗DDOS的网络设备可以串联或者并联在网络出又处，但DDOS仍然是业界的一个难题，当攻击流量超过了网络设备，甚至带宽的最大负荷时，网络仍将瘫痪，一般来说，大型网站之所以看起来比较能抗DDOS攻击，是因为大型网站的带宽比较充足，集群内服务器的数量也比较多，但一个集群的资源毕竟是有限的，在实际的攻击中，DDOS的流量甚至可以达到数G到几十G，遇到这种情况，只能与网络运营商合作，共同完成DDOS攻击的响应，DDOS的攻击与防御是一个复杂的课题，而本书重点是Web安全，因此对网络层的DDOS攻防在此不做深入讨论，有兴趣的朋友可以自行查阅一些相关资料
+
+#### <font color="yellow">002 应用层DDOS</font>
+
+应用层DDOS，不同于网络层DDOS，由于发生在应用层，因此TCP三次握手已经完成，连接已经建立，所以发起攻击的IP地址也都是真实的，但应用层DDOS有时甚至比网络层DDOS攻击更为可怕，因为今天几乎所有的商业Anti-DDOS设备，只在对抗网络层DDOS时效果较好，而对应用层DDOS攻击却缺乏有效的对抗手段
+
+##### <font color="yellow">0001 CC攻击</font>
+
+CC攻击的前身是一个叫fatboy的攻击程序，当时黑客为了挑战绿盟的一款反DDOS设备开发了它，绿盟是中国著名的安全公司之一，它有一款叫黑洞(Collapasar)的反DDOS设备，能够有效地清洗SYN Flood等有害流量，而黑客则挑衅式地将fatboy所实现的攻击方式命名为ChallengeCollapasar(简称CC)，意指在黑洞的防御下，仍然能有效完成拒绝服务攻击，CC攻击的原理非常简单，就是对一些消耗资源较大的应用页面不断发起正常的请求，以达到消耗服务端资源的目的，在Web应用中，查询数据库、读/写硬盘文件等操作，相对都会消耗比较多的资源，在互联网中充斥着各种搜索引擎、信息收集等系统的爬虫(spider)，爬虫把小网站直接爬死的情况时有发生，这与应用层DDOS攻击的结果很像，由此看来，应用层DDOS攻击与正常业务的界线比较模糊，应用层DDOS攻击还可以通过以下方式完成，在黑客入侵了一个流量很大的网站后，通过篡改页面，将巨大的用户流量分流到目标网站，应用层DDOS攻击是针对服务器性能的一种攻击，那么许多优化服务器性能的方法，都或多或少地能缓解此种攻击，比如将使用频率高的数据放在memcache中，相对于查询数据库所消耗的资源来说，查询memcache所消耗的资源可以忽略不计，但很多性能优化的方案并非是为了对抗应用层DDOS攻击而设计的，因此攻击者想要找到一个资源消耗大的页面并不困难，比如当memcache查询没有命中时，服务器必然会查询数据库，从而增大服务器资源的消耗，攻击者只需要找到这样的页面即可，同时攻击者除了触发读数据操作外，还可以触发写数据操作，写数据的行为一般都会导致服务器操作数据库
+
+##### <font color="yellow">0002 限制请求频率</font>
+
+最常见的针对应用层DDOS攻击的防御措施，是在应用中针对每个客户端做一个请求频率的限制，从架构上看，代码需要放在业务逻辑之前，才能起到保护后端应用的目的，可以看做是一个基层的安全模
+
+限制？不可靠！
+
+> 然而这种防御方法并不完美，因为它在客户端的判断依据上并不是永远可靠的，这个方案中有两个因素用以定位一个客户端，一个是IP地址，另一个是Cookie，但用户的IP地址可能会发生改变，而Cookie又可能会被清空，如果IP地址和Cookie同时都发生了变化，那么就无法再定位到同一个客户端了，使用代理服务器是一个常见的做法，在实际的攻击中，大量使用代理服务器或傀儡机来隐藏攻击者的真实IP地址，已经成为一种成熟的攻击模式，攻击者使用这些方法可不断地变换IP地址，就可以绕过服务器对单个IP地址请求频率的限制了，代理猎手是一个常用的搜索代理服务器的工具，而AccessDiver则已经自动化地实现了这种变换IP地址的攻击，它可以批量导入代理服务器地址，然后通过代理服务器在线暴力破解用户名和密码，攻击者使用的这些混淆信息的手段，都给对抗应用层DDOS攻击带来了很大的困难
+> 
+> 应用层DDOS攻击并非一个无法解决的难题，一般来说，我们可以从以下几个方面着手
+> 
+>  - 应用代码要做好性能优化
+> 
+>      合理地使用memcache就是一个很好的优化方案，将数据库的压力尽 可能转移到内存中
+> 
+>      此外还需要及时地释放资源，比如及时关闭数据库连接，减少空连接等消耗
+> 
+>  - 在网络架构上做好优化
+> 
+>      善于利用负载均衡分流，避免用户流量集中在单台服务器上
+> 
+>      同时可以充分利用好CDN和镜像站点的分流作用，缓解主站的压力
+> 
+>  - 也是最重要的一点，实现一些对抗手段，比如限制每个IP地址的请求频率
+
+#### <font color="yellow">003 验证码</font>
+
+验证码是互联网中常用的技术之一，它的英文简称是CAPTCHA(Completely Automated Public Turing Test to Tell Computers and Humans Apart，全自动区分计算机和人类的图灵测试)，在很多时候，如果可以忽略对用户体验的影响，那么引入验证码这一手段能够有效地阻止自动化的重放行为，CAPTCHA发明的初衷，是为了识别人与机器，但验证码如果设计得过于复杂，那么人也很难辨识出来，所以验证码是一把双刃剑，有验证码，就会有验证码破解技术，除了直接利用图像相关算法识别验证码外，还可以利用Web实现上可能存在的漏洞破解验证码，因为验证码的验证过程，是比对用户提交的明文和服务器端Session里保存的验证码明文是否一致，所以曾经有验证码系统出现过这样的漏洞，因为验证码消耗掉后SessionID未更新，还有的验证码实现方式，是提前将所有的验证码图片生成好，以哈希过的字符串作为验证码图片的文件名，在使用验证码时，则直接从图片服务器返回已经生成好的验证码，这种设计原本的想法是为了提高性能，但这种一一对应的验证码文件名会存在一个缺陷，攻击者可以事先采用枚举的方式，遍历所有的验证码图片，并建立验证码到明文之间的——对应关系，从而形成一张彩虹表，这也会导致验证码形同虚设，修补的方式是验证码的文件名需要随机化，满足不可预测性原则，随着技术的发展，直接通过算法破解验证码的方法也变得越来越成熟，通过一些图像处理技术，可以将验证码逐步变化成可识别的图片，对此有兴趣的朋友，可以查阅moonblue333所写的如何识别高级的验证码[http://secinn.appspot.com/pstzine/read?issue=2&articleid=9](http://secinn.appspot.com/pstzine/read?issue=2&articleid=9)
+
+#### <font color="yellow">004 防御应用层DDOS</font>
+
+验证码不是万能的，很多时候为了给用户一个最好的体验而不能使用验证码，且验证码不宜使用过于频繁，所以我们还需要有更好的方案，验证码的核心思想是识别人与机器，那么顺着这个思路，在人机识别方面，我们是否还能再做一些事情呢?答案是肯定的，在一般情况下，服务器端应用可以通过判断HTTP头中的User-Agent字段来识别客户端，但从安全性来看这种方法并不可靠，因为HTTP头中的User-Agent是可以被客户端篡改的，所以不能信任，一种比较可靠的方法是让客户端解析一段JavaScript，并给出正确的运行结果，因为大部分的自动化脚本都是直接构造HTTP包完成的，并非在一个浏览器环境中发起的请求，因此一段需要计算的JavaScript，可以判断出客户端到底是不是浏览器，类似的，发送一个flash让客户端解析，也可以起到同样的作用，但需要注意的是，这种方法并不是万能的，有的自动化脚本是内嵌在浏览器中的内挂，就无法检测出来了，除了人机识别外，还可以在Web Server这一层做些防御，其好处是请求尚未到达后端的应用程序里，因此可以起到一个保护的作用，在Apache的配置文件中，有一些参数可以缓解DDOS攻击，比如调小Timeout、KeepAliveTimeout值，增加MaxClients值，但需要注意的是，这些参数的调整可能会影响到正常应用，因此需要视实际情况而定，在Apache的官方文档中对此给出了一些指导——Apache提供的模块接又为我们扩展Apache、设计防御措施提供了可能，目前已经有一些开源的Module全部或部分实现了针对应用层DDOS攻击的保护，mod_qos是Apache的一个Module，它可以帮助缓解应用层DDOS攻击，比如mod_qos的下面这些配置就非常有价值，mod_qos功能强大，它还有更多的配置，有兴趣的朋友可以通过官方网站获得更多的信息[http://httpd.apache.org/docs/trunk/misc/security_tips.html#dos](http://httpd.apache.org/docs/trunk/misc/security_tips.html#dos)，除了mod_qos外，还有专用于对抗应用层DDOS的mod_evasive也有类似的效果[http://opensource.adnovum.ch/mod_pos](http://opensource.adnovum.ch/mod_pos)，mod_qos从思路上仍然是限制单个IP地址的访问频率，因此在面对单个IP地址或者IP地址较少的情况下，比较有用，Yahoo为我们提供了一个解决思路，因为发起应用层DDOS攻击的IP地址都是真实的，所以在实际情况中，攻击者的IP地址其实也不可能无限制增长，假设攻击者有1000个IP地址发起攻击，如果请求了10000次，则平均每个IP地址请求同一页面达到10次，攻击如果持续下去，单个IP地址的请求也将变多，但无论如何变，都是在这1000个IP地址的范围内做轮询，为此Yahoo实现了一套算法，根据IP地址和Cookie等信息，可以计算客户端的请求频率并进行拦截，Yahoo设计的这套系统也是为Web Server开发的一个模块，但在整体架构上会有一台master服务器集中计算所有IP地址的请求频率，并同步策略到每台Webserver上，Yahoo为此申请了一个专利(Detecting system abuse)，因此我们可以查阅此专利的公开信息，以了解更多的详细信息，[http://patft.uspto.gov/netacgi/nph-Parser?Sectl-POT2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=2&f=G&col=AND&d=PTXT&sl=Yahoo.ASNM.&s2=abuse.TI.&OS=AN/Yahoo+AND+TTL/&RS=AN/Yahoo+AND+TTL/abuse](http://patft.uspto.gov/netacgi/nph-Parser?Sectl-POT2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=2&f=G&col=AND&d=PTXT&sl=Yahoo.ASNM.&s2=abuse.TI.&OS=AN/Yahoo+AND+TTL/&RS=AN/Yahoo+AND+TTL/abuse)，Yahoo设计的这套防御体系，经过实践检验，可以有效对抗应用层DDOS攻击和一些类似的资源滥用攻击，但Yahoo并未将其开源，因此对于一些研发能力较强的互联网公司来说，可以根据专利中的描述，实现一套类似的系统
+
+#### <font color="yellow">005 资源消耗攻击</font>
+
+除了CC攻击外，攻击者还可能利用一些Web Server的漏洞或设计缺陷，直接造成拒绝服务
+
+##### <font color="yellow">0001 Slowloris攻击</font>
+
+Slowloris是在2009年由著名的Web安全专家RSnake提出的一种攻击方法，其原理是以极低的速度往服务器发送HTTP请求[http://ha.ckers.org/slowloris/](http://ha.ckers.org/slowloris/)，由于Web Server对于并发的连接数都有一定的上限，因此若是恶意地占用住这些连接不释放，那么Web Server的所有连接都将被恶意连接占用，从而无法接受新的请求，导致拒绝服务，要保持住这个连接，RSnake构造了一个畸形的HTTP请求，准确地说，是一个不完整的HTTP请求，在正常的HTTP包头中，是以两个CLRF表示HTTP Headers部分结束的，由于Web Server只收到了一个\r\n，因此将认为HTTP Headers部分没有结束，并保持此连接不释放，继续等待完整的请求，此时客户端再发送任意HTTP头，保持住连接即可，<font color="red">此类拒绝服务攻击的本质，实际上是对有限资源的无限制滥用</font>，在Slowloris案例中，有限的资源是连接数，这是一个有上限的值，比如在Apache中这个值由 MaxClients定义，如果恶意客户端可以无限制地将连接数占满，就完成了对有限资源的恶意消耗，导致拒绝服务，在Slowloris发布之前，也曾经有人意识到这个问题，但是Apache官方否认Slowloris的攻击方式是一个漏洞，他们认为这是Web Server的一种特性，通过调整参数能够缓解此类问题，给出的回应是参考文档中调整配置参数的部分，[http://httpd.apache.org/docs/trunk/misc/security_tips.html#dos](http://httpd.apache.org/docs/trunk/misc/security_tips.html#dos)
+
+##### <font color="yellow">0002 HTTP POST DOS</font>
+
+Wong Onn Chee和Tom Brennan演示了一种类似于Slowloris效果的攻击方法，作者称之为HTTP POST D.O.S.[http://www.owasap.org/images/4/43/Layer_7_DDOS.pdf](http://www.owasap.org/images/4/43/Layer_7_DDOS.pdf)，其原理是在发送HTTP POST包时，指定一个非常大的Content-Length值，然后以很低的速度发包，比如10~100s发一个字节，保持住这个连接不断开，这样当客户端连接数多了以后，占用住了Web Server的所有可用连接，从而导致DOS，这种攻击的本质也是针对Apache的MaxClients限制的，要解决此类问题，可以使用Web应用防火墙，或者一个定制的Web Server安全模块，凡是资源有限制的地方，都可能发生资源滥用，从而导致拒绝服务，也就是一种资源耗尽攻击，出于可用性和物理条件的限制，内存、进程数、存储空间等资源都不可能无限制地增长，因此如果未对不可信任的资源使用者进行配额的限制，就有可能造成拒绝服务，内存泄漏是程序员经常需要解决的一种bug，而在安全领域中，内存泄漏则被认为是一种能够造成拒绝服务攻击的方式
+
+##### <font color="yellow">0003 Server Limit DOS</font>
+
+Cookie也能造成一种拒绝服务，安全研究者称之为Server Limit DOS,并曾在安全研究者的博客文章中描述过这种攻击[http://hi.baidu.com/aullik5/blog/item/6947261e7eaeaac0a7866913.html](http://hi.baidu.com/aullik5/blog/item/6947261e7eaeaac0a7866913.html)，Web Server对HTTP包头都有长度限制，以Apache举例，默认是8192字节，也就是说，Apache所能接受的最大HTTP包头大小为8192字节(这里指的是Request Header，如果是Request Body，则默认的大小限制是2GB)，如果客户端发送的HTTP包头超过这个大小，服务器就会返回一个4xx错误，假如攻击者通过XSS攻击，恶意地往客户端写入了一个超长的Cookie，则该客户端在清空Cookie之前，将无法再访问该Cookie所在域的任何页面，这是因为Cookie也是放在HTTP包头里发送的，而Web Server默认会认为这是一个超长的非正常请求，从而导致客户端的拒绝服务，要解决此问题，需要调整Apache配置参数LimitRequestFieldSize，这个参数设置为0时，对HTTP包头的大小没有限制，[http://httpd.apache.org/docs/2.0/mod/core.html#limitrequestfieldsize](http://httpd.apache.org/docs/2.0/mod/core.html#limitrequestfieldsize)，拒绝服务攻击的本质实际上就是一种资源耗尽攻击，因此在设计系统时，需要考虑到各种可能出现的场景，避免出现有限资源被恶意滥用的情况，这对安全设计提出了更高的要求
+
+#### <font color="yellow">006 ReDDOS</font>
+
+当正则表达式写得不好时，就有可能被恶意输入利用，消耗大量资源，从而造成DOS，这种攻击被称为ReDOS，ReDOS是一种代码实现上的缺陷，我们知道正则表达式是基于NFA(Nondeterministic Finite Automaton)的，它是—个状态机，每个状态和输入符号都可能有许多不同的下一个状态，正则解析引擎将遍历所有可能的路径直到最后，由于每个状态都有若干个下一个状态，因此决策算法将逐个尝试每个下一个状态，直到找到一个匹配的，当用户恶意构造输入时，这些有缺陷的正则表达式就会消耗大量的系统资源(比如CPU和内存)，从而导致整台服务器的性能下降，表现的结果是系统速度很慢，有的进程或服务失去响应，与拒绝服务的后果是一样的，[http://www.computerbytesman.com/redos/](http://www.computerbytesman.com/redos/)，ReDOS可能会成为一个埋藏在系统中的炸弹，虽然正则表达式的解析算法有可能实现得更好一些，但是流行语言为了提供增强型的解析引擎，仍然使用了naive algorithm，从而使得在很多平台和开发语言内置的正则解析引擎中都存在类似的问题，[http://swtch.com/~rsc/regexp/regexp1.html](http://swtch.com/~rsc/regexp/regexp1.html)，在今天的互联网中，正则表达式可能存在于任何地方，但只要任何一个环节存在有缺陷的正则表达式，就都有可能导致一次ReDOS，在检查应用安全时，一定不能忽略ReDOS可能造成的影响，在本节中提到的几种存在缺陷的正则表达式和测试用例，可以加入安全评估的流程中
+
+#### <font color="yellow">007 总结</font>
+
+在解决应用层拒绝服务攻击时，可以采用验证码，但验证码并不是最好的解决方案，Yahoo的专利为我们提供了更宽广的思路
+
+### <font color="yellow">08 PHP安全</font>
+
+#### <font color="yellow">001 PHP基础</font>
+
+##### <font color="yellow">0001 简介</font>
+
+PHP(超文本预处理器)原始为Personal Home Page的缩写，已经正式更名为PHP: Hypertext Preprocessor，自20世纪90年代国内互联网开始发展到现在，互联网信息几乎覆盖了我们日常活动所有知识范畴，并逐渐成为我们生活、学习、工作中必不可少的一部分，据统计，从2003年开始，我国的网页规模基本保持了翻番的增长速度，并且呈上升趋势，PHP语言作为当今最热门的网站程序开发语言，它具有成本低、速度快、可移植性好、内置丰富的函数库等优点，因此被越来越多的企业应用于网站开发中，但随着互联网的不断更新换代，PHP语言也出现了不少问题，根据动态网站要求，PHP语言作为一种语言程序，其专用性逐渐在应用过程中显现，其技术水平的优劣与否将直接影响网站的运行效率，其特点是具有公开的源代码，在程序设计上与通用型语言，如C语言相似性较高，因此在操作过程中简单易懂，可操作性强，同时，PHP语言具有较高的数据传送处理水平和输出水平，可以广泛应用在Windows系统及各类Web服务器中，如果数据量较大，PHP语言还可以拓宽链接面，与各种数据库相连，缓解数据存储、检索及维护压力，随着技术的发展，PHP语言搜索引擎还可以量体裁衣，实行个性化服务，如根据客户的喜好进行分类收集储存，极大提高了数据运行效率
+
+##### <font color="yellow">0002 主要特点</font>
+
+###### <font color="yellow">a. 开源性和免费性</font>
+
+由于PHP的解释器的源代码是公开的，所以安全系数较高的网站可以自己更改PHP的解释程序，另外，PHP运行环境的使用也是免费的
+
+###### <font color="yellow">b. 快捷性</font>
+
+PHP是一种非常容易学习和使用的一门语言，它的语法特点类似于C语言，但又没有C语言复杂的地址操作，而且又加入了面向对象的概念，再加上它具有简洁的语法规则，使得它操作编辑非常简单，实用性很强
+
+###### <font color="yellow">c. 数据库连接的广泛性</font>
+
+PHP可以与很多主流的数据库建立起连接，如MySQL、ODBC、Oracle等，PHP是利用编译的不同函数与这些数据库建立起连接的，PHPLIB就是常用的为一般事务提供的基库
+
+###### <font color="yellow">d. 面向过程和面向对象并用</font>
+
+在PHP语言的使用中，可以分别使用面向过程和面向对象，而且可以将PHP面向过程和面向对象两者一起混用，这是其它很多编程语言做不到的
+
+###### <font color="yellow">e. 优点</font>
+
+1. 流行，容易上手
+
+    PHP是目前最流行的编程语言，这毋庸置疑，它驱动全球超过2亿多个网站，有全球超过81.7%的公共网站在服务器端采用PHP，PHP常用的数据结构都内置了，使用起来方便简单，也一点都不复杂，表达能力相当灵活
+
+2. 开发职位很多
+
+    在服务器端的网站编程中PHP会更容易帮助你找到工作，很多互联网相关企业都在使用PHP开发框架，所以可以说市场对PHP的开发程序员的需求还是比较大的
+
+3. 仍然在不断发展
+
+    PHP在不断兼容着类似closures和命名空间等技术，同时兼顾性能和当下流行的框架，版本是7之后，一直在提供更高性能的应用
+
+4. 可植入性强
+
+    PHP语言在补丁漏洞升级过程中，核心部分植入简单易行，且速度快
+
+5. 拓展性强
+
+    PHP语言在数据库应用过程中，可以从数据库调取各类数据，执行效率高
+
+###### <font color="yellow">f. 缺点</font>
+
+1. PHP的解释运行机制
+
+	在PHP中，所有的变量都是页面级的，无论是全局变量，还是类的静态成员，都会在页面执行完毕后被清空
+
+2. 设计缺陷
+
+    缺少关注PHP被称作是不透明的语言，因为没有堆栈追踪，各种脆弱的输入，没有一个明确的设计哲学，早期的PHP受到Perl的影响，带有out参数的标准库又是有C语言引入，面向对象的部分又是从C++和Java学来的
+
+3. 对递归的不良支持
+
+    PHP并不擅长递归，它能容忍的递归函数的数量限制和其他语言比起来明显少
+
+##### <font color="yellow">0003 语法</font>
+
+###### <font color="yellow">a. 更全面的语法</font>
+
+[https://www.w3school.com.cn/php/index.asp](https://www.w3school.com.cn/php/index.asp)
+
+###### <font color="yellow">b. PHP代码执行方式</font>
+
+在服务器端执行，然后返回给用户结果，如果直接使用浏览器打开，就会解析为文本，意思是说，需要浏览器通过http请求，才能够执行php页面
+
+###### <font color="yellow">c. 第一段php代码</font>
+
+```php
+<?php
+    echo "hello world!";
+?>
+```
+
+上方代码中，注意php语言的格式，第一行和第三行的格式中，没有空格，代码的编写位置在`<?php代码?>`
+
+###### <font color="yellow">d. 注释</font>
+
+```php
+// 单行注释
+/*
+    多行注释
+*/
+```
+
+###### <font color="yellow">e. 变量</font>
+
+变量以`$`符号开头，其后是变量的名称，<font color="red">大小写敏感</font>
+
+```php
+$a1;
+$_abc;
+```
+
+###### <font color="yellow">f. 数据类型</font>
+
+PHP支持的数据类型包括
+
+- 字符串
+- 整数
+- 浮点数
+- 布尔
+- 数组
+- 对象
+- NULLL
+
+定义字符串时需要注意
+
+- 单引号''：内部的内容只是作为字符串
+- 双引号""：如果内部是PHP的变量，那么会将该变量的值解析，如果内部是html代码，也会解析成html
+
+单引号里的内容，一定是字符串，双引号里的内容，可能会进行解析
+
+```php
+echo "<input type=`button` value=`smyhvae`>";
+```
+
+上面这个语句，就被会解析成按钮
+
+```php
+    // 字符串
+    $str = '123';
+
+    // 字符串拼接
+    $str2 = '123'.'哈哈哈';
+
+
+    // 整数
+    $numA = 1;// 正数
+    $numB = -2;// 负数
+
+    // 浮点数
+    $x = 1.1;
+
+    // 布尔
+    $a = true;
+    $b = false;
+
+    // 普通数组：数组中可以放 数字、字符串、布尔值等，不限制类型
+    $arr1 = array('123', 123);
+    echo $arr1[0];
+
+    // 关系型数组：类似于json格式
+    $arr2 = $array(`name`=>`smyhvae`, `age`=>`26`);
+    echo $arr2[`name`];// 获取时，通过key来获取
+```
+
+上方代码中注意，php中字符串拼接的方式是`.`
+
+###### <font color="yellow">g. 运算符</font>
+
+PHP中的运算符跟JavaScript中的基本一致，用法也基本一致
+
+算数运算符
+
+- +
+- -
+- /
+- *
+- %
+
+赋值运算符
+
+- =
+- +=
+- -=
+
+```php
+<?php
+    $x = 10;
+    $y = 6;
+
+    echo ($x + $y);// 输出16
+    echo ($x - $y);// 输出4
+    echo ($x * $y);// 输出60
+    echo ($x / $y);// 输出1.6666666666667
+    echo ($x % $y);// 输出4
+?>
+```
+
+###### <font color="yellow">h. 函数</font>
+
+```php
+function functionName() {
+  // 代码
+}
+```
+
+有参数、无返回值的函数
+
+```php
+function sayName($name){
+    echo $name.'你好';
+}
+// 调用
+sayName('smyhvae');
+```
+
+有参数、参数有默认值的函数
+
+```php
+function sayFood($f='你好'){
+    echo $f.'好';
+}
+// 调用
+sayFood('你好');// 如果传入参数，就使用传入的参数
+sayFood();// 如果不传入参数，直接使用默认值
+```
+
+有参数、有返回值的函数
+
+```php
+function sum($a,$b){
+    return $a+$b
+}
+sum(1,2);// 返回值为1+2 = 3
+```
+
+###### <font color="yellow">i. 类和对象</font>
+
+PHP中允许使用对象这种自定义的数据类型，必须先声明，实例化之后才能够使用
+
+定义最基础的类
+
+```php
+class Fox{
+
+    public $name = 'itcast';
+    public $age = 10;
+}
+$fox = new $fox;
+// 对象属性取值
+$name = $fox->name;
+// 对象属性赋值
+$fox->name = '小狐狸';
+```
+
+带构造函数的类
+
+```php
+class fox{
+    // 私有属性,外部无法访问
+    var $name = '小狐狸';
+    // 定义方法 用来获取属性
+    function Name(){
+    return $this->name;
+    }
+    // 构造函数,可以传入参数
+    function fox($name){
+    $this->name = $name
+    }
+}
+
+// 定义了构造函数 需要使用构造函数初始化对象
+$fox = new fox('小狐狸');
+// 调用对象方法,获取对象名
+$foxName = $fox->Name();
+```
+
+###### <font color="yellow">j. 内容输出</font>
+        
+- echo
+
+    输出字符串
+
+- print_r()
+
+    输出复杂数据类型，比如数组、对象
+
+- var_dump()
+
+    输出详细信息
+
+```php
+$arr =array(1,2,'123');
+
+echo'123';
+// 结果：123
+
+print_r($arr);
+// 结果：Array ([0] => 1 [1] => 2 [2] => 123)
+var_dump($arr);
+/* 结果：
+array
+  0 => int 1
+  1 => int 2
+  2 => string '123' (length=3)
+*/
+```
+
+###### <font color="yellow">k. 循环语句</font>
+
+这里只列举了foreach、for循环
+
+for循环
+
+```php
+for ($x=0; $x<=10; $x++) {
+    echo "数字是：$x <br>";
+}
+```
+
+foreach循环
+
+```php
+$colors = array("red","green","blue","yellow");
+foreach ($colors as $value) {
+    echo "$value <br>";
+}
+```
+
+上方代码中
+
+参数一：循环的对象
+
+参数二：将对象的值挨个取出，直到最后
+
+如果循环的是对象，输出的是对象的属性的值
+
+###### <font color="yellow">l. php中的`header()`函数</font>
+
+浏览器访问http服务器，接收到响应时，会根据响应报文头的内容进行一些具体的操作，在php中，我们可以根据header来设置这些内容
+
+`header()`函数的作用
+
+- 用来向客户端(浏览器)发送报头
+- 直接写在php代码的第一行就行
+
+下面列举几个常见的header函数
+
+1. 设置编码格式
+
+    ```php
+    header('content-type:text/html; charset= utf-8');
+    ```
+
+    ```php
+    <?php
+        header('content-type:text/html; charset= utf-8');
+        echo "我的第一段 PHP 脚本";
+    ?>
+    ```
+
+2. 设置页面跳转
+    
+	```php
+    header('location:http://www.baidu.com');
+    ```
+
+    设置页面刷新的间隔
+    
+	```php
+    header('refresh:3;url=http://www.xiaomi.com');
+    ```
+
+###### <font color="yellow">m. php中的get请求和post请求</font>
+
+get请求
+
+> 可以通过`$_GET`对象来获取，下面是一个简单的表单代码，通过get请求将数据提交到`01.php`
+> 
+> index.html
+> 
+> ```html
+> <!DOCTYPE html>
+> <html lang="en">
+>     <head>
+>         <meta charset="UTF-8">
+>         <title>Title</title>
+>     </head>
+>     <body>
+>         <!--通过get请求，将表单提交到php页面中-->
+>         <form action="01.php" method="get">
+>             <label for="">姓名：
+>                 <input type="text"name="userName"></label>
+>             <br/>
+>             <label for="">邮箱：
+>                 <input type="text"name="userEmail"></label>
+>             <br/>
+>             <input type="submit"name="">
+>         </form>
+>     </body>
+> </html>
+> ```
+> 
+> 01.php
+> 
+> ```php
+> <?php
+>     header('content-type:text/html; charset= utf-8');
+>     echo "<h1>php 的get 请求演示</h1>";
+>     echo '用户名：'.$_GET['userName'];
+>     echo '<br/>';
+>     echo '邮箱：'.$_GET['userEmail'];
+> ?>
+> ```
+> 
+> 上方代码可以看出，`$_GET`是关系型数组，可以通过`**$_GET[key]**`获取值，这里的key是form标签中表单元素的name属性的值
+
+post请求
+
+> 可以通过`$_POST`对象来获取，下面是一个简单的表单代码，通过post请求将数据提交到`02.php`
+> 
+> index.html
+> 
+> ```html
+> <!DOCTYPE html>
+> <html lang="en">
+>     <head>
+>         <meta charset="UTF-8">
+>         <title>Title</title>
+>     </head>
+>     <body>
+>     <!-- 通过 post 请求，将表单提交到 php 页面中 -->
+>         <form action="02.php" method="post" >
+>           <label for="">姓名：
+>                 <input type="text"name="userName"></label>
+>                 <br/>
+>           <label for="">邮箱：
+>                 <input type="text"name="userEmail"></label>
+>                 <br/>
+>                 <input type="submit" name="">
+>         </form>
+>     </body>
+> </html>
+> ```
+> 
+> 02.php
+> 
+> ```php
+> <?php
+>     header('content-type:text/html; charset= utf-8');
+>     echo "<h1>php 的 post 请求演示</h1>";
+>     echo '用户名：'.$_POST['userName'];
+>     echo '<br/>';
+>     echo '邮箱：'.$_POST['userEmail'];
+> ?>
+> ```
+> 
+> 上方代码可以看出，`$_POST`是关系型数组，可以通过`**$_POST[key]**`获取值，这里的key是form标签中表单元素的name属性的值，实际开发中，可能不会单独写一个php文件，常见的做法是在html文件中嵌入php的代码
+> 
+> 比如说，原本html中有个li标签是存放用户名的
+> 
+> ```html
+> <li>smyhvae</li>
+> ```
+> 
+> 嵌入php后，用户名就变成了动态获取的
+> 
+> ```php
+> <li><?php
+>     echo $_POST[`userName`]
+> ?></li>
+> ```
+
+###### <font color="yellow">n. php中文件相关的操作</font>
+
+文件上传`$_FILES`
+
+> 上传文件时，需要在html代码中进行如下设置
+> 
+> - 在html表单中，设置`enctype="multipart/form-data"`，该值是必须的
+> - 只能用post方式获取
+> 
+> 代码如下
+> 
+> index.html
+> 
+> ```html
+> <form action="03-fileUpdate.php" method="post" enctype="multipart/form-data">
+>     <label for="">照片:
+>         <input type="file" name = "picture" multiple=""></label>
+>     <br/>
+>     <input type="submit" name="">
+> </form>
+> ```
+> 
+> 在php文件中打印file的具体内容
+> 
+> ```php
+> <?php
+>     sleep(5);// 让服务器休息一会
+>     print_r($_FILES);// 打印file的具体内容
+> ?>
+> ```
+> 
+> 上方现象可以看出
+> 
+> 点击提交后，服务器没有立即出现反应，而是休息了一会`sleep(5)`，在`wamp/tmp`目录下面出现了一个`.tmp`文件，`.tmp`文件一会就被自动删除了，服务器返回的内容中有文件的名字`[name] => computer.png`，以及上传文件保存的位置`D:\wamp\tmp\php3D70.tmp`
+> 
+> 服务器返回的内容如下
+> 
+> ```php
+> Array([upFile] => Array([name] => yangyang.jpg [type] => image/jpeg [tmp_name] => D:\wamp\tmp\phpCC56.tmp [error] => 0 [size] => 18145))
+> ```
+
+文件保存
+
+> 我们尝试一下，把上面的例子中的临时目录下面的文件保存起来，这里需要用到php里的`move_uploaded_file()`函数[http://www.w3school.com.cn/php/func_filesystem_move_uploaded_file.asp](http://www.w3school.com.cn/php/func_filesystem_move_uploaded_file.asp)
+> 
+> 格式如下
+> 
+> ```php
+> move_uploaded_file($_FILES['photo']['tmp_name'], './images/test.jpg');
+> ```
+> 
+> 参数解释
+> 
+> - 参数一：移动的文件
+> - 参数二：目标路径
+> 
+> index.html(这部分的代码保持不变)
+> 
+> ```html
+> <form action="03.fileUpdate.php" method="post" enctype="multipart/form-data">
+>     <label for="">照片:
+>         <input type="file" name = "picture" multiple=""></label>
+>     <br/>
+>     <input type="submit" name="">
+> </form>
+> ```
+
+WampServer中修改上传文件的大小
+
+> 打开WampServer的文件`php.ini`，修改`php.ini`中的如下内容
+>     
+> 设置文件最大上传限制(值的大小可以根据需求修改)
+> 
+> ```php
+> file_uploads = On;         是否允许上传文件On/Off默认是On
+> upload_max_filesize = 32M; 设置上传文件的最大限制
+> post_max_size = 32M;       设置通过Post提交的最多数据
+> ```
+> 
+> 考虑网络传输快慢(这里修改一些参数)
+> 
+> ```php
+> max_execution_time = 30000; 脚本最长的执行时间单位为秒
+> max_input_time = 600;       接收提交的数据的时间限制单位为秒
+> memory_limit = 1024M;       最大的内存消耗
+> ```
+
+##### <font color="yellow">0004 HTTP协议</font>
+
+###### <font color="yellow">a. 请求</font>
+
+客户端发出的请求，主要由三个组成部分
+
+- 请求行
+    
+	请求方法
+
+    > GET or POST，请求URL
+
+- 请求头
+    
+	常见的请求头如下
+    
+	- User-Agent
+
+        浏览器的具体类型
+
+        `User-Agent：Mozilla/5.0 (Windows NT 6.1; rv:17.0) Gecko/20100101 Firefox/17.0`
+
+    - Accept
+
+        浏览器支持哪些数据类型
+
+        `Accept：text/html,application/xhtml+xml,application/xml;q=0.9;`
+
+    - Accept-Charset
+
+        浏览器采用的是哪种编码
+
+        `Accept-Charset：ISO-8859-1`
+
+    - Accept-Encoding
+
+        浏览器支持解码的数据压缩格式
+
+        `Accept-Encoding：gzip, deflate`
+
+    - Accept-Language
+
+        浏览器的语言环境
+
+        `Accept-Language zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3`
+
+    - Host
+
+        请求的主机名，允许多个域名同处一个IP地址，即虚拟主机
+
+        `Host:www.baidu.com`
+
+    - Connection
+
+        表示是否需要持久连接，属性值可以是Keep-Alive/close，HTTP1.1默认是持久连接，它可以利用持久连接的优点，当页面包含多个元素时（例如Applet，图片），显著地减少下载所需要的时间，要实现这一点，Servlet需要在应答中发送一个Content-Length头，最简单的实现方法是：先把内容写入ByteArrayOutputStream，然后在正式写出内容之前计算它的大小
+
+        `Connection: Keep-Alive`
+
+    - Content-Length
+
+        表示请求消息正文的长度
+
+        对于POST请求来说Content-Length必须出现
+
+    - Content-Type
+
+        WEB服务器告诉浏览器自己响应的对象的类型和字符集
+
+        `Content-Type: text/html; charset='gb2312'`
+
+    - Content-Encoding
+
+        WEB服务器表明自己使用了什么压缩方法（gzip，deflate）压缩响应中的对象
+
+        `Content-Encoding：gzip`
+
+    - Content-Language
+
+        WEB服务器告诉浏览器自己响应的对象的语言
+
+    - Cookie：最常用的请求头，浏览器每次都会将cookie发送到服务器上，允许服务器在客户端存储少量数据
+
+    - Referer
+
+        包含一个URL，用户从该URL代表的页面出发访问当前请求的页面
+
+        服务器能知道你是从哪个页面过来的
+
+        `Referer: http://www.baidu.com/`
+
+- 请求主体
+ 
+    指的是提交给服务器的数据，需要注意的是，如果是往服务器提交数据，需要在请求头中设置`Content-Type:application/x-www-form-urlencoded`(在ajax中需要手动设置)
+
+###### <font color="yellow">b. 响应</font>
+
+响应报文是服务器返回给客户端的
+
+组成部分有
+
+- 响应行
+
+    HTTP响应行：主要是设置响应状态等信息
+
+- 响应头
+
+    Cookie、缓存等信息就是在响应头的属性中设置的
+
+    常见的响应头如下
+
+    - Cache-Control
+
+        响应输出到客户端后，服务端通过该报文头属告诉客户端如何控制响应内容的缓存
+
+        下面，的设置让客户端对响应内容缓存3600秒，也即在3600秒内，如果客户再次访问该资源，直接从客户端的缓存中返回内容给客户，不要再从服务端获取(当然，这个功能是靠客户端实现的，服务端只是通过这个属性提示客户端“应该这么做”，做不做，还是决定于客户端，如果是自己宣称支持HTTP的客户端，则就应该这样实现)
+
+        `Cache-Control: max-age=3600`
+
+    - ETag
+
+        一个代表响应服务端资源（如页面）版本的报文头属性，如果某个服务端资源发生变化了，这个ETag就会相应发生变化。它是Cache-Control的有益补充，可以让客户端“更智能”地处理什么时候要从服务端取资源，什么时候可以直接从缓存中返回响应
+
+        `ETag: "737060cd8c284d8af7ad3082f209582d"`
+
+    - Location
+
+        我们在Asp.net中让页面Redirect到一个某个A页面中，其实是让客户端再发一个请求到A页面，这个需要Redirect到的A页面的URL，其实就是通过响应报文头的Location属性告知客户端的，如下的报文头属性，将使客户端redirect到iteye的首页中
+
+        `Location: http://www.google.com.hk`
+
+    - Set-Cookie
+
+        服务端可以设置客户端的Cookie，其原理就是通过这个响应报文头属性实现的
+
+        `Set-Cookie: UserID=JohnDoe; Max-Age=3600; Version=1`
+
+- 响应主体
+
+    如果请求的是HTML页面，那么返回的就是HTML代码，如果是JS就是JS代码
+
+##### <font color="yellow">0005 抓包工具</font>
+
+常见的抓包工具有
+
+- Fiddler[https://mccxj.github.io/blog/20130531_introduce-to-fiddler.html](https://mccxj.github.io/blog/20130531_introduce-to-fiddler.html)
+- Charles[https://blog.devtang.com/2015/11/14/charles-introduction/](https://blog.devtang.com/2015/11/14/charles-introduction/)
+
+#### <font color="yellow">002 文件包含漏洞</font>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
