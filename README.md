@@ -7299,7 +7299,7 @@ Web Server的安全我们关注两点
 
 在此仍需强调的是，Web Server对于DDOS攻击的防御作用是有限的，对于大规模的拒绝服务攻击，需要使用更加专业的保护方案
 
-#### <font color="yellow">003 jBoos远程命令执</font>
+#### <font color="yellow">003 jBoos远程命令执行</font>
 
 jBoss是J2EE环境中一个流行的Web容器，但是jBoss在默认安装时提供的一些功能却不太安全，如果配置不得当，则可能直接造成远程命令执行，由于jBoss在默认安装时会有一个管理后台，叫做JMX-Console，它提供给管理员一些强大的功能，其中包括配置MBeans，这同样也会为黑客们打开方便之门，通过8080端又(默认安装时会监听8080端又)访问`/jmx-console`能够进入到这个管理界面，默认安装时访问JMX-Console是没有任何认证的，在JMX-Console中，有多种可以远程执行命令的方法，最简单的方式，是通过DeploymentScanner远程加载一个war包，默认的DeploymentScanner将检查URL是否是`file:/[JBOSSHOME]/server/default/deploy/`，但通过`addURL()`方法却可以添加一个远程的war包，出于安全防御的目的，在加固时，需要删除JMX-Console后台，事实上，jBoss的使用兀全可以不依赖于匕[http://wiki.jboss.org/wiki/Wiki.jsp?passage=SecureTheJmxConsole](http://wiki.jboss.org/wiki/Wiki.jsp?passage=SecureTheJmxConsole)，要移除`JMX-Console`，只需要删除`jmx-console.war`和`web-console.war`即可，它们分别位于`$JBOSS_HOME/server/all/deploy`和`$JBOSS_HOME/server/default/deploy`目录下，如果出于业务需要不得不使用`JMX-Console`，则应该使用一个强壮的密码，并且运行`JMX-Console`的端又不应该面向整个Internet开放
 
