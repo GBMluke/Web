@@ -10888,11 +10888,11 @@ taint只支持php5.4.*及以前的版本，最新的php是不支持的
 > 
 > `mixed preg_replace(mixed $pattern,mixed $replacement,mixed $subject[, int $limit = -1[, int &$count]])`
 > 
-> 当`$pattern`处存在`e`修饰符时，`$replacement`会被当做php代码执行
+> <font color="red">当`$pattern`处存在`e`修饰符时，`$replacement`会被当做php代码执行</font>
 > 
 > 3. `mixed call_user_func(callable $callbank[`, `mixed $parameter[`, `mixed$…)`
 > 
-> 第一个参数为回调函数，第二个参数是回调函数的参数
+> <font color="red">第一个参数为回调函数，第二个参数是回调函数的参数</font>
 > 
 > ```php
 > <?php
@@ -10903,7 +10903,7 @@ taint只支持php5.4.*及以前的版本，最新的php是不支持的
 > 
 > 4. `eval()`和`assert()`
 > 
-> 当`assert()`的参数为字符串时，可执行PHP代码
+> <font color="red">当`assert()`的参数为字符串时，可执行PHP代码</font>
 > 
 > - `eval("phpinfo();"); = False`
 > - `eval("phpinfo()"); = True`
@@ -10959,7 +10959,7 @@ taint只支持php5.4.*及以前的版本，最新的php是不支持的
 > > echo '$a' = output:$a
 > > ```
 > > 
-> > 双引号时，可以直接解析变量，造成代码执行漏洞，google绕过
+> > <font color="red">双引号时，可以直接解析变量，造成代码执行漏洞，google绕过</font>
 
 变量覆盖漏洞
 
@@ -10995,9 +10995,10 @@ taint只支持php5.4.*及以前的版本，最新的php是不支持的
 > 
 > 1. 等于与存在判断绕过
 > 
-> > 1. in_array()
+> > 1. `in_array()`
 > >     
-> >     比较之前会自动转换类型
+> >     <font color="red">比较之前会自动转换类型</font>
+> >     
 > >     ```php
 > > 	<?php
 > > 		if(in_array($_GET['type_id'],array(1,2,3,4))) {
@@ -11006,9 +11007,9 @@ taint只支持php5.4.*及以前的版本，最新的php是不支持的
 > > 	?>
 > > 	```
 > > 
-> > 2. is_numeric()
+> > 2. `is_numeric()`
 > > 	
-> >     当传入参数为hex时直接通过并返回true并且MYSQL可以直接使用hex编码代替字符串明文可以二次注入并且可能造成XSS漏洞
+> >     <font color="red">当传入参数为hex时直接通过并返回true并且MYSQL可以直接使用hex编码代替字符串明文可以二次注入并且可能造成XSS漏洞</font>
 > > 
 > > 3. 双等于`==`和三等于`===`
 > >     
@@ -11243,9 +11244,3 @@ taint只支持php5.4.*及以前的版本，最新的php是不支持的
 > > 		- windows findfirstfile利用
 > >             
 > > 			若要搜索12345.txt文件，可使用`1<<`来代替或者`12<<`，不可以单独使用一个"`<`"或"`>`"，因为单独一个只是代表了一个字符，两个代表多个字符
-
-
-
-
-
-
