@@ -8,6 +8,7 @@ Attention:
 > 7. 如果我的文章中存在任何问题，欢迎大家指出(If there are any problems in my article, please feel free to point them out.)
 > 8. 以下内容和各文件夹(文件夹不包括reprint、thematic topic and analysis、tools)中的内容一致，仅为更可观的版本存在于此(The following content corresponds to the content in each folder (folders excluding reprint, thematic topic and analysis, tools), only the more substantial version exists here.)
 > 9. 之后的内容将会直接补充到这个文档中，将不在向文件夹中补充，所以文件夹中的文件可理解为已弃用的文件(The subsequent content will be added directly to this document and will not be added to the folder, so the files in the folder can be interpreted as discarded files.)
+> 10. 可能因为部分原因
 
 csdn address:[hackjacking.blog.csdn.net](https://hackjacking.blog.csdn.net/)
 
